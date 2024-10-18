@@ -1,16 +1,23 @@
 import { Room, Client } from "@colyseus/core";
-import { Point, MyRoomState } from "./schema/MyRoomState";
+import { MyRoomState } from "./schema/MyRoomState";
+import { LandTiles } from "../models/LandTiles";
+import { Point } from "../models/Point";
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 4;
 
   onCreate (options: any) {
     const state = new MyRoomState()
-    const location = new Point()
-    state.LandTiles.push()
 
 
-    this.setState(new MyRoomState());
+    const test = new LandTiles("string", "Dessert", new Point(100,100), [],[])
+
+
+    state.LandTiles.push(test.getStateSchema())
+
+
+
+    this.setState(state);
 
 
     this.onMessage("type", (client, message) => {
