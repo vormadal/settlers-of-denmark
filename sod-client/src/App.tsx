@@ -4,6 +4,8 @@ import { Land } from "./shapes/LandShape";
 import * as Colyseus from "colyseus.js";
 import { useEffect, useState } from "react";
 import { MyRoomState } from "./state/MyRoomState";
+import { EdgeShape } from "./shapes/EdgeShape";
+import { IntersectionShape } from "./shapes/IntersectionShape";
 
 // const tiles = [
 //   "Dessert",
@@ -54,27 +56,14 @@ function App() {
         {state?.LandTiles.map((x) => (
           <Land key={x.id} tile={x} />
         ))}
-        {/* <Star
-            key={star.id}
-            id={star.id}
-            x={star.x}
-            y={star.y}
-            numPoints={5}
-            innerRadius={20}
-            outerRadius={40}
-            fill="#89b717"
-            opacity={0.8}
-            draggable
-            rotation={star.rotation}
-            shadowColor="black"
-            shadowBlur={10}
-            shadowOpacity={0.6}
-            shadowOffsetX={star.isDragging ? 10 : 5}
-            shadowOffsetY={star.isDragging ? 10 : 5}
-            scaleX={star.isDragging ? 1.2 : 1}
-            scaleY={star.isDragging ? 1.2 : 1}
-          />
-        ))} */}
+
+        {state?.edges.map((x) => (
+          <EdgeShape key={x.id} edge={x} />
+        ))}
+
+        {state?.intersections.map((x) => (
+          <IntersectionShape key={x.id} intersection={x} show />
+        ))}
       </Layer>
     </Stage>
   );
