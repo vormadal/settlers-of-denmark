@@ -19,6 +19,7 @@ export class Intersection extends Schema{
 export class LandTiles extends Schema{
   @type(Point) position: Point;
   @type("string") id: string;
+  @type("string") type: string;
 }
 
 export class MyRoomState extends Schema {
