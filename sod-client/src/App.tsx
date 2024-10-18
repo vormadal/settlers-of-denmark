@@ -50,9 +50,26 @@ function App() {
         console.log("JOIN ERROR", e);
       });
   }, []);
+
+  const xs = state?.LandTiles.map((x) => x.position.x).sort(
+    (a, b) => b - a
+  ) || [0];
+  const ys = state?.LandTiles.map((x) => x.position.y).sort(
+    (a, b) => b - a
+  ) || [0];
+
+  const xMin = xs.slice(0, 1)[0];
+  const xMax = xs.slice(-1)[0];
+  const yMin = ys.slice(0, 1)[0];
+  const yMax = ys.slice(-1)[0];
+
+  const [cx, cy] = [(xMin + xMax) / 2, (yMin + yMax) / 2];
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
-      <Layer>
+      <Layer
+        offsetX={-window.innerWidth / 2 + cx}
+        offsetY={-window.innerHeight / 2 + cy}
+      >
         {state?.LandTiles.map((x) => (
           <Land key={x.id} tile={x} />
         ))}
