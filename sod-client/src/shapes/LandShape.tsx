@@ -1,5 +1,5 @@
 import { RegularPolygon } from "react-konva";
-import { LandTiles } from "../models/LandTiles";
+import { LandTiles } from "../state/LandTiles";
 
 interface Type {
   tile: LandTiles;
