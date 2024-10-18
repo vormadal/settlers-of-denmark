@@ -6,14 +6,24 @@ import { Point } from "../models/Point";
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 4;
 
-  onCreate (options: any) {
+  onCreate(options: any) {
     const state = new MyRoomState()
 
+    const maxValueX = 3;
+    const maxValueY = 6;
 
-    const test = new LandTiles("string", "Dessert", new Point(100,100), [],[])
+    var allThemLandTiles = []
 
 
-    state.LandTiles.push(test.getStateSchema())
+    for (let i = 0; i < maxValueX; i++) {
+      for (let j = 0; j < maxValueY; j++) {
+
+        allThemLandTiles.push(new LandTiles(`x${i} y${j}`, "Dessert", new Point(3 * i*60, j*60 * Math.sqrt(3)), [], []).getStateSchema())
+        allThemLandTiles.push(new LandTiles(`fx${i} y${j}`, "Dessert", new Point(3 * i * 60 + (3 / 2)*60, (j + 0.5) * 60 * Math.sqrt(3)), [], []).getStateSchema())
+      }
+    }
+
+    state.LandTiles.push(...allThemLandTiles)
 
 
 
@@ -27,11 +37,11 @@ export class MyRoom extends Room<MyRoomState> {
     });
   }
 
-  onJoin (client: Client, options: any) {
+  onJoin(client: Client, options: any) {
     console.log(client.sessionId, "joined!");
   }
 
-  onLeave (client: Client, consented: boolean) {
+  onLeave(client: Client, consented: boolean) {
     console.log(client.sessionId, "left!");
   }
 
