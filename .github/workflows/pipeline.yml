@@ -63,7 +63,7 @@ jobs:
         run: >
           node_modules/.bin/caprover deploy -h https://captain.caprover.vormadal.com 
           -b ${{ github.ref }} 
-          -c ./captain-definition-server 
+          -c ../../captain-definition-server 
           --appToken ${{ secrets.CAPROVER_SERVER_APP_TOKEN }} 
           -a "sod-server" 
 
@@ -71,7 +71,7 @@ jobs:
         run: >
           node_modules/.bin/caprover deploy -h https://captain.caprover.vormadal.com 
           -b ${{ github.ref }} 
-          -c ./captain-definition-client 
+          -c ../../captain-definition-client 
           --appToken ${{ secrets.CAPROVER_CLIENT_APP_TOKEN }} 
           -a "sod-client" 
       # - name: Wait for deployment is done
