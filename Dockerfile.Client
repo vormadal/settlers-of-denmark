@@ -7,12 +7,12 @@ WORKDIR /frontend
 # copy package.json and lock file from host to image and install node modules
 # this will speed up rebuilding image due to changes of source files as
 # these layer are cached and do not have to be rebuilt
-COPY ./package.json ./
-COPY ./package-lock.json ./
+COPY ./sod-client/package.json ./
+COPY ./sod-client/package-lock.json ./
 RUN npm ci
 
 #copy the rest of the source files into the container
-COPY . .
+COPY ./sod-client .
 
 # build the app ##
 RUN npm run build
