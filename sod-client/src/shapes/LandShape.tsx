@@ -1,4 +1,4 @@
-import { RegularPolygon } from "react-konva";
+import { Circle, RegularPolygon, Text } from "react-konva";
 import { LandTiles } from "../state/LandTiles";
 
 interface Type {
@@ -15,8 +15,11 @@ const colors: { [key: string]: string } = {
 };
 
 export function Land({ tile }: Type) {
+  
+
   return (
-    <RegularPolygon
+    <div>
+      <RegularPolygon
       radius={tile.radius-2}
       sides={6}
       rotation={90}
@@ -24,5 +27,28 @@ export function Land({ tile }: Type) {
       y={tile.position.y}
       fill={colors[tile.type] ?? "#ff0000"}
     />
+    
+      <Text
+        text="5"
+        fontSize={0.2}
+        align="center"
+        verticalAlign="bottom"
+        offsetX={0.07}
+        offsetY={0.1}
+        x={tile.position.x}
+        y={tile.position.y}
+      />
+      <Circle
+      radius={0.2}
+      stroke={"#000000"}
+      strokeWidth={0.02}
+        x={tile.position.x}
+        y={tile.position.y}
+      />
+
+    </div>
+
+
   );
+
 }
