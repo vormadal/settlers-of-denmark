@@ -8,8 +8,8 @@ export function EdgeShape({ edge }: Props) {
   return (
     <Line
       points={[edge.pointA.x, edge.pointA.y, edge.pointB.x, edge.pointB.y]}
-      fill={"#ff0000"}
-      width={2}
+      strokeWidth={0.05}
+      stroke={"#ff0000"}
     />
   );
 }

@@ -17,4 +17,8 @@ export class Intersection {
     schema.id = this.id;
     return schema;
   }
+
+  isSameAs(inter: Intersection){
+    return this.position.IsTheSameAs(inter.position)
+  }
 }

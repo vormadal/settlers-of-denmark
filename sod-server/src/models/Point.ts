@@ -3,6 +3,9 @@ import { Point as Schema } from "../rooms/schema/MyRoomState";
 export class Point {
   constructor(public readonly x: number, public readonly y: number) { }
 
+  get id(){
+    return `${this.x}${this.y}`
+  }
   GetStateSchema() {
     const schema = new Schema()
     schema.x = this.x
@@ -17,8 +20,17 @@ export class Point {
     return new Point(pX, pY)
   }
 
-  IsTheSameAs(point: Point, decimal: number = 8){
-    const p1x = Math.round(this.x)
-    
+  IsTheSameAs(point: Point){
+    const decimalNumber = 100
+
+    const p1x = Math.round(this.x * decimalNumber) / decimalNumber
+    const p1y = Math.round(this.y * decimalNumber) / decimalNumber
+    const p2x = Math.round(point.x * decimalNumber) / decimalNumber
+    const p2y = Math.round(point.y * decimalNumber) / decimalNumber
+
+    if(p1x === p2x && p1y === p2y){
+      return true
+    }
+    return false
   }
 }
