@@ -11,7 +11,7 @@ interface Type {
 }
 
 const inactiveColor = "#f0e68c";
-const activeColor = "#fa8072";
+const activeColor = "#ffffff";
 export function IntersectionShape({ intersection, show, onClick }: Type) {
   const [_, room] = useGameState();
   const [focus, setFocus] = useState(false);
@@ -40,6 +40,14 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
       onMouseLeave={handleMouseLeave}
       scaleX={focus ? 1.6 : 1}
       scaleY={focus ? 1.6 : 1}
+      opacity={0.6}
+      shadowEnabled={true}
+      shadowColor="#000000"
+      shadowOffsetX={1}
+      shadowBlur={2}
+      shadowOpacity={0.3}
+      strokeWidth={0.9}
+      stroke={"#000000"}
     />
   );
 }

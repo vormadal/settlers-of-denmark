@@ -18,8 +18,7 @@ export function HouseShape({ intersection, color = "#00ff00" }: Props) {
           -10, 10,
           -10, -5,
           0, -15,
-          10, -5,
-          10, 10]
+          10, -5]
     
         return shapePoints
       }
@@ -30,10 +29,14 @@ export function HouseShape({ intersection, color = "#00ff00" }: Props) {
           x={intersection.position.x}
           y={intersection.position.y}
           closed={true}
-          strokeWidth={1}
+          shadowEnabled={true}
+          shadowColor="#000000"
+          shadowOffsetX={2}
+          shadowBlur={5}
+          shadowOpacity={0.6}
+          strokeWidth={1.1}
           stroke={"#000000"}
           fill={color}
-    
         />
     
       );
