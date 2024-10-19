@@ -15,4 +15,5 @@ export class LandTiles extends Schema {
     @type("string") public type!: string;
     @type([ "string" ]) public edges: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public intersections: ArraySchema<string> = new ArraySchema<string>();
+    @type("number") public value!: number;
 }

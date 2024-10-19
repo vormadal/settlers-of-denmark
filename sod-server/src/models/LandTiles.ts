@@ -20,13 +20,15 @@ export class LandTiles {
   constructor(
     public readonly id: string,
     public readonly type: string,
-    public readonly position: Point
+    public readonly position: Point,
+    public readonly number: number
   ) {
     this._schema = new Schema();
     this._schema.id = id;
     this._schema.type = type;
     this._schema.position = position.schema;
     this._schema.radius = LandTiles.RADIUS;
+    this._schema.value = number;
   }
 
   set edges(value: BorderEdge[]) {

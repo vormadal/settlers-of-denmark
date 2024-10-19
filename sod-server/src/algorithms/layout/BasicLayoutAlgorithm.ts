@@ -3,6 +3,7 @@ import { GameMap } from "../../models/GameMap";
 import { Intersection } from "../../models/Intersection";
 import { LandTiles } from "../../models/LandTiles";
 import { Point } from "../../models/Point";
+import { NumberProvider } from "../NumberProvider";
 import { TileTypeProvider } from "../TileTypeProvider";
 import { LayoutAlgorithm } from "./LayoutAlgorithm";
 
@@ -11,7 +12,11 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   private borderEdges: BorderEdge[] = [];
   private intersections: Intersection[] = [];
   constructor(private readonly m: number, private readonly n: number) {}
-  createLayout(map: GameMap, tileTypeProvider: TileTypeProvider, numberProvider: NumberProvider): GameMap {
+  createLayout(
+    map: GameMap,
+    tileTypeProvider: TileTypeProvider,
+    numberProvider: NumberProvider
+  ): GameMap {
     tileTypeProvider.setup(2 * this.n * this.m);
 
     for (let i = 0; i < this.m; i++) {
@@ -19,8 +24,16 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
         const p1 = CalculatePoint(i, j);
         const p2 = CalculatePointAlt(i, j);
 
-        const tile1 = this.createTile(p1, tileTypeProvider.nextType());
-        const tile2 = this.createTile(p2, tileTypeProvider.nextType());
+        const tile1 = this.createTile(
+          p1,
+          tileTypeProvider.nextType(),
+          numberProvider.next()
+        );
+        const tile2 = this.createTile(
+          p2,
+          tileTypeProvider.nextType(),
+          numberProvider.next()
+        );
 
         this.landTiles.push(tile1, tile2);
       }
@@ -33,11 +46,12 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
     return map;
   }
 
-  createTile = (position: Point, type: string) => {
+  createTile = (position: Point, type: string, number: number) => {
     const tile = new LandTiles(
       `tile:${position.x},${position.y}`,
       type,
-      position
+      position,
+      number
     );
     const intersections: Intersection[] = [];
     for (let index = 0; index < 6; index++) {

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { GameState } from "./state/GameState";
 import { Room } from "colyseus.js";
 
@@ -19,6 +19,10 @@ interface Props {
 export function GameStateContextProvider({ children }: Props) {
   const [state, setState] = useState<GameState>();
   const [room, setRoom] = useState<Room<GameState>>();
+
+  useEffect(() => {
+    if(!room) return
+  }, [room])
   return (
     <GameStateContext.Provider
       value={[
