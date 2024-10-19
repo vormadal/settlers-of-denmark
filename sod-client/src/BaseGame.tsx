@@ -2,11 +2,11 @@ import { Layer, Stage, Text } from "react-konva";
 import { Land } from "./shapes/LandShape";
 import { EdgeShape } from "./shapes/EdgeShape";
 import { IntersectionShape } from "./shapes/IntersectionShape";
-import { MyRoomState } from "./state/MyRoomState";
+import { GameState } from "./state/GameState";
 import { useEffect, useState } from "react";
 
 interface Props {
-  state: MyRoomState;
+  state: GameState;
 }
 export function BaseGame({ state }: Props) {
   const [gameState, setGameState] = useState(state.gameState);
@@ -24,10 +24,10 @@ export function BaseGame({ state }: Props) {
       true
     );
   }, [setGameState, state]);
-  const xs = state?.LandTiles.map((x) => x.position.x).sort(
+  const xs = state?.landTiles.map((x) => x.position.x).sort(
     (a, b) => a - b
   ) || [0];
-  const ys = state?.LandTiles.map((x) => x.position.y).sort(
+  const ys = state?.landTiles.map((x) => x.position.y).sort(
     (a, b) => a - b
   ) || [0];
 
@@ -67,7 +67,7 @@ export function BaseGame({ state }: Props) {
       offsetY={offsetY}
     >
       <Layer scale={{ x: scale, y: scale }}>
-        {state?.LandTiles.map((x) => (
+        {state?.landTiles.map((x) => (
           <Land key={x.id} tile={x} />
         ))}
 
@@ -83,6 +83,7 @@ export function BaseGame({ state }: Props) {
         {gameState === "waiting_for_players" && (
           <Text x={100} y={100} fontSize={50} text="waiting for players..." />
         )}
+        
       </Layer>
     </Stage>
   );

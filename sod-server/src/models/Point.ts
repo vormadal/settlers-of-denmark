@@ -1,4 +1,4 @@
-import { Point as Schema } from "../rooms/schema/MyRoomState";
+import { Point as Schema } from "../rooms/schema/Point";
 
 export class Point {
   constructor(public readonly x: number, public readonly y: number) { }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useColyseus } from "./ColyseusContext";
 import { useGameState } from "./GameStateContext";
-import { MyRoomState } from "./state/MyRoomState";
+import { GameState } from "./state/GameState";
 import { Room, RoomAvailable } from "colyseus.js";
 import {
   Box,
@@ -17,13 +17,13 @@ import {
 export function Lobby() {
   const client = useColyseus();
   const [state, setState] = useGameState();
-  const [rooms, setRooms] = useState<RoomAvailable<MyRoomState>[]>([]);
+  const [rooms, setRooms] = useState<RoomAvailable<GameState>[]>([]);
   const [reconnectionToken, setReconnectionToken] = useState(
     sessionStorage.getItem("reconnectionToken")
   );
 
   useEffect(() => {
-    client.getAvailableRooms<MyRoomState>().then((rooms) => {
+    client.getAvailableRooms<GameState>().then((rooms) => {
       setRooms(rooms);
     });
   }, [setRooms, client]);
@@ -55,7 +55,7 @@ export function Lobby() {
   //       });
   //   }, []);
 
-  function attachStateListener(room: Room<MyRoomState>) {
+  function attachStateListener(room: Room<GameState>) {
     sessionStorage.setItem("reconnectionToken", room.reconnectionToken);
     room.onStateChange((state) => {
       setState(state);
@@ -63,18 +63,18 @@ export function Lobby() {
   }
 
   async function createRoom() {
-    const room = await client.create<MyRoomState>("my_room");
+    const room = await client.create<GameState>("my_room");
     attachStateListener(room);
   }
 
   async function joinRoom(id: string) {
-    const room = await client.joinById<MyRoomState>(id);
+    const room = await client.joinById<GameState>(id);
     attachStateListener(room);
   }
 
   async function handleReconnect() {
     if (!reconnectionToken) return;
-    const room = await client.reconnect<MyRoomState>(reconnectionToken);
+    const room = await client.reconnect<GameState>(reconnectionToken);
     attachStateListener(room);
   }
 

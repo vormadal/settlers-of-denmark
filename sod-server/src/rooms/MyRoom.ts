@@ -5,17 +5,18 @@ import {
   RandomTileTypeProvider,
 } from "../algorithms/TileTypeProvider";
 import { BaseGameTileTypes } from "../models/LandTiles";
-import { MyRoomState } from "./schema/MyRoomState";
+import { GameState } from "./schema/GameState";
 import { GameMap, GameMapOptions } from "../models/GameMap";
 import { Dispatcher } from "@colyseus/command";
 import { OnJoinCommand } from "../commands/OnJoinCommand";
 
-export class MyRoom extends Room<MyRoomState> {
+export class MyRoom extends Room<GameState> {
   maxClients = 2;
 
   dispatcher = new Dispatcher(this);
 
   map: GameMap;
+  
   onCreate(options: GameMapOptions) {
     this.map = new GameMap(
       `${Date.now()}`,

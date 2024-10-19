@@ -1,5 +1,5 @@
 import { BorderEdge } from "./BorderEdge";
-import { Intersection as Schema } from "../rooms/schema/MyRoomState";
+import { Intersection as Schema } from "../rooms/schema/Intersection";
 import { Point } from "./Point";
 import { LandTiles } from "./LandTiles";
 

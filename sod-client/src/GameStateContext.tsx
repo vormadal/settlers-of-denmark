@@ -1,24 +1,24 @@
 import { createContext, useContext, useState } from "react";
-import { MyRoomState } from "./state/MyRoomState";
+import { GameState } from "./state/GameState";
 
 type ContextValueType = [
-  state: MyRoomState | undefined,
-  updateState: (state?: MyRoomState) => void
+  state: GameState | undefined,
+  updateState: (state?: GameState) => void
 ];
-const GameState = createContext<ContextValueType>([undefined, () => {}]);
+const GameStateContext = createContext<ContextValueType>([undefined, () => {}]);
 
 interface Props {
   children: React.ReactElement;
 }
 export function GameStateContextProvider({ children }: Props) {
-  const [state, setState] = useState<MyRoomState>();
+  const [state, setState] = useState<GameState>();
   return (
-    <GameState.Provider value={[state, setState]}>
+    <GameStateContext.Provider value={[state, setState]}>
       {children}
-    </GameState.Provider>
+    </GameStateContext.Provider>
   );
 }
 
 export function useGameState() {
-  return useContext(GameState);
+  return useContext(GameStateContext);
 }

@@ -1,7 +1,7 @@
 import { BorderEdge } from "./BorderEdge";
 import { Intersection } from "./Intersection";
 import { Point } from "./Point";
-import { LandTiles as Schema } from "../rooms/schema/MyRoomState";
+import { LandTiles as Schema } from "../rooms/schema/LandTile";
 
 export const BaseGameTileTypes = {
   Dessert: "Dessert",

@@ -1,7 +1,7 @@
 import { Intersection } from "./Intersection";
 import { LandTiles } from "./LandTiles";
 import { Point } from "./Point";
-import { BorderEdge as Schema } from "../rooms/schema/MyRoomState";
+import { BorderEdge as Schema } from "../rooms/schema/BorderEdge";
 
 export class BorderEdge {
   public readonly adjacentTiles: LandTiles[] = [];
