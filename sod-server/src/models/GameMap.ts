@@ -1,4 +1,5 @@
 import { LayoutAlgorithm } from "../algorithms/layout/LayoutAlgorithm";
+import { RandomNumberProvider } from "../algorithms/NumberProvider";
 import { PercentageTileTypeProvider } from "../algorithms/TileTypeProvider";
 import { GameState } from "../rooms/schema/GameState";
 import { BorderEdge } from "./BorderEdge";
@@ -48,7 +49,8 @@ export class GameMap {
         [BaseGameTileTypes.Lifestock]: (4 / 19) * 100,
         [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
         [BaseGameTileTypes.Mine]: (3 / 19) * 100,
-      })
+      }),
+      new RandomNumberProvider()
     );
   }
 
