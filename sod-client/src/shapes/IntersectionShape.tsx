@@ -13,7 +13,7 @@ export function IntersectionShape({ intersection, show }: Type) {
     <Circle
       x={intersection.position.x}
       y={intersection.position.y}
-      radius={5}
+      radius={0.05}
       fill={show ? activeColor : inactiveColor}
     />
   );

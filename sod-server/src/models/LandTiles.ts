@@ -3,7 +3,7 @@ import { Intersection } from "./Intersection";
 import { Point } from "./Point";
 import { LandTiles as Schema } from "../rooms/schema/MyRoomState";
 export class LandTiles {
-  public static RADIUS = 60;
+  public static RADIUS = 1;
   constructor(
     public readonly id: string,
     public readonly type: string,

@@ -1,6 +1,7 @@
 import { BorderEdge } from "./BorderEdge";
-import { LandTiles } from "./LandTiles";
+import { Intersection as Schema } from "../rooms/schema/MyRoomState";
 import { Point } from "./Point";
+import { LandTiles } from "./LandTiles";
 
 export class Intersection {
   constructor(
@@ -9,4 +10,11 @@ export class Intersection {
     public readonly adjacentTiles: LandTiles[],
     public readonly adjacentBorderEdges: BorderEdge[]
   ) {}
+
+  getStateSchema() {
+    const schema = new Schema();
+    schema.position = this.position.GetStateSchema();
+    schema.id = this.id;
+    return schema;
+  }
 }
