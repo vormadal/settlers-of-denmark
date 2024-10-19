@@ -13,4 +13,6 @@ export class LandTiles extends Schema {
     @type("number") public radius!: number;
     @type("string") public id!: string;
     @type("string") public type!: string;
+    @type([ "string" ]) public edges: ArraySchema<string> = new ArraySchema<string>();
+    @type([ "string" ]) public intersections: ArraySchema<string> = new ArraySchema<string>();
 }

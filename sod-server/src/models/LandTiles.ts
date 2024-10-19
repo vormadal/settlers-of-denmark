@@ -13,21 +13,41 @@ export const BaseGameTileTypes = {
 };
 export class LandTiles {
   public static RADIUS = 1;
-  public readonly edges: BorderEdge[] = [];
-  public readonly intersections: Intersection[] = [];
+  private readonly _edges: BorderEdge[] = [];
+  private readonly _intersections: Intersection[] = [];
 
+  private readonly _schema: Schema;
   constructor(
     public readonly id: string,
     public readonly type: string,
     public readonly position: Point
-  ) {}
+  ) {
+    this._schema = new Schema();
+    this._schema.id = id;
+    this._schema.type = type;
+    this._schema.position = position.schema;
+    this._schema.radius = LandTiles.RADIUS;
+  }
 
-  getStateSchema() {
-    const schema = new Schema();
-    schema.position = this.position.GetStateSchema();
-    schema.id = this.id;
-    schema.type = this.type;
-    schema.radius = LandTiles.RADIUS;
-    return schema;
+  set edges(value: BorderEdge[]) {
+    this._edges.push(...value);
+    this._schema.edges.push(...value.map((x) => x.id));
+  }
+
+  get edges() {
+    return this._edges;
+  }
+
+  set intersections(value: Intersection[]) {
+    this._intersections.push(...value);
+    this._schema.intersections.push(...value.map((x) => x.id));
+  }
+
+  get intersections() {
+    return this._intersections;
+  }
+
+  get schema() {
+    return this._schema;
   }
 }

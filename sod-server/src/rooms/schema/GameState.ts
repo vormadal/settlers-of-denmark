@@ -10,9 +10,10 @@ export class GameState extends Schema {
   @type([Intersection]) intersections = new ArraySchema<Intersection>();
   @type([LandTiles]) landTiles = new ArraySchema<LandTiles>();
   @type({ map: Player }) players = new MapSchema<Player>();
-  @type([Road]) roads = new ArraySchema<Road>();
-
+  
   @type("string") gameState: string = GameStates.WaitingForPlayers;
+
+  @type("string") currentPlayer: string = "";
 }
 
 export const GameStates = {

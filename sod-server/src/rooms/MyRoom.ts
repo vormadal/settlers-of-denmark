@@ -1,22 +1,23 @@
-import { Client, Deferred, Room } from "@colyseus/core";
+import { Client, Room } from "@colyseus/core";
 import { BasicLayoutAlgorithm } from "../algorithms/layout/BasicLayoutAlgorithm";
 import {
-  PercentageTileTypeProvider,
-  RandomTileTypeProvider,
-} from "../algorithms/TileTypeProvider";
-import { BaseGameTileTypes } from "../models/LandTiles";
-import { GameState } from "./schema/GameState";
+  createBaseGameStateMachine,
+  EVENT_NAMES,
+} from "../baseGameStateMachine";
 import { GameMap, GameMapOptions } from "../models/GameMap";
-import { Dispatcher } from "@colyseus/command";
-import { OnJoinCommand } from "../commands/OnJoinCommand";
+import { GameState } from "./schema/GameState";
 
 export class MyRoom extends Room<GameState> {
   maxClients = 2;
 
-  dispatcher = new Dispatcher(this);
-
   map: GameMap;
-  
+
+  stateMachine: any
+  //  = createBaseGameStateMachine(
+  //   new GameMap("init", new BasicLayoutAlgorithm(3, 4)),
+  //   new GameState()
+  // );
+
   onCreate(options: GameMapOptions) {
     this.map = new GameMap(
       `${Date.now()}`,
@@ -24,27 +25,33 @@ export class MyRoom extends Room<GameState> {
       options
     );
 
-    this.setState(this.map.schema);
+    this.maxClients = options.numPlayers;
+    const state = this.map.schema;
+    this.setState(state);
+    this.stateMachine = createBaseGameStateMachine(this.map, state);
 
-    this.onMessage("type", (client, message) => {
-      //
-      // handle "type" message
-      //
+    this.onMessage(EVENT_NAMES.PLACE_HOUSE, (client, message) => {
+      this.stateMachine.send({
+        type: "PLACE_HOUSE",
+        value: { sessionId: client.sessionId, ...message },
+      });
     });
+  
+    // this.stateMachine.subscribe((state) => {
+    //   state.context.gameState.gameState
+    // });
   }
 
   async onJoin(client: Client, options: any) {
-    await this.dispatcher.dispatch(new OnJoinCommand(), {
-      sessionId: client.sessionId,
+    this.stateMachine.send({
+      type: "PLAYER_JOINED",
+      value: { sessionId: client.sessionId },
     });
+    this.stateMachine.send({ type: "START_GAME" });
   }
 
   onLeave(client: Client, consented: boolean) {
     this.allowReconnection(client, 60);
     console.log(client.sessionId, "left!");
-  }
-
-  onDispose() {
-    this.dispatcher.stop();
   }
 }

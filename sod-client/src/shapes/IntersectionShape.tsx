@@ -2,6 +2,7 @@ import { Circle, Line } from "react-konva";
 import { Intersection } from "../state/Intersection";
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { useGameState } from "../GameStateContext";
 
 interface Type {
   intersection: Intersection;
@@ -12,8 +13,12 @@ interface Type {
 const inactiveColor = "#f0e68c";
 const activeColor = "#fa8072";
 export function IntersectionShape({ intersection, show, onClick }: Type) {
+  const [state, room] = useGameState();
   const [focus, setFocus] = useState(false);
   function handleClick() {
+    room?.send("PLACE_HOUSE", {
+      intersectionId: intersection.id,
+    });
     onClick && onClick(intersection);
   }
 
@@ -37,5 +42,4 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
       scaleY={focus ? 1.6 : 1}
     />
   );
-  
 }
