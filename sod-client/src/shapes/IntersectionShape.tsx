@@ -33,8 +33,8 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      scaleX={focus ? 1.1 : 1}
-      scaleY={focus ? 1.1 : 1}
+      scaleX={focus ? 1.6 : 1}
+      scaleY={focus ? 1.6 : 1}
     />
   );
 }
