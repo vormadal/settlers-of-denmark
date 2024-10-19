@@ -1,34 +1,18 @@
-FROM node:23-alpine as backend
+FROM node:14
 
-WORKDIR /backend
+# ENV PORT 8080
 
-COPY ./sod-server/package.json ./
-COPY ./sod-server/package-lock.json ./
+WORKDIR /usr/src/app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY ./sod-server/package*.json ./
+
 RUN npm ci
+# run this for production
+# npm ci --only=production
 
-COPY ./sod-server .
+COPY ./sod-server/ .
 
-RUN npm run build
+# EXPOSE 8080
 
-FROM node:16.9.0-alpine as production
-
-RUN mkdir -p /home/node && chown -R node:node /home/node
-
-# set working directory to /home/node as we will run the app using the user 'node'
-WORKDIR /home/node
-
-# Copy package.json and package-lock.json
-COPY ./sod-server/package.json ./
-COPY ./sod-server/package-lock.json ./
-
-# Switch to user node
-USER node
-
-# Install libraries as user node. If NODE_ENV=production dev_dependencies will not be installed.
-RUN npm ci --production=true
-
-# Copy built js files for server and change ownership to user node. 
-COPY --chown=node:node --from=backend /backend/build /home/node/backend
-
-# run the server
-CMD ["node", "./backend/index.js"]
+CMD [ "npm", "start" ]
