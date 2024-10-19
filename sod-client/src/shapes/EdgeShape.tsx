@@ -49,8 +49,8 @@ export function EdgeShape({ edge }: Props) {
     <Ellipse
       x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
       y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
-      radiusX={0.11}
-      radiusY={0.06}
+      radiusX={11}
+      radiusY={6}
       rotation={GetRotation()}
       fill={"#00ffff"}
       onMouseEnter={handleMouseEnter}

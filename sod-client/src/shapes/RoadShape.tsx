@@ -39,14 +39,14 @@ export function RoadShape({ edge, color = "#000000" }: Props) {
 
     function GetPoints() {
         const shapePoints = [
-            0.25, 0.08,
-            0.08, 0.02,
-            -0.08, 0.08,
-            -0.25, 0.02,
-            -0.25, -0.08,
-            -0.08, -0.02,
-            0.08, -0.08,
-            0.25, -0.02]
+            25, 8,
+            8, 2,
+            -8, 8,
+            -25, 2,
+            -25, -8,
+            -8, -2,
+            8, -8,
+            25, -2]
 
         return shapePoints
     }
@@ -57,7 +57,7 @@ export function RoadShape({ edge, color = "#000000" }: Props) {
             x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
             y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
             closed={true}
-            strokeWidth={0.01}
+            strokeWidth={1}
             stroke={"#000000"}
             fill={"color"}
             tension={0.5}

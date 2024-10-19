@@ -12,7 +12,7 @@ export const BaseGameTileTypes = {
   Grain: "Grain",
 };
 export class LandTiles {
-  public static RADIUS = 1;
+  public static RADIUS = 100;
   private readonly _edges: BorderEdge[] = [];
   private readonly _intersections: Intersection[] = [];
 

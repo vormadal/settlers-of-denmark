@@ -22,34 +22,35 @@ export function Land({ tile }: Type) {
   return (
     <Group>
       <RegularPolygon
-        radius={tile.radius - 2}
+        radius={tile.radius}
         sides={6}
         rotation={90}
         x={tile.position.x}
         y={tile.position.y}
         stroke={"#000000"}
-        strokeWidth={0.015}
+        strokeWidth={1.5}
         fill={colors[tile.type] ?? "#ff0000"}
       />
 
       <Circle
         radius={0.2}
         fill={"#ffffff"}
+        strokeWidth={2}
         x={tile.position.x}
         y={tile.position.y}
         opacity={0.6}
       />
       <Circle
-        radius={0.2}
+        radius={20}
         stroke={"#000000"}
-        strokeWidth={0.02}
+        strokeWidth={2}
         x={tile.position.x}
         y={tile.position.y}
       />
 
       <Text
-        text="5"
-        fontSize={0.18}
+        text={tile.value.toString()}
+        fontSize={18}
         align="center"
         verticalAlign="middle"
         width={100}

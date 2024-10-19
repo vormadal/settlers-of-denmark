@@ -12,15 +12,15 @@ interface Props {
 export function CityShape({ intersection, color = "#000000" }: Props) {
     function GetPoints() {
         const shapePoints = [
-          0.1, 0.1,
-          -0.1, 0.1,
-          -0.1, -0.1,
-          -0.03, -0.1,
-          -0.03, -0.03,
-          0.03, -0.03,
-          0.03, -0.1,
-          0.1, -0.1,
-          0.1, 0.1]
+          10, 10,
+          -10, 10,
+          -10, -10,
+          -3, -10,
+          -3, -3,
+          3, -3,
+          3, -10,
+          10, -10,
+          10, 10]
     
         return shapePoints
       }
