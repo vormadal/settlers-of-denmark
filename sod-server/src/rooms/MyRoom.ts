@@ -7,21 +7,25 @@ export class MyRoom extends Room<MyRoomState> {
   maxClients = 4;
 
   onCreate(options: any) {
-    const state = new MyRoomState();
+    const state = new MyRoomState()
 
-    const size = 10
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        const tile = new LandTiles(
-          `${i},${j}`,
-          "Dessert",
-          new Point(100 * i, 100 * j),
-          [],
-          []
-        );
-        state.LandTiles.push(tile.getStateSchema());
+    const maxValueX = 3;
+    const maxValueY = 6;
+
+    var allThemLandTiles = []
+
+
+    for (let i = 0; i < maxValueX; i++) {
+      for (let j = 0; j < maxValueY; j++) {
+
+        allThemLandTiles.push(new LandTiles(`x${i} y${j}`, "Dessert", new Point(3 * i*60, j*60 * Math.sqrt(3)), [], []).getStateSchema())
+        allThemLandTiles.push(new LandTiles(`fx${i} y${j}`, "Dessert", new Point(3 * i * 60 + (3 / 2)*60, (j + 0.5) * 60 * Math.sqrt(3)), [], []).getStateSchema())
       }
     }
+
+    state.LandTiles.push(...allThemLandTiles)
+
+
 
     this.setState(state);
 
