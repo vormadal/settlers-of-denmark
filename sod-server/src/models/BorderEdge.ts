@@ -8,18 +8,21 @@ export class BorderEdge {
   public readonly adjacentIntersections: Intersection[] = [];
   public readonly adjacentBorderEdges: BorderEdge[] = [];
 
+  private readonly _schema: Schema;
+
   constructor(
     public readonly id: string,
     public readonly pointA: Point,
     public readonly pointB: Point
-  ) {}
+  ) {
+    this._schema = new Schema();
+    this._schema.id = id;
+    this._schema.pointA = pointA.schema;
+    this._schema.pointB = pointB.schema;
+  }
 
-  getStateSchema() {
-    const schema = new Schema();
-    schema.pointA = this.pointA.GetStateSchema();
-    schema.pointB = this.pointB.GetStateSchema();
-    schema.id = this.id;
-    return schema;
+  get schema() {
+    return this._schema;
   }
 
   IsSameAs(borderEdge: BorderEdge) {

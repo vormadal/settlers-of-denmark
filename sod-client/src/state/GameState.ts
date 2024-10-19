@@ -10,13 +10,12 @@ import { BorderEdge } from './BorderEdge'
 import { Intersection } from './Intersection'
 import { LandTiles } from './LandTiles'
 import { Player } from './Player'
-import { Road } from './Road'
 
 export class GameState extends Schema {
     @type([ BorderEdge ]) public edges: ArraySchema<BorderEdge> = new ArraySchema<BorderEdge>();
     @type([ Intersection ]) public intersections: ArraySchema<Intersection> = new ArraySchema<Intersection>();
     @type([ LandTiles ]) public landTiles: ArraySchema<LandTiles> = new ArraySchema<LandTiles>();
     @type({ map: Player }) public players: MapSchema<Player> = new MapSchema<Player>();
-    @type([ Road ]) public roads: ArraySchema<Road> = new ArraySchema<Road>();
     @type("string") public gameState!: string;
+    @type("string") public currentPlayer!: string;
 }

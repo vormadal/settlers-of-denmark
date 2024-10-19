@@ -16,7 +16,7 @@ import {
 
 export function Lobby() {
   const client = useColyseus();
-  const [state, setState] = useGameState();
+  const [state, _, setState] = useGameState();
   const [rooms, setRooms] = useState<RoomAvailable<GameState>[]>([]);
   const [reconnectionToken, setReconnectionToken] = useState(
     sessionStorage.getItem("reconnectionToken")
@@ -58,7 +58,7 @@ export function Lobby() {
   function attachStateListener(room: Room<GameState>) {
     sessionStorage.setItem("reconnectionToken", room.reconnectionToken);
     room.onStateChange((state) => {
-      setState(state);
+      setState(state, room);
     });
   }
 

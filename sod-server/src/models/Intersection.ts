@@ -8,9 +8,9 @@ export class Intersection {
   public readonly adjacentBorderEdges: BorderEdge[] = [];
   constructor(public readonly id: string, public readonly position: Point) {}
 
-  getStateSchema() {
+  get schema() {
     const schema = new Schema();
-    schema.position = this.position.GetStateSchema();
+    schema.position = this.position.schema;
     schema.id = this.id;
     return schema;
   }

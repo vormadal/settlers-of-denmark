@@ -1,19 +1,35 @@
 import { createContext, useContext, useState } from "react";
 import { GameState } from "./state/GameState";
+import { Room } from "colyseus.js";
 
 type ContextValueType = [
   state: GameState | undefined,
-  updateState: (state?: GameState) => void
+  room: Room<GameState> | undefined,
+  updateState: (state?: GameState, room?: Room<GameState>) => void
 ];
-const GameStateContext = createContext<ContextValueType>([undefined, () => {}]);
+const GameStateContext = createContext<ContextValueType>([
+  undefined,
+  undefined,
+  () => {},
+]);
 
 interface Props {
   children: React.ReactElement;
 }
 export function GameStateContextProvider({ children }: Props) {
   const [state, setState] = useState<GameState>();
+  const [room, setRoom] = useState<Room<GameState>>();
   return (
-    <GameStateContext.Provider value={[state, setState]}>
+    <GameStateContext.Provider
+      value={[
+        state,
+        room,
+        (state, room) => {
+          setState(state);
+          setRoom(room);
+        },
+      ]}
+    >
       {children}
     </GameStateContext.Provider>
   );
