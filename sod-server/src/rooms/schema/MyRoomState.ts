@@ -33,7 +33,7 @@ export class MyRoomState extends Schema {
   @type([LandTiles]) LandTiles = new ArraySchema<LandTiles>();
   @type([Player]) players = new ArraySchema<Player>();
 
-  @type("string") state: string = "waiting_for_players";
+  @type("string") gameState: string = "waiting_for_players";
 }
 
 export const GameStates = {

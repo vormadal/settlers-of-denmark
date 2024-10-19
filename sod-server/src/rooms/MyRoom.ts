@@ -32,8 +32,8 @@ export class MyRoom extends Room<MyRoomState> {
     });
   }
 
-  onJoin(client: Client, options: any) {
-    this.dispatcher.dispatch(new OnJoinCommand(), {
+  async onJoin(client: Client, options: any) {
+    await this.dispatcher.dispatch(new OnJoinCommand(), {
       sessionId: client.sessionId,
     });
   }
@@ -44,6 +44,6 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   onDispose() {
-    console.log("room", this.roomId, "disposing...");
+    this.dispatcher.stop();
   }
 }

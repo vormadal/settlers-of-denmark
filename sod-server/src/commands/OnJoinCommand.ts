@@ -22,10 +22,7 @@ export class OnJoinCommand extends Command<
     this.state.players.push(player.state);
     console.log("player joined", payload.sessionId);
     if (this.room.maxClients == this.room.clients.length) {
-      this.state.state = GameStates.WaitingForPlayers;
-      console.log('starting game...')
+      this.state.gameState = GameStates.InProgress;
     }
-
-    
   }
 }

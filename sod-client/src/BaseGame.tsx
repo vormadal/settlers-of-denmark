@@ -1,13 +1,29 @@
-import { Layer, Stage } from "react-konva";
+import { Layer, Stage, Text } from "react-konva";
 import { Land } from "./shapes/LandShape";
 import { EdgeShape } from "./shapes/EdgeShape";
 import { IntersectionShape } from "./shapes/IntersectionShape";
 import { MyRoomState } from "./state/MyRoomState";
+import { useEffect, useState } from "react";
 
 interface Props {
   state: MyRoomState;
 }
 export function BaseGame({ state }: Props) {
+  const [gameState, setGameState] = useState(state.gameState);
+
+  useEffect(() => {
+    state.onChange(() => {
+      // something changed on .state
+      console.log("state changed...")
+  });
+    state.listen(
+      "gameState",
+      (value) => {
+        setGameState(value);
+      },
+      true
+    );
+  }, [setGameState, state]);
   const xs = state?.LandTiles.map((x) => x.position.x).sort(
     (a, b) => a - b
   ) || [0];
@@ -62,6 +78,11 @@ export function BaseGame({ state }: Props) {
         {state?.intersections.map((x) => (
           <IntersectionShape key={x.id} intersection={x} show />
         ))}
+      </Layer>
+      <Layer>
+        {gameState === "waiting_for_players" && (
+          <Text x={100} y={100} fontSize={50} text="waiting for players..." />
+        )}
       </Layer>
     </Stage>
   );

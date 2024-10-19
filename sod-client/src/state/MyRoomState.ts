@@ -16,5 +16,5 @@ export class MyRoomState extends Schema {
     @type([ Intersection ]) public intersections: ArraySchema<Intersection> = new ArraySchema<Intersection>();
     @type([ LandTiles ]) public LandTiles: ArraySchema<LandTiles> = new ArraySchema<LandTiles>();
     @type([ Player ]) public players: ArraySchema<Player> = new ArraySchema<Player>();
-    @type("string") public state!: string;
+    @type("string") public gameState!: string;
 }
