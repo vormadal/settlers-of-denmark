@@ -52,10 +52,10 @@ export function Land({ tile }: Type) {
         fontSize={18}
         align="center"
         verticalAlign="middle"
-        width={100}
-        height={100}
-        x={tile.position.x - 100/2}
-        y={tile.position.y - 100/2}
+        width={50}
+        height={50}
+        x={tile.position.x - 50/2}
+        y={tile.position.y - 50/2}
         // scale={{ x: 0.01, y: 0.01 }}
         // offsetX={10}
         // offsetY={7}

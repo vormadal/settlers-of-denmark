@@ -52,11 +52,19 @@ export function EdgeShape({ edge }: Props) {
       radiusX={11}
       radiusY={6}
       rotation={GetRotation()}
-      fill={"#00ffff"}
+      fill={"#ffffff"}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       scaleX={focus ? 1.6 : 1}
       scaleY={focus ? 1.6 : 1}
+      opacity={0.6}
+      shadowEnabled={true}
+      shadowColor="#000000"
+      shadowOffsetX={1}
+      shadowBlur={2}
+      shadowOpacity={0.3}
+      strokeWidth={0.9}
+      stroke={"#000000"}
     />
 
   );

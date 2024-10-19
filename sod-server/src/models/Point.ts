@@ -9,7 +9,7 @@ export class Point {
   }
 
   get id() {
-    return `${this.x}${this.y}`;
+    return `${Math.round(this.x)}${Math.round(this.y)}`;
   }
   get schema() {
     return this._schema;
@@ -23,7 +23,7 @@ export class Point {
   }
 
   IsTheSameAs(point: Point) {
-    const decimalNumber = 100;
+    const decimalNumber = 1;
 
     const p1x = Math.round(this.x * decimalNumber) / decimalNumber;
     const p1y = Math.round(this.y * decimalNumber) / decimalNumber;

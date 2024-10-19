@@ -11,7 +11,7 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   private landTiles: LandTiles[] = [];
   private borderEdges: BorderEdge[] = [];
   private intersections: Intersection[] = [];
-  constructor(private readonly m: number, private readonly n: number) {}
+  constructor(private readonly m: number, private readonly n: number) { }
   createLayout(
     map: GameMap,
     tileTypeProvider: TileTypeProvider,
@@ -91,12 +91,12 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   }
 
   getOrCreateIntersection(position: Point, angle: number) {
-    const point = new Point(Math.cos(angle)*100, Math.sin(angle)*100).AddPoint(
+    const point = new Point(Math.cos(angle) * 100, Math.sin(angle) * 100).AddPoint(
       position
     );
 
     let intersection = new Intersection(
-      `Intersection:${point.id}${angle}`,
+      `Intersection:${point.id}`,
       point
     );
     const existing = this.intersections.find((x) => x.id === intersection.id);
@@ -114,5 +114,5 @@ function CalculatePoint(m: number, n: number) {
 }
 
 function CalculatePointAlt(m: number, n: number) {
-  return new Point(3 * m * 100 + 3 * 100/ 2, (n * 100 + 0.5 * 100) * Math.sqrt(3));
+  return new Point(3 * m * 100 + 3 * 100 / 2, (n * 100 + 0.5 * 100) * Math.sqrt(3));
 }
