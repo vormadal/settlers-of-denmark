@@ -5,13 +5,13 @@ import { useGameState } from "./GameStateContext";
 import { Lobby } from "./Lobby";
 
 function App() {
-  const [state] = useGameState();
+  const [_, room] = useGameState();
 
   return (
     <div>
-      {!state && <Lobby />}
+      {!room && <Lobby />}
 
-      {state && <BaseGame state={state} />}
+      {room && <BaseGame room={room} />}
     </div>
   );
 }

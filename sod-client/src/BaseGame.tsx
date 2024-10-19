@@ -4,32 +4,35 @@ import { EdgeShape } from "./shapes/EdgeShape";
 import { IntersectionShape } from "./shapes/IntersectionShape";
 import { GameState } from "./state/GameState";
 import { useEffect, useState } from "react";
+import { HouseShape } from "./shapes/HouseShape";
+import { Player } from "./state/Player";
+import { Room } from "colyseus.js";
 
 interface Props {
-  state: GameState;
+  room: Room<GameState>;
 }
-export function BaseGame({ state }: Props) {
-  const [gameState, setGameState] = useState(state.gameState);
-
+export function BaseGame({ room }: Props) {
+  const [state, setState] = useState(room.state);
+  const [players, setPlayers] = useState<Player[]>([]);
   useEffect(() => {
-    state.onChange(() => {
-      // something changed on .state
-      console.log("state changed...")
-  });
-    state.listen(
-      "gameState",
-      (value) => {
-        setGameState(value);
-      },
-      true
-    );
-  }, [setGameState, state]);
-  const xs = state?.landTiles.map((x) => x.position.x).sort(
-    (a, b) => a - b
-  ) || [0];
-  const ys = state?.landTiles.map((x) => x.position.y).sort(
-    (a, b) => a - b
-  ) || [0];
+    setState(room.state);
+    room.onStateChange((state) => {
+      setPlayers([...state.players.values()]);
+    });
+    // room.state.listen(
+    //   "gameState",
+    //   (value) => {
+    //     setGameState(value);
+    //   },
+    //   true
+    // );
+  }, [setState, room]);
+  const xs = state?.landTiles
+    .map((x) => x.position.x)
+    .sort((a, b) => a - b) || [0];
+  const ys = state?.landTiles
+    .map((x) => x.position.y)
+    .sort((a, b) => a - b) || [0];
 
   const buffer = 1;
   const xMin = xs.slice(0, 1)[0] - buffer;
@@ -59,6 +62,14 @@ export function BaseGame({ state }: Props) {
   console.log("scale", scale);
   console.log("center", cx, cy);
   console.log("offset", offsetX, offsetY);
+
+  const list = [...state.players.values()]
+    .map((player) =>
+      player.houses
+        .filter((x) => !!x.intersection)
+        .map((house) => ({ player, house }))
+    )
+    .flat();
   return (
     <Stage
       width={window.innerWidth}
@@ -78,12 +89,20 @@ export function BaseGame({ state }: Props) {
         {state?.intersections.map((x) => (
           <IntersectionShape key={x.id} intersection={x} show />
         ))}
+
+        {list.map(({ house, player }) => (
+          <HouseShape
+            color="#ff0000"
+            intersection={
+              state.intersections.find((x) => x.id === house.intersection)!
+            }
+          />
+        ))}
       </Layer>
       <Layer>
-        {gameState === "waiting_for_players" && (
+        {state.gameState === "waiting_for_players" && (
           <Text x={100} y={100} fontSize={50} text="waiting for players..." />
         )}
-        
       </Layer>
     </Stage>
   );

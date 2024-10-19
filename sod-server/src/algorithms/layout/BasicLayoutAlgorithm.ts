@@ -11,7 +11,7 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   private borderEdges: BorderEdge[] = [];
   private intersections: Intersection[] = [];
   constructor(private readonly m: number, private readonly n: number) {}
-  createLayout(map: GameMap, tileTypeProvider: TileTypeProvider): GameMap {
+  createLayout(map: GameMap, tileTypeProvider: TileTypeProvider, numberProvider: NumberProvider): GameMap {
     tileTypeProvider.setup(2 * this.n * this.m);
 
     for (let i = 0; i < this.m; i++) {
@@ -50,8 +50,8 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
     const edges: BorderEdge[] = [];
     for (let index = 0; index < 6; index++) {
       const edge = this.getOrCreateEdge(
-        tile.intersections[(index + 1) % 6],
-        tile.intersections[index]
+        intersections[(index + 1) % 6],
+        intersections[index]
       );
       edges.push(edge);
     }

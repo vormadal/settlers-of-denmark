@@ -73,6 +73,21 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
           context.game.options.numPlayers == context.gameState.players.size
         );
       },
+      isAllowedToPlaceHouse: ({ context, event }) => {
+        const e = event as PlaceHouseEvent;
+        const player = context.game.players.find(
+          (x) => x.id == e.value.sessionId
+        );
+        const intersection = context.game.intersections.find(
+          (x) => x.id == e.value.intersectionId
+        );
+        const house = player.houses.find((x) => !x.intersection);
+        return context.gameState.currentPlayer == e.value.sessionId && !!house;
+      },
+      isPlayerTurn: ({ context, event }) => {
+        const e = event as PlaceHouseEvent;
+        return context.gameState.currentPlayer == e.value.sessionId;
+      },
     },
     actions: {
       startGame: assign({
@@ -109,7 +124,7 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
           const house = player.houses.find((x) => !x.intersection);
           house.intersection = intersection;
 
-          console.log('placing house', intersection)
+          console.log("placing house", intersection);
           return context.gameState;
         },
       }),
@@ -138,6 +153,7 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
         on: {
           PLACE_HOUSE: {
             actions: "placeHouse",
+            guard: "isAllowedToPlaceHouse",
           },
           // PLACE_CITY: {
           //   actions: "placeCity",
