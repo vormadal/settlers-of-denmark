@@ -33,9 +33,8 @@ export function Land({ tile }: Type) {
       />
 
       <Circle
-        radius={0.2}
+        radius={20}
         fill={"#ffffff"}
-        strokeWidth={2}
         x={tile.position.x}
         y={tile.position.y}
         opacity={0.6}
