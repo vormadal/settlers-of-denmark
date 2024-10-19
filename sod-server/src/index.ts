@@ -15,5 +15,5 @@ import app from "./app.config";
 import { BoardGameMap } from "./models/BoardGameMap";
 
 // Create and listen on 2567 (or PORT environment variable.)
-listen(app);
+listen(app, Number.parseInt(process.env.PORT || "2567"));
 
