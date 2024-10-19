@@ -10,6 +10,7 @@ import { Point } from './Point'
 
 export class LandTiles extends Schema {
     @type(Point) public position: Point = new Point();
+    @type("number") public radius!: number;
     @type("string") public id!: string;
     @type("string") public type!: string;
 }

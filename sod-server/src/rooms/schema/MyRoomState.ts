@@ -18,6 +18,7 @@ export class Intersection extends Schema{
 
 export class LandTiles extends Schema{
   @type(Point) position: Point;
+  @type("number") radius: number
   @type("string") id: string;
   @type("string") type: string;
 }

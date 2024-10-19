@@ -3,6 +3,7 @@ import { Intersection } from "./Intersection";
 import { Point } from "./Point";
 import { LandTiles as Schema } from "../rooms/schema/MyRoomState";
 export class LandTiles {
+  public static RADIUS = 60;
   constructor(
     public readonly id: string,
     public readonly type: string,
@@ -11,12 +12,12 @@ export class LandTiles {
     public readonly intersections: Intersection[]
   ) {}
 
-  getStateSchema(){
-    const schema = new Schema()
-    schema.position = this.position.GetStateSchema()
-    schema.id = this.id
-    schema.type = this.type
-
-    return schema
+  getStateSchema() {
+    const schema = new Schema();
+    schema.position = this.position.GetStateSchema();
+    schema.id = this.id;
+    schema.type = this.type;
+    schema.radius = LandTiles.RADIUS;
+    return schema;
   }
 }
