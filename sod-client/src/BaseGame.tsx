@@ -37,7 +37,7 @@ export function BaseGame({ room }: Props) {
     .map((x) => x.position.y)
     .sort((a, b) => a - b) || [0];
 
-  const buffer = 1;
+  const buffer = 100;
   const xMin = xs.slice(0, 1)[0] - buffer;
   const xMax = xs.slice(-1)[0] + buffer;
   const yMin = ys.slice(0, 1)[0] - buffer;

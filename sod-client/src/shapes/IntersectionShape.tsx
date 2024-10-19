@@ -33,7 +33,7 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
     <Circle
       x={intersection.position.x}
       y={intersection.position.y}
-      radius={0.09}
+      radius={9}
       fill={show ? activeColor : inactiveColor}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}

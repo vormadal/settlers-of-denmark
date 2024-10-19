@@ -91,7 +91,7 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   }
 
   getOrCreateIntersection(position: Point, angle: number) {
-    const point = new Point(Math.cos(angle), Math.sin(angle)).AddPoint(
+    const point = new Point(Math.cos(angle)*100, Math.sin(angle)*100).AddPoint(
       position
     );
 
@@ -110,9 +110,9 @@ export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   }
 }
 function CalculatePoint(m: number, n: number) {
-  return new Point(3 * m, n * Math.sqrt(3));
+  return new Point(3 * m * 100, n * 100 * Math.sqrt(3));
 }
 
 function CalculatePointAlt(m: number, n: number) {
-  return new Point(3 * m + 3 / 2, (n + 0.5) * Math.sqrt(3));
+  return new Point(3 * m * 100 + 3 * 100/ 2, (n * 100 + 0.5 * 100) * Math.sqrt(3));
 }

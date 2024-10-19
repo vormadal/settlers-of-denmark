@@ -14,12 +14,12 @@ export function HouseShape({ intersection, color = "#00ff00" }: Props) {
 
     function GetPoints() {
         const shapePoints = [
-          0.1, 0.1,
-          -0.1, 0.1,
-          -0.1, -0.05,
-          0, -0.15,
-          0.1, -0.05,
-          0.1, 0.1]
+          10, 10,
+          -10, 10,
+          -10, -5,
+          0, -15,
+          10, -5,
+          10, 10]
     
         return shapePoints
       }
@@ -30,7 +30,7 @@ export function HouseShape({ intersection, color = "#00ff00" }: Props) {
           x={intersection.position.x}
           y={intersection.position.y}
           closed={true}
-          strokeWidth={0.01}
+          strokeWidth={1}
           stroke={"#000000"}
           fill={color}
     

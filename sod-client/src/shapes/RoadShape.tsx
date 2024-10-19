@@ -33,26 +33,33 @@ export function RoadShape({ edge, color = "#000000" }: Props) {
     return nr2 + translationX / 2;
   }
 
-  function GetPoints() {
-    const shapePoints = [
-      0.25, 0.08, 0.08, 0.02, -0.08, 0.08, -0.25, 0.02, -0.25, -0.08, -0.08,
-      -0.02, 0.08, -0.08, 0.25, -0.02,
-    ];
+    function GetPoints() {
+        const shapePoints = [
+            25, 8,
+            8, 2,
+            -8, 8,
+            -25, 2,
+            -25, -8,
+            -8, -2,
+            8, -8,
+            25, -2]
 
-    return shapePoints;
-  }
+        return shapePoints
+    }
 
-  return (
-    <Line
-      points={GetPoints()}
-      x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
-      y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
-      closed={true}
-      strokeWidth={0.01}
-      stroke={"#000000"}
-      fill={color}
-      tension={0.5}
-      rotation={GetRotation()}
-    />
-  );
+    return (
+        <Line
+            points={GetPoints()}
+            x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
+            y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
+            closed={true}
+            strokeWidth={1}
+            stroke={"#000000"}
+            fill={color}
+            tension={0.5}
+            rotation={GetRotation()}
+
+        />
+
+    );
 }
