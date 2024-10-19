@@ -9,9 +9,9 @@ import { LayoutAlgorithm } from "./LayoutAlgorithm";
 export class BasicLayoutAlgorithm implements LayoutAlgorithm {
   private map: GameMap;
   constructor(private readonly m: number, private readonly n: number) {}
-  createLayout(tileTypeProvider: TileTypeProvider): GameMap {
-    tileTypeProvider.setup(2*this.n*this.m)
-    this.map = new GameMap(`${Date.now()}`);
+  createLayout(map: GameMap, tileTypeProvider: TileTypeProvider): GameMap {
+    tileTypeProvider.setup(2 * this.n * this.m);
+    this.map = map;
 
     for (let i = 0; i < this.m; i++) {
       for (let j = 0; j < this.n; j++) {

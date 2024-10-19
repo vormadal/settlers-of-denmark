@@ -1,4 +1,4 @@
-import { Client, Room } from "@colyseus/core";
+import { Client, Deferred, Room } from "@colyseus/core";
 import { BasicLayoutAlgorithm } from "../algorithms/layout/BasicLayoutAlgorithm";
 import {
   PercentageTileTypeProvider,
@@ -6,27 +6,24 @@ import {
 } from "../algorithms/TileTypeProvider";
 import { BaseGameTileTypes } from "../models/LandTiles";
 import { MyRoomState } from "./schema/MyRoomState";
+import { GameMap, GameMapOptions } from "../models/GameMap";
+import { Dispatcher } from "@colyseus/command";
+import { OnJoinCommand } from "../commands/OnJoinCommand";
 
 export class MyRoom extends Room<MyRoomState> {
-  maxClients = 4;
+  maxClients = 2;
 
-  onCreate(options: any) {
-    const layout = new BasicLayoutAlgorithm(3, 4);
-    // const map = layout.createLayout(
-    //   new RandomTileTypeProvider(Object.keys(BaseGameTileTypes))
-    // );
+  dispatcher = new Dispatcher(this);
 
-    const map = layout.createLayout(
-      new PercentageTileTypeProvider({
-        [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
-        [BaseGameTileTypes.Forrest]: (4 / 19) * 100,
-        [BaseGameTileTypes.Grain]: (4 / 19) * 100,
-        [BaseGameTileTypes.Lifestock]: (4 / 19) * 100,
-        [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
-        [BaseGameTileTypes.Mine]: (3 / 19) * 100,
-      })
+  map: GameMap;
+  onCreate(options: GameMapOptions) {
+    this.map = new GameMap(
+      `${Date.now()}`,
+      new BasicLayoutAlgorithm(3, 4),
+      options
     );
-    this.setState(map.schema);
+
+    this.setState(this.map.schema);
 
     this.onMessage("type", (client, message) => {
       //
@@ -36,10 +33,13 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   onJoin(client: Client, options: any) {
-    console.log(client.sessionId, "joined!");
+    this.dispatcher.dispatch(new OnJoinCommand(), {
+      sessionId: client.sessionId,
+    });
   }
 
   onLeave(client: Client, consented: boolean) {
+    this.allowReconnection(client, 60);
     console.log(client.sessionId, "left!");
   }
 

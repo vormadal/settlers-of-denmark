@@ -1,15 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { ColyseusContextProvider } from "./ColyseusContext";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import { GameStateContextProvider } from "./GameStateContext";
+import { CssBaseline } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+      <CssBaseline />
+      <ColyseusContextProvider>
+        <GameStateContextProvider>
+          <App />
+        </GameStateContextProvider>
+      </ColyseusContextProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
 
