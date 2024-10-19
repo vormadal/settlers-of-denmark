@@ -30,5 +30,7 @@ RUN npm ci --production
 # Copy built js files for server and change ownership to user node. 
 COPY --chown=node:node --from=backend /backend/build /home/node/backend
 
+EXPOSE 2567
+
 # run the server
 CMD ["node", "./backend/index.js"]
