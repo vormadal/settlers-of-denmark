@@ -1,6 +1,8 @@
 import { Line, Circle, Ellipse } from "react-konva";
 import { BorderEdge } from "../state/BorderEdge";
 import { Vector } from "ts-matrix";
+import { useState } from "react";
+import { KonvaEventObject } from "konva/lib/Node";
 
 interface Props {
   edge: BorderEdge;
@@ -33,6 +35,16 @@ export function EdgeShape({ edge }: Props) {
     const translationX = nr1 - nr2
     return nr2 + translationX / 2
   }
+
+  const [focus, setFocus] = useState(false);
+  function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
+    setFocus(true);
+  }
+
+  function handleMouseLeave() {
+    setFocus(false);
+  }
+  
   return (
     <Ellipse
       x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
@@ -41,7 +53,12 @@ export function EdgeShape({ edge }: Props) {
       radiusY={0.06}
       rotation={GetRotation()}
       fill={"#00ffff"}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      scaleX={focus ? 1.6 : 1}
+      scaleY={focus ? 1.6 : 1}
     />
 
   );
+
 }

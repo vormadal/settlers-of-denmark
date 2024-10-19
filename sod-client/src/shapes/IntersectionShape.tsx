@@ -1,4 +1,4 @@
-import { Circle } from "react-konva";
+import { Circle, Line } from "react-konva";
 import { Intersection } from "../state/Intersection";
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -37,4 +37,5 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
       scaleY={focus ? 1.6 : 1}
     />
   );
+  
 }
