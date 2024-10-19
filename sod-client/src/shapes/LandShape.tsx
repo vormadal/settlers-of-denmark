@@ -17,7 +17,7 @@ const colors: { [key: string]: string } = {
 export function Land({ tile }: Type) {
   return (
     <RegularPolygon
-      radius={tile.radius}
+      radius={tile.radius-2}
       sides={6}
       rotation={90}
       x={tile.position.x}
