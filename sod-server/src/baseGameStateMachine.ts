@@ -78,6 +78,8 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
         const player = context.game.players.find(
           (x) => x.id == e.value.sessionId
         );
+        if (!player) return false;
+
         const intersection = context.game.intersections.find(
           (x) => x.id == e.value.intersectionId
         );
@@ -90,6 +92,17 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
       },
     },
     actions: {
+      nextPlayer: assign({
+        gameState: ({ context }) => {
+          const players = context.gameState.players;
+          const ids = Array.from(players.keys());
+          const index = ids.indexOf(context.gameState.currentPlayer);
+          const nextIndex = (index + 1) % ids.length;
+          context.gameState.currentPlayer = ids[nextIndex];
+          console.log("next player", ids[nextIndex]);
+          return context.gameState;
+        },
+      }),
       startGame: assign({
         gameState: ({ context }) => {
           context.gameState.gameState = GameStates.InProgress;
@@ -114,7 +127,6 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
       placeHouse: assign({
         gameState: ({ context, event }) => {
           const e = event as PlaceHouseEvent;
-          console.log("placeHouse", e.value);
           const player = context.game.players.find(
             (x) => x.id == e.value.sessionId
           );
@@ -124,7 +136,23 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
           const house = player.houses.find((x) => !x.intersection);
           house.intersection = intersection;
 
-          console.log("placing house", intersection);
+          console.log("placing house", intersection.id, player.id);
+          return context.gameState;
+        },
+      }),
+      placeRoad: assign({
+        gameState: ({ context, event }) => {
+          const e = event as placeRoadEvent;
+          const player = context.game.players.find(
+            (x) => x.id == e.value.sessionId
+          );
+          const edge = context.game.borderEdges.find(
+            (x) => x.id == e.value.edgeId
+          );
+          const road = player.roads.find((x) => !x.edge);
+          road.edge = edge;
+
+          console.log("placing road", edge.id, player.id);
           return context.gameState;
         },
       }),
@@ -150,11 +178,29 @@ export function createBaseGameStateMachine(game: GameMap, schema: GameState) {
         },
       },
       establishing: {
-        on: {
-          PLACE_HOUSE: {
-            actions: "placeHouse",
-            guard: "isAllowedToPlaceHouse",
+        initial: "placingHouse",
+        reenter: true,
+        states: {
+          placingHouse: {
+            entry: "nextPlayer",
+            on: {
+              PLACE_HOUSE: {
+                actions: "placeHouse",
+                guard: "isAllowedToPlaceHouse",
+                target: "placingRoad",
+              },
+            },
           },
+          placingRoad: {
+            on: {
+              PLACE_ROAD: {
+                actions: "placeRoad",
+                target: "placingHouse",
+              },
+            },
+          },
+        },
+        on: {
           // PLACE_CITY: {
           //   actions: "placeCity",
           // },

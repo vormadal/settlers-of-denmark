@@ -12,11 +12,10 @@ export class MyRoom extends Room<GameState> {
 
   map: GameMap;
 
-  stateMachine: any
-  //  = createBaseGameStateMachine(
-  //   new GameMap("init", new BasicLayoutAlgorithm(3, 4)),
-  //   new GameState()
-  // );
+  stateMachine = createBaseGameStateMachine(
+    new GameMap("init", new BasicLayoutAlgorithm(3, 4)),
+    new GameState()
+  );
 
   onCreate(options: GameMapOptions) {
     this.map = new GameMap(
@@ -30,13 +29,17 @@ export class MyRoom extends Room<GameState> {
     this.setState(state);
     this.stateMachine = createBaseGameStateMachine(this.map, state);
 
-    this.onMessage(EVENT_NAMES.PLACE_HOUSE, (client, message) => {
+    this.stateMachine.subscribe((state) => {
+      this.state.gameState = state.value.toString()
+      console.log('state', state.value)
+    });
+
+    this.onMessage("*", (client, type, message) => {
       this.stateMachine.send({
-        type: "PLACE_HOUSE",
+        type: type as string,
         value: { sessionId: client.sessionId, ...message },
       });
     });
-  
     // this.stateMachine.subscribe((state) => {
     //   state.context.gameState.gameState
     // });

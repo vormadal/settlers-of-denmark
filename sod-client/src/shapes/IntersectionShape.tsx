@@ -13,7 +13,7 @@ interface Type {
 const inactiveColor = "#f0e68c";
 const activeColor = "#fa8072";
 export function IntersectionShape({ intersection, show, onClick }: Type) {
-  const [state, room] = useGameState();
+  const [_, room] = useGameState();
   const [focus, setFocus] = useState(false);
   function handleClick() {
     room?.send("PLACE_HOUSE", {

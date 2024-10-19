@@ -3,37 +3,37 @@ import { BorderEdge } from "../state/BorderEdge";
 import { Vector } from "ts-matrix";
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { useGameState } from "../GameStateContext";
 
 interface Props {
   edge: BorderEdge;
 }
 export function EdgeShape({ edge }: Props) {
-
+  const [_, room] = useGameState();
   function GetRotation() {
-    const list = []
-    
-    list.push(edge.pointA.x - edge.pointB.x)
-    list.push(edge.pointA.y - edge.pointB.y)
+    const list = [];
 
-    return GetRotationFromVector(new Vector(list))
+    list.push(edge.pointA.x - edge.pointB.x);
+    list.push(edge.pointA.y - edge.pointB.y);
+
+    return GetRotationFromVector(new Vector(list));
   }
 
   function GetRotationFromVector(vet: Vector) {
+    let baseVector = new Vector([1, 0]);
 
-    let baseVector = new Vector([1,0])
-
-    if(vet.at(1) < 0){
-      baseVector = new Vector([-1,0])
+    if (vet.at(1) < 0) {
+      baseVector = new Vector([-1, 0]);
     }
 
-    const test = vet.angleFrom(baseVector)
-    const degrees = test * 180 / Math.PI
-    return degrees
+    const test = vet.angleFrom(baseVector);
+    const degrees = (test * 180) / Math.PI;
+    return degrees;
   }
 
   function GetMiddlePoint(nr1: number, nr2: number) {
-    const translationX = nr1 - nr2
-    return nr2 + translationX / 2
+    const translationX = nr1 - nr2;
+    return nr2 + translationX / 2;
   }
 
   const [focus, setFocus] = useState(false);
@@ -44,11 +44,18 @@ export function EdgeShape({ edge }: Props) {
   function handleMouseLeave() {
     setFocus(false);
   }
-  
+
+  function handleClick() {
+    room?.send("PLACE_ROAD", {
+      edgeId: edge.id,
+    });
+  }
+
   return (
     <Ellipse
       x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
       y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
+      onClick={handleClick}
       radiusX={0.11}
       radiusY={0.06}
       rotation={GetRotation()}
@@ -58,7 +65,5 @@ export function EdgeShape({ edge }: Props) {
       scaleX={focus ? 1.6 : 1}
       scaleY={focus ? 1.6 : 1}
     />
-
   );
-
 }

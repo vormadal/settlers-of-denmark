@@ -7,10 +7,13 @@ import { useEffect, useState } from "react";
 import { HouseShape } from "./shapes/HouseShape";
 import { Player } from "./state/Player";
 import { Room } from "colyseus.js";
+import { RoadShape } from "./shapes/RoadShape";
 
 interface Props {
   room: Room<GameState>;
 }
+
+const colors = ["#ff0000", "#00ff00", "#0000ff", "#f0000f"];
 export function BaseGame({ room }: Props) {
   const [state, setState] = useState(room.state);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -63,13 +66,22 @@ export function BaseGame({ room }: Props) {
   console.log("center", cx, cy);
   console.log("offset", offsetX, offsetY);
 
-  const list = [...state.players.values()]
-    .map((player) =>
+  const houses = players
+    .map((player, i) =>
       player.houses
         .filter((x) => !!x.intersection)
-        .map((house) => ({ player, house }))
+        .map((house) => ({ player, house, color: colors[i] }))
     )
     .flat();
+
+  const roads = players
+    .map((player, i) =>
+      player.roads
+        .filter((x) => !!x.edge)
+        .map((road) => ({ player, road, color: colors[i] }))
+    )
+    .flat();
+
   return (
     <Stage
       width={window.innerWidth}
@@ -90,16 +102,44 @@ export function BaseGame({ room }: Props) {
           <IntersectionShape key={x.id} intersection={x} show />
         ))}
 
-        {list.map(({ house, player }) => (
+        {houses.map(({ house, player, color }) => (
           <HouseShape
-            color="#ff0000"
+            key={house.id}
+            color={color}
             intersection={
               state.intersections.find((x) => x.id === house.intersection)!
             }
           />
         ))}
+
+        {houses.map(({ house, player, color }) => (
+          <HouseShape
+            key={house.id}
+            color={color}
+            intersection={
+              state.intersections.find((x) => x.id === house.intersection)!
+            }
+          />
+        ))}
+
+        {roads.map(({ road, player, color }) => (
+          <RoadShape
+            key={road.id}
+            color={color}
+            edge={state.edges.find((x) => x.id === road.edge)!}
+          />
+        ))}
       </Layer>
       <Layer>
+        <Text fontSize={15} text={state.gameState} x={-250} y={0} />
+        <Text
+          fontSize={15}
+          text={`CurrentPlayer: ${state.currentPlayer}`}
+          x={-250}
+          y={20}
+        />
+        <Text fontSize={15} text={`ME: ${room.sessionId}`} x={-250} y={40} />
+
         {state.gameState === "waiting_for_players" && (
           <Text x={100} y={100} fontSize={50} text="waiting for players..." />
         )}

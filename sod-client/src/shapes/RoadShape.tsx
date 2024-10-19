@@ -1,69 +1,58 @@
-import { Line, Circle, Ellipse } from "react-konva";
-import { BorderEdge } from "../state/BorderEdge";
+import { Line } from "react-konva";
 import { Vector } from "ts-matrix";
-import { useState } from "react";
-import { KonvaEventObject } from "konva/lib/Node";
+import { BorderEdge } from "../state/BorderEdge";
 
 interface Props {
-    edge: BorderEdge;
-    color: string;
+  edge: BorderEdge;
+  color: string;
 }
 export function RoadShape({ edge, color = "#000000" }: Props) {
+  function GetRotation() {
+    const list = [];
 
-    function GetRotation() {
-        const list = []
+    list.push(edge.pointA.x - edge.pointB.x);
+    list.push(edge.pointA.y - edge.pointB.y);
 
-        list.push(edge.pointA.x - edge.pointB.x)
-        list.push(edge.pointA.y - edge.pointB.y)
+    return GetRotationFromVector(new Vector(list));
+  }
 
-        return GetRotationFromVector(new Vector(list))
+  function GetRotationFromVector(vet: Vector) {
+    let baseVector = new Vector([1, 0]);
+
+    if (vet.at(1) < 0) {
+      baseVector = new Vector([-1, 0]);
     }
 
-    function GetRotationFromVector(vet: Vector) {
+    const test = vet.angleFrom(baseVector);
+    const degrees = (test * 180) / Math.PI;
+    return degrees;
+  }
 
-        let baseVector = new Vector([1, 0])
+  function GetMiddlePoint(nr1: number, nr2: number) {
+    const translationX = nr1 - nr2;
+    return nr2 + translationX / 2;
+  }
 
-        if (vet.at(1) < 0) {
-            baseVector = new Vector([-1, 0])
-        }
+  function GetPoints() {
+    const shapePoints = [
+      0.25, 0.08, 0.08, 0.02, -0.08, 0.08, -0.25, 0.02, -0.25, -0.08, -0.08,
+      -0.02, 0.08, -0.08, 0.25, -0.02,
+    ];
 
-        const test = vet.angleFrom(baseVector)
-        const degrees = test * 180 / Math.PI
-        return degrees
-    }
+    return shapePoints;
+  }
 
-    function GetMiddlePoint(nr1: number, nr2: number) {
-        const translationX = nr1 - nr2
-        return nr2 + translationX / 2
-    }
-
-    function GetPoints() {
-        const shapePoints = [
-            0.25, 0.08,
-            0.08, 0.02,
-            -0.08, 0.08,
-            -0.25, 0.02,
-            -0.25, -0.08,
-            -0.08, -0.02,
-            0.08, -0.08,
-            0.25, -0.02]
-
-        return shapePoints
-    }
-
-    return (
-        <Line
-            points={GetPoints()}
-            x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
-            y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
-            closed={true}
-            strokeWidth={0.01}
-            stroke={"#000000"}
-            fill={"color"}
-            tension={0.5}
-            rotation={GetRotation()}
-
-        />
-
-    );
+  return (
+    <Line
+      points={GetPoints()}
+      x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
+      y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
+      closed={true}
+      strokeWidth={0.01}
+      stroke={"#000000"}
+      fill={color}
+      tension={0.5}
+      rotation={GetRotation()}
+    />
+  );
 }
