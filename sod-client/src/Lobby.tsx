@@ -27,33 +27,6 @@ export function Lobby() {
       setRooms(rooms);
     });
   }, [setRooms, client]);
-  //   useEffect(() => {
-  //     client
-  //       .joinOrCreate<MyRoomState>("my_room", { test: "hello" })
-  //       .then((room) => {
-  //         console.log(room.sessionId, "joined", room.name);
-
-  //         room.onStateChange((state) => {
-  //           setState(state);
-  //           console.log(room.name, "has new state:", state);
-  //         });
-
-  //         room.onMessage("message_type", (message) => {
-  //           console.log(room.sessionId, "received on", room.name, message);
-  //         });
-
-  //         room.onError((code, message) => {
-  //           console.log(room.sessionId, "couldn't join", room.name);
-  //         });
-
-  //         room.onLeave((code) => {
-  //           console.log(room.sessionId, "left", room.name);
-  //         });
-  //       })
-  //       .catch((e) => {
-  //         console.log("JOIN ERROR", e);
-  //       });
-  //   }, []);
 
   function attachStateListener(room: Room<GameState>) {
     sessionStorage.setItem("reconnectionToken", room.reconnectionToken);

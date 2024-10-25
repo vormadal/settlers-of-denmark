@@ -11,4 +11,5 @@ import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@co
 export class Point extends Schema {
     @type("number") public x!: number;
     @type("number") public y!: number;
+    @type("string") public id!: string;
 }

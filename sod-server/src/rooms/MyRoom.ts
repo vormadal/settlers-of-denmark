@@ -1,60 +1,114 @@
-import { Client, Room } from "@colyseus/core";
-import { BasicLayoutAlgorithm } from "../algorithms/layout/BasicLayoutAlgorithm";
-import {
-  createBaseGameStateMachine,
-  EVENT_NAMES,
-} from "../baseGameStateMachine";
-import { GameMap, GameMapOptions } from "../models/GameMap";
-import { GameState } from "./schema/GameState";
+import { Dispatcher } from '@colyseus/command'
+import { Client, Room } from '@colyseus/core'
+import { BasicLayoutAlgorithm } from '../algorithms/layout/BasicLayoutAlgorithm'
+import { PercentageTileTypeProvider } from '../algorithms/TileTypeProvider'
+import { PlaceHouseCommand } from '../commands/base/PlaceHouseCommand'
+import { PlaceRoadCommand } from '../commands/base/PlaceRoadCommand'
+import { GamePhases, GameState } from './schema/GameState'
+import { House } from './schema/House'
+import { Player } from './schema/Player'
+import { Road } from './schema/Road'
+
+import { RandomNumberProvider } from '../algorithms/NumberProvider'
+import { BaseGameTileTypes } from './schema/LandTile'
+
+export interface GameMapOptions {
+  numPlayers: number
+  numHouses: number
+  numCities: number
+  numRoads: number
+}
 
 export class MyRoom extends Room<GameState> {
-  maxClients = 2;
-
-  map: GameMap;
-
-  stateMachine = createBaseGameStateMachine(
-    new GameMap("init", new BasicLayoutAlgorithm(3, 4)),
-    new GameState()
-  );
+  maxClients = 2
+  options: GameMapOptions
+  dispatcher = new Dispatcher(this)
+  layoutAlgorithm = new BasicLayoutAlgorithm(
+    3,
+    4,
+    new PercentageTileTypeProvider({
+      [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
+      [BaseGameTileTypes.Forrest]: (4 / 19) * 100,
+      [BaseGameTileTypes.Grain]: (4 / 19) * 100,
+      [BaseGameTileTypes.Lifestock]: (4 / 19) * 100,
+      [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
+      [BaseGameTileTypes.Mine]: (3 / 19) * 100
+    }),
+    new RandomNumberProvider()
+  )
 
   onCreate(options: GameMapOptions) {
-    this.map = new GameMap(
-      `${Date.now()}`,
-      new BasicLayoutAlgorithm(3, 4),
-      options
-    );
+    this.options = {
+      numCities: 4,
+      numHouses: 4,
+      numPlayers: 1,
+      numRoads: 9,
+      ...options
+    }
 
-    this.maxClients = options.numPlayers;
-    const state = this.map.schema;
-    this.setState(state);
-    this.stateMachine = createBaseGameStateMachine(this.map, state);
+    this.maxClients = options.numPlayers
+    const state = this.layoutAlgorithm.createLayout(new GameState())
+    this.setState(state)
 
-    this.stateMachine.subscribe((state) => {
-      this.state.gameState = state.value.toString()
-      console.log('state', state.value)
-    });
+    this.onMessage<Pick<PlaceHouseCommand['payload'], 'intersectionId'>>('place_house', (client, message) => {
+      this.executeCommand(() => {
+        this.dispatcher.dispatch(new PlaceHouseCommand(), {
+          intersectionId: message.intersectionId,
+          playerId: client.sessionId
+        })
+      })
+    })
 
-    this.onMessage("*", (client, type, message) => {
-      this.stateMachine.send({
-        type: type as string,
-        value: { sessionId: client.sessionId, ...message },
-      });
-    });
-    // this.stateMachine.subscribe((state) => {
-    //   state.context.gameState.gameState
-    // });
+    this.onMessage<Pick<PlaceRoadCommand['payload'], 'edgeId'>>('place_road', (client, message) => {
+      this.executeCommand(() => {
+        this.dispatcher.dispatch(new PlaceRoadCommand(), {
+          ...message,
+          playerId: client.sessionId
+        })
+      })
+    })
+  }
+
+  executeCommand(execute: () => void) {
+    execute()
   }
 
   async onJoin(client: Client, options: any) {
-    this.stateMachine.send({
-      type: "PLAYER_JOINED",
-      value: { sessionId: client.sessionId },
-    });
-    this.stateMachine.send({ type: "START_GAME" });
+    const player = this.createPlayer(client.sessionId)
+    this.state.players.set(player.id, player)
+
+    if (this.state.players.size === this.options.numPlayers) {
+      this.state.phase = GamePhases.Establishment
+    }
+  }
+
+  createPlayer(id: string) {
+    const player = new Player()
+    player.id = id
+    player.houses.push(
+      ...Array.from({ length: this.options.numHouses }, (_, i) => i).map((i) =>
+        new House().assign({
+          id: `${id}-${i}`,
+          owner: id
+        })
+      )
+    )
+
+    player.houses
+    player.roads.push(
+      ...Array.from({ length: this.options.numRoads }, (_, i) => i).map((i) =>
+        new Road().assign({
+          id: `${id}-${i}`,
+          owner: id
+        })
+      )
+    )
+
+    return player
   }
 
   onLeave(client: Client, consented: boolean) {
-    this.allowReconnection(client, 60);
-    console.log(client.sessionId, "left!");
+    this.allowReconnection(client, 60)
+    console.log(client.sessionId, 'left!')
   }
 }

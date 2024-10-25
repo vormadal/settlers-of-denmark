@@ -1,8 +1,8 @@
-import { Circle, Line } from "react-konva";
-import { Intersection } from "../state/Intersection";
-import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { useState } from "react";
+import { Circle } from "react-konva";
 import { useGameState } from "../GameStateContext";
+import { Intersection } from "../state/Intersection";
 
 interface Type {
   intersection: Intersection;
@@ -16,7 +16,7 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
   const [_, room] = useGameState();
   const [focus, setFocus] = useState(false);
   function handleClick() {
-    room?.send("PLACE_HOUSE", {
+    room?.send("place_house", {
       intersectionId: intersection.id,
     });
     onClick && onClick(intersection);

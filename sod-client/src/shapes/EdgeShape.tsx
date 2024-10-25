@@ -1,65 +1,51 @@
-import { Line, Circle, Ellipse } from "react-konva";
-import { BorderEdge } from "../state/BorderEdge";
-import { Vector } from "ts-matrix";
-import { useState } from "react";
-import { KonvaEventObject } from "konva/lib/Node";
-import { useGameState } from "../GameStateContext";
+import { KonvaEventObject } from 'konva/lib/Node'
+import { useState } from 'react'
+import { Ellipse } from 'react-konva'
+import { useGameState } from '../GameStateContext'
+import { BorderEdge } from '../state/BorderEdge'
+import { Point } from '../state/Point'
+import { getLineRotation } from '../utils/VectorMath'
 
 interface Props {
-  edge: BorderEdge;
+  edge: BorderEdge
 }
+
+function getCenter(pointA: Point, pointB: Point) {
+  return {
+    x: (pointA.x + pointB.x) / 2,
+    y: (pointA.y + pointB.y) / 2
+  }
+}
+
 export function EdgeShape({ edge }: Props) {
-  const [_, room] = useGameState();
-  function GetRotation() {
-    const list = [];
+  const [_, room] = useGameState()
+  const [focus, setFocus] = useState(false)
 
-    list.push(edge.pointA.x - edge.pointB.x);
-    list.push(edge.pointA.y - edge.pointB.y);
-
-    return GetRotationFromVector(new Vector(list));
-  }
-
-  function GetRotationFromVector(vet: Vector) {
-    let baseVector = new Vector([1, 0]);
-
-    if (vet.at(1) < 0) {
-      baseVector = new Vector([-1, 0]);
-    }
-
-    const test = vet.angleFrom(baseVector);
-    const degrees = (test * 180) / Math.PI;
-    return degrees;
-  }
-
-  function GetMiddlePoint(nr1: number, nr2: number) {
-    const translationX = nr1 - nr2;
-    return nr2 + translationX / 2;
-  }
-
-  const [focus, setFocus] = useState(false);
   function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
-    setFocus(true);
+    setFocus(true)
   }
 
   function handleMouseLeave() {
-    setFocus(false);
+    setFocus(false)
   }
 
   function handleClick() {
-    room?.send("PLACE_ROAD", {
-      edgeId: edge.id,
-    });
+    room?.send('place_road', {
+      edgeId: edge.id
+    })
   }
 
+  const center = getCenter(edge.pointA, edge.pointB)
+  const rotation = getLineRotation(edge.pointA, edge.pointB)
   return (
     <Ellipse
-      x={GetMiddlePoint(edge.pointA.x, edge.pointB.x)}
-      y={GetMiddlePoint(edge.pointA.y, edge.pointB.y)}
+      x={center.x}
+      y={center.y}
       onClick={handleClick}
       radiusX={11}
       radiusY={6}
-      rotation={GetRotation()}
-      fill={"#ffffff"}
+      rotation={rotation}
+      fill={'#ffffff'}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       scaleX={focus ? 1.6 : 1}
@@ -71,7 +57,7 @@ export function EdgeShape({ edge }: Props) {
       shadowBlur={2}
       shadowOpacity={0.3}
       strokeWidth={0.9}
-      stroke={"#000000"}
+      stroke={'#000000'}
     />
-  );
+  )
 }

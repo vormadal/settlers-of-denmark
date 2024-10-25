@@ -1,10 +1,10 @@
-import { GameMap } from "../../models/GameMap";
+import { GameState } from "../../rooms/schema/GameState";
 import { NumberProvider } from "../NumberProvider";
 import { TileTypeProvider } from "../TileTypeProvider";
 
 export interface LayoutAlgorithm {
   createLayout(
-    map: GameMap,
+    state: GameState,
     tileTypeProvider: TileTypeProvider,
     numberProvider: NumberProvider
   ): void;
