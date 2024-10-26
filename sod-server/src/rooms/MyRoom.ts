@@ -57,6 +57,10 @@ export class MyRoom extends Room<GameState> {
 
     this.onMessage('*', (client, type, message) => {
       console.log('received message:', type, message)
+      if (this.state.currentPlayer !== client.sessionId) {
+        //TODO this might not always be the case
+        return
+      }
       this.stateMachine.send({
         type: type,
         payload: {
