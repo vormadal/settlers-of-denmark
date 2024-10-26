@@ -28,7 +28,7 @@ export class GameState extends Schema {
       ])
       .flat()
       .filter((x) => x !== undefined)
-      
+
     this.availableIntersections.push(
       ...this.intersections
         .filter((intersection) => !occupiedIntersections.includes(intersection.id))

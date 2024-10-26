@@ -2,9 +2,9 @@ import { Dispatcher } from '@colyseus/command'
 import { Client, Room } from '@colyseus/core'
 import { BasicLayoutAlgorithm } from '../algorithms/layout/BasicLayoutAlgorithm'
 import { PercentageTileTypeProvider } from '../algorithms/TileTypeProvider'
-import { PlaceHouseCommand } from '../commands/base/PlaceHouseCommand'
-import { PlaceRoadCommand } from '../commands/base/PlaceRoadCommand'
-import { GamePhases, GameState } from './schema/GameState'
+import { PlaceInitialHouseCommand } from '../commands/base/PlaceInitialHouseCommand'
+import { PlaceInitialRoadCommand } from '../commands/base/PlaceInitialRoadCommand'
+import { GamePhases, GameState, PhaseSteps } from './schema/GameState'
 import { House } from './schema/House'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
@@ -50,18 +50,18 @@ export class MyRoom extends Room<GameState> {
     const state = this.layoutAlgorithm.createLayout(new GameState())
     this.setState(state)
 
-    this.onMessage<Pick<PlaceHouseCommand['payload'], 'intersectionId'>>('place_house', (client, message) => {
+    this.onMessage<Pick<PlaceInitialHouseCommand['payload'], 'intersectionId'>>('place_house', (client, message) => {
       this.executeCommand(() => {
-        this.dispatcher.dispatch(new PlaceHouseCommand(), {
+        this.dispatcher.dispatch(new PlaceInitialHouseCommand(), {
           intersectionId: message.intersectionId,
           playerId: client.sessionId
         })
       })
     })
 
-    this.onMessage<Pick<PlaceRoadCommand['payload'], 'edgeId'>>('place_road', (client, message) => {
+    this.onMessage<Pick<PlaceInitialRoadCommand['payload'], 'edgeId'>>('place_road', (client, message) => {
       this.executeCommand(() => {
-        this.dispatcher.dispatch(new PlaceRoadCommand(), {
+        this.dispatcher.dispatch(new PlaceInitialRoadCommand(), {
           ...message,
           playerId: client.sessionId
         })
@@ -79,6 +79,9 @@ export class MyRoom extends Room<GameState> {
 
     if (this.state.players.size === this.options.numPlayers) {
       this.state.phase = GamePhases.Establishment
+      this.state.phaseStep = PhaseSteps.PlaceInitialSettlement
+      this.state.currentPlayer = Array.from(this.state.players.keys())[0]
+      this.state.availableIntersections.push(...this.state.intersections.map((x) => x.id))
     }
   }
 

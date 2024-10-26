@@ -1,14 +1,15 @@
-import { ArraySchema, Schema, type } from '@colyseus/schema'
-import { Point } from './Point'
+import { Schema, type } from '@colyseus/schema'
 import { GameState } from './GameState'
+import { Point } from './Point'
 
 export class BorderEdge extends Schema {
   @type(Point) pointA: Point
   @type(Point) pointB: Point
   @type('string') id: string
-  @type(['string']) neighbors = new ArraySchema<string>()
-
-  getNeighbors(state: GameState) {
-    return this.neighbors.map((id) => state.edges.find((edge) => edge.id === id))
+  
+  getIntersections(state: GameState) {
+    return state.intersections.filter(
+      (intersection) => intersection.position.id === this.pointA.id || intersection.position.id === this.pointB.id
+    )
   }
 }
