@@ -13,10 +13,10 @@ interface Type {
 const inactiveColor = "#f0e68c";
 const activeColor = "#ffffff";
 export function IntersectionShape({ intersection, show, onClick }: Type) {
-  const [_, room] = useGameState();
+  const [state, room] = useGameState();
   const [focus, setFocus] = useState(false);
   function handleClick() {
-    room?.send("place_house", {
+    room?.send("PLACE_HOUSE", {
       intersectionId: intersection.id,
     });
     onClick && onClick(intersection);
@@ -29,6 +29,9 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
   function handleMouseLeave() {
     setFocus(false);
   }
+
+  if(!state?.availableIntersections.includes(intersection.id)) return null;
+
   return (
     <Circle
       x={intersection.position.x}

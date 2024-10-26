@@ -17,7 +17,6 @@ export class GameState extends Schema {
     @type([ LandTiles ]) public landTiles: ArraySchema<LandTiles> = new ArraySchema<LandTiles>();
     @type({ map: Player }) public players: MapSchema<Player> = new MapSchema<Player>();
     @type("string") public phase!: string;
-    @type("string") public phaseStep!: string;
     @type("string") public currentPlayer!: string;
     @type("number") public round!: number;
     @type([ "string" ]) public availableIntersections: ArraySchema<string> = new ArraySchema<string>();

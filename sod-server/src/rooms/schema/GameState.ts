@@ -11,7 +11,6 @@ export class GameState extends Schema {
   @type({ map: Player }) players = new MapSchema<Player>()
 
   @type('string') phase: string = GamePhases.WaitingForPlayers
-  @type('string') phaseStep: string = PhaseSteps.PlaceInitialSettlement
   @type('string') currentPlayer: string = ''
 
   @type('number') round = 1

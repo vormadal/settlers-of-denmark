@@ -2,8 +2,8 @@ import { Dispatcher } from '@colyseus/command'
 import { Client, Room } from '@colyseus/core'
 import { BasicLayoutAlgorithm } from '../algorithms/layout/BasicLayoutAlgorithm'
 import { PercentageTileTypeProvider } from '../algorithms/TileTypeProvider'
-import { PlaceInitialHouseCommand } from '../commands/base/PlaceInitialHouseCommand'
-import { PlaceInitialRoadCommand } from '../commands/base/PlaceInitialRoadCommand'
+import { PlaceHouseCommand } from '../commands/base/PlaceHouseCommand'
+import { PlaceRoadCommand } from '../commands/base/PlaceRoadCommand'
 import { GamePhases, GameState, PhaseSteps } from './schema/GameState'
 import { House } from './schema/House'
 import { Player } from './schema/Player'
@@ -11,6 +11,7 @@ import { Road } from './schema/Road'
 
 import { RandomNumberProvider } from '../algorithms/NumberProvider'
 import { BaseGameTileTypes } from './schema/LandTile'
+import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
 
 export interface GameMapOptions {
   numPlayers: number
@@ -37,36 +38,51 @@ export class MyRoom extends Room<GameState> {
     new RandomNumberProvider()
   )
 
+  // dummy initialization to get the proper type
+  stateMachine = createBaseGameStateMachine(this.state, this.dispatcher)
+
   onCreate(options: GameMapOptions) {
     this.options = {
       numCities: 4,
       numHouses: 4,
-      numPlayers: 1,
+      numPlayers: 2,
       numRoads: 9,
       ...options
     }
 
     this.maxClients = options.numPlayers
     const state = this.layoutAlgorithm.createLayout(new GameState())
+    this.stateMachine = createBaseGameStateMachine(state, this.dispatcher)
     this.setState(state)
 
-    this.onMessage<Pick<PlaceInitialHouseCommand['payload'], 'intersectionId'>>('place_house', (client, message) => {
-      this.executeCommand(() => {
-        this.dispatcher.dispatch(new PlaceInitialHouseCommand(), {
-          intersectionId: message.intersectionId,
-          playerId: client.sessionId
-        })
-      })
-    })
-
-    this.onMessage<Pick<PlaceInitialRoadCommand['payload'], 'edgeId'>>('place_road', (client, message) => {
-      this.executeCommand(() => {
-        this.dispatcher.dispatch(new PlaceInitialRoadCommand(), {
+    this.onMessage('*', (client, type, message) => {
+      console.log('received message:', type, message)
+      this.stateMachine.send({
+        type: type,
+        payload: {
           ...message,
           playerId: client.sessionId
-        })
-      })
+        }
+      } as any)
     })
+
+    // this.onMessage<Pick<PlaceHouseCommand['payload'], 'intersectionId'>>('place_house', (client, message) => {
+    //   this.executeCommand(() => {
+    //     this.dispatcher.dispatch(new PlaceHouseCommand(), {
+    //       intersectionId: message.intersectionId,
+    //       playerId: client.sessionId
+    //     })
+    //   })
+    // })
+
+    // this.onMessage<Pick<PlaceRoadCommand['payload'], 'edgeId'>>('place_road', (client, message) => {
+    //   this.executeCommand(() => {
+    //     this.dispatcher.dispatch(new PlaceRoadCommand(), {
+    //       ...message,
+    //       playerId: client.sessionId
+    //     })
+    //   })
+    // })
   }
 
   executeCommand(execute: () => void) {
@@ -78,10 +94,11 @@ export class MyRoom extends Room<GameState> {
     this.state.players.set(player.id, player)
 
     if (this.state.players.size === this.options.numPlayers) {
-      this.state.phase = GamePhases.Establishment
-      this.state.phaseStep = PhaseSteps.PlaceInitialSettlement
-      this.state.currentPlayer = Array.from(this.state.players.keys())[0]
-      this.state.availableIntersections.push(...this.state.intersections.map((x) => x.id))
+      this.stateMachine.start()
+      // this.state.phase = GamePhases.Establishment
+      // this.state.phaseStep = PhaseSteps.PlaceInitialSettlement
+      // this.state.currentPlayer = Array.from(this.state.players.keys())[0]
+      // this.state.availableIntersections.push(...this.state.intersections.map((x) => x.id))
     }
   }
 

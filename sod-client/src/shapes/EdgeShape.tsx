@@ -18,7 +18,7 @@ function getCenter(pointA: Point, pointB: Point) {
 }
 
 export function EdgeShape({ edge }: Props) {
-  const [_, room] = useGameState()
+  const [state, room] = useGameState()
   const [focus, setFocus] = useState(false)
 
   function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
@@ -30,13 +30,16 @@ export function EdgeShape({ edge }: Props) {
   }
 
   function handleClick() {
-    room?.send('place_road', {
+    room?.send('PLACE_ROAD', {
       edgeId: edge.id
     })
   }
 
   const center = getCenter(edge.pointA, edge.pointB)
   const rotation = getLineRotation(edge.pointA, edge.pointB)
+
+  if (!state?.availableEdges.includes(edge.id)) return null
+  
   return (
     <Ellipse
       x={center.x}

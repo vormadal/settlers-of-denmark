@@ -118,7 +118,7 @@ export function BaseGame({ room }: Props) {
       <Layer>
         <Text
           fontSize={15}
-          text={`${state.phase}: ${state.phaseStep}`}
+          text={`${state.phase}`}
           x={-250}
           y={0}
         />

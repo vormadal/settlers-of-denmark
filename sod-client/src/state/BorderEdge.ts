@@ -12,5 +12,4 @@ export class BorderEdge extends Schema {
     @type(Point) public pointA: Point = new Point();
     @type(Point) public pointB: Point = new Point();
     @type("string") public id!: string;
-    @type([ "string" ]) public neighbors: ArraySchema<string> = new ArraySchema<string>();
 }
