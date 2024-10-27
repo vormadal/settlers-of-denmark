@@ -1,44 +1,31 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { GameState } from "./state/GameState";
-import { Room } from "colyseus.js";
+import { createContext, useContext, useEffect, useState } from 'react'
+import { GameState } from './state/GameState'
+import { Room } from 'colyseus.js'
 
 type ContextValueType = [
   state: GameState | undefined,
   room: Room<GameState> | undefined,
-  updateState: (state?: GameState, room?: Room<GameState>) => void
-];
-const GameStateContext = createContext<ContextValueType>([
-  undefined,
-  undefined,
-  () => {},
-]);
+  updateState: (room?: Room<GameState>) => void
+]
+const GameStateContext = createContext<ContextValueType>([undefined, undefined, () => {}])
 
 interface Props {
-  children: React.ReactElement;
+  children: React.ReactElement
 }
 export function GameStateContextProvider({ children }: Props) {
-  const [state, setState] = useState<GameState>();
-  const [room, setRoom] = useState<Room<GameState>>();
+  const [state, setState] = useState<GameState>()
+  const [room, setRoom] = useState<Room<GameState>>()
 
   useEffect(() => {
-    if(!room) return
+    if (!room) return
+    room.onStateChange((newState) => {
+      setState({...newState} as any) //HACK: this is to force a re-render
+    })
   }, [room])
-  return (
-    <GameStateContext.Provider
-      value={[
-        state,
-        room,
-        (state, room) => {
-          setState(state);
-          setRoom(room);
-        },
-      ]}
-    >
-      {children}
-    </GameStateContext.Provider>
-  );
+
+  return <GameStateContext.Provider value={[state, room, setRoom]}>{children}</GameStateContext.Provider>
 }
 
 export function useGameState() {
-  return useContext(GameStateContext);
+  return useContext(GameStateContext)
 }

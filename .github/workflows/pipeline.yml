@@ -1,4 +1,4 @@
-name: Vormadal Diaper Tracker
+name: Settlers of Denmark
 
 on:
   push:
@@ -47,7 +47,7 @@ jobs:
   #         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
       
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: Production
     # needs: [ci]
     steps:
@@ -59,21 +59,13 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-      - name: Deploy server to Caprover
+      - name: Deploy app to Caprover
         run: >
           node_modules/.bin/caprover deploy -h https://captain.caprover.vormadal.com 
           -b ${{ github.ref }} 
-          -c ../captain-definition-server 
           --appToken ${{ secrets.CAPROVER_SERVER_APP_TOKEN }} 
-          -a "sod-server" 
+          -a "settlers-of-denmark" 
 
-      - name: Deploy client to Caprover
-        run: >
-          node_modules/.bin/caprover deploy -h https://captain.caprover.vormadal.com 
-          -b ${{ github.ref }} 
-          -c ../captain-definition-client 
-          --appToken ${{ secrets.CAPROVER_CLIENT_APP_TOKEN }} 
-          -a "sod-client" 
       # - name: Wait for deployment is done
       #   run: >
       #     node ./scripts/waitForDeploymentCompletion.js 

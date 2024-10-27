@@ -1,43 +1,45 @@
-import { KonvaEventObject } from "konva/lib/Node";
-import { useState } from "react";
-import { Circle } from "react-konva";
-import { useGameState } from "../GameStateContext";
-import { Intersection } from "../state/Intersection";
+import { KonvaEventObject } from 'konva/lib/Node'
+import { useState } from 'react'
+import { Circle } from 'react-konva'
+import { useGameState } from '../GameStateContext'
+import { Intersection } from '../state/Intersection'
 
 interface Type {
-  intersection: Intersection;
-  show: boolean;
-  onClick?: (intersection: Intersection) => void;
+  intersection: Intersection
+  onClick?: (intersection: Intersection) => void
 }
 
-const inactiveColor = "#f0e68c";
-const activeColor = "#ffffff";
-export function IntersectionShape({ intersection, show, onClick }: Type) {
-  const [state, room] = useGameState();
-  const [focus, setFocus] = useState(false);
+const activeColor = '#ffffff'
+export function IntersectionShape({ intersection, onClick }: Type) {
+  const [state, room] = useGameState()
+  const [focus, setFocus] = useState(false)
+
   function handleClick() {
-    room?.send("PLACE_HOUSE", {
-      intersectionId: intersection.id,
-    });
-    onClick && onClick(intersection);
+    room?.send('PLACE_HOUSE', {
+      intersectionId: intersection.id
+    })
+    onClick && onClick(intersection)
   }
 
   function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
-    setFocus(true);
+    setFocus(true)
   }
 
   function handleMouseLeave() {
-    setFocus(false);
+    setFocus(false)
+  }
+  if (intersection.id === 'Intersection:100,0') {
+    console.log('render')
   }
 
-  if(!state?.availableIntersections.includes(intersection.id)) return null;
+  if (!state?.availableIntersections.includes(intersection.id)) return null
 
   return (
     <Circle
       x={intersection.position.x}
       y={intersection.position.y}
       radius={9}
-      fill={show ? activeColor : inactiveColor}
+      fill={activeColor}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -50,7 +52,7 @@ export function IntersectionShape({ intersection, show, onClick }: Type) {
       shadowBlur={2}
       shadowOpacity={0.3}
       strokeWidth={0.9}
-      stroke={"#000000"}
+      stroke={'#000000'}
     />
-  );
+  )
 }
