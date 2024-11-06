@@ -9,7 +9,7 @@ import { House } from './schema/House'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
 
-import { RandomNumberProvider } from '../algorithms/NumberProvider'
+import { BalancedNumberProvider, RandomNumberProvider } from '../algorithms/NumberProvider'
 import { BaseGameTileTypes } from './schema/LandTile'
 import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
 import { Card, CardTypes, CardVariants } from './schema/Card'
@@ -46,7 +46,7 @@ export class MyRoom extends Room<GameState> {
       [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
       [BaseGameTileTypes.Hills]: (3 / 19) * 100
     }),
-    new RandomNumberProvider()
+    new BalancedNumberProvider()
   )
 
   // dummy initialization to get the proper type
