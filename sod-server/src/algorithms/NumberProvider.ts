@@ -9,6 +9,13 @@ export class RandomNumberProvider implements NumberProvider {
   }
 }
 
+export class DebugNumberProvider implements NumberProvider {
+  value = 0
+  next(): number {
+    return this.value++
+  }
+}
+
 export class BalancedNumberProvider implements NumberProvider {
   values: number[]
   index = 0

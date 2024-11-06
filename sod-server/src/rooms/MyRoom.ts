@@ -9,10 +9,11 @@ import { House } from './schema/House'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
 
-import { BalancedNumberProvider, RandomNumberProvider } from '../algorithms/NumberProvider'
+import { BalancedNumberProvider, DebugNumberProvider, RandomNumberProvider } from '../algorithms/NumberProvider'
 import { BaseGameTileTypes } from './schema/LandTile'
 import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
 import { Card, CardTypes, CardVariants } from './schema/Card'
+import { HexLayoutAlgorithm } from '../algorithms/layout/HexLayoutAlgorithm'
 
 function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
   return Array.from({ length: count }, (_, i) => i).map((i) => {
@@ -35,19 +36,6 @@ export class MyRoom extends Room<GameState> {
   maxClients = 2
   options: GameMapOptions
   dispatcher = new Dispatcher(this)
-  layoutAlgorithm = new BasicLayoutAlgorithm(
-    3,
-    4,
-    new PercentageTileTypeProvider({
-      [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
-      [BaseGameTileTypes.Forest]: (4 / 19) * 100,
-      [BaseGameTileTypes.Fields]: (4 / 19) * 100,
-      [BaseGameTileTypes.Pastures]: (4 / 19) * 100,
-      [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
-      [BaseGameTileTypes.Hills]: (3 / 19) * 100
-    }),
-    new BalancedNumberProvider()
-  )
 
   // dummy initialization to get the proper type
   stateMachine = createBaseGameStateMachine(this.state, this.dispatcher)
@@ -62,7 +50,18 @@ export class MyRoom extends Room<GameState> {
     }
 
     this.maxClients = options.numPlayers
-    const state = this.layoutAlgorithm.createLayout(new GameState())
+    const tileTypeProvider = new PercentageTileTypeProvider({
+      [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
+      [BaseGameTileTypes.Forest]: (4 / 19) * 100,
+      [BaseGameTileTypes.Fields]: (4 / 19) * 100,
+      [BaseGameTileTypes.Pastures]: (4 / 19) * 100,
+      [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
+      [BaseGameTileTypes.Hills]: (3 / 19) * 100
+    })
+    const numberProvider = new DebugNumberProvider()
+    // const layoutAlgorithm = new BasicLayoutAlgorithm(3, 4, tileTypeProvider, numberProvider)
+    const layoutAlgorithm = new HexLayoutAlgorithm(4, tileTypeProvider, numberProvider)
+    const state = layoutAlgorithm.createLayout(new GameState())
     state.deck.push(
       ...cardGenerator(14, CardTypes.Resource, CardVariants.Brick, (card) => card),
       ...cardGenerator(14, CardTypes.Resource, CardVariants.Grain, (card) => card),
