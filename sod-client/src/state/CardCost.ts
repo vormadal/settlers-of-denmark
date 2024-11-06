@@ -8,9 +8,7 @@
 import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@colyseus/schema';
 
 
-export class House extends Schema {
-    @type("string") public id!: string;
-    @type("string") public owner!: string;
-    @type("string") public intersection!: string;
-    @type("int16") public round!: number;
+export class CardCost extends Schema {
+    @type("string") public type!: string;
+    @type("number") public cost!: number;
 }

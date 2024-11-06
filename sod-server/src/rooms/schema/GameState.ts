@@ -3,12 +3,15 @@ import { BorderEdge } from './BorderEdge'
 import { Intersection } from './Intersection'
 import { LandTiles } from './LandTile'
 import { Player } from './Player'
+import { Card } from './Card'
 
 export class GameState extends Schema {
   @type([BorderEdge]) edges = new ArraySchema<BorderEdge>()
   @type([Intersection]) intersections = new ArraySchema<Intersection>()
   @type([LandTiles]) landTiles = new ArraySchema<LandTiles>()
   @type({ map: Player }) players = new MapSchema<Player>()
+
+  @type([Card]) deck = new ArraySchema<Card>()
 
   @type('string') phase: string = GamePhases.WaitingForPlayers
   @type('string') currentPlayer: string = ''

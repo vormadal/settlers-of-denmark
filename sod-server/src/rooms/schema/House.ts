@@ -5,6 +5,7 @@ export class House extends Schema {
   @type('string') id: string
   @type('string') owner: string
   @type('string') intersection?: string
+  @type('int16') round?: number
 
   getIntersection(state: GameState) {
     return state.intersections.find((x) => x.id === this.intersection)

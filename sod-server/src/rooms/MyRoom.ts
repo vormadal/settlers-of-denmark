@@ -12,6 +12,17 @@ import { Road } from './schema/Road'
 import { RandomNumberProvider } from '../algorithms/NumberProvider'
 import { BaseGameTileTypes } from './schema/LandTile'
 import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
+import { Card, CardTypes, CardVariants } from './schema/Card'
+
+function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
+  return Array.from({ length: count }, (_, i) => i).map((i) => {
+    const card = new Card()
+    card.id = `${type}-${variant}-${i}`
+    card.type = type
+    card.variant = variant
+    return create(card)
+  })
+}
 
 export interface GameMapOptions {
   numPlayers: number
@@ -29,11 +40,11 @@ export class MyRoom extends Room<GameState> {
     4,
     new PercentageTileTypeProvider({
       [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
-      [BaseGameTileTypes.Forrest]: (4 / 19) * 100,
-      [BaseGameTileTypes.Grain]: (4 / 19) * 100,
-      [BaseGameTileTypes.Lifestock]: (4 / 19) * 100,
+      [BaseGameTileTypes.Forest]: (4 / 19) * 100,
+      [BaseGameTileTypes.Fields]: (4 / 19) * 100,
+      [BaseGameTileTypes.Pastures]: (4 / 19) * 100,
       [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
-      [BaseGameTileTypes.Mine]: (3 / 19) * 100
+      [BaseGameTileTypes.Hills]: (3 / 19) * 100
     }),
     new RandomNumberProvider()
   )
@@ -52,6 +63,18 @@ export class MyRoom extends Room<GameState> {
 
     this.maxClients = options.numPlayers
     const state = this.layoutAlgorithm.createLayout(new GameState())
+    state.deck.push(
+      ...cardGenerator(14, CardTypes.Resource, CardVariants.Brick, (card) => card),
+      ...cardGenerator(14, CardTypes.Resource, CardVariants.Grain, (card) => card),
+      ...cardGenerator(14, CardTypes.Resource, CardVariants.Lumber, (card) => card),
+      ...cardGenerator(14, CardTypes.Resource, CardVariants.Ore, (card) => card),
+      ...cardGenerator(14, CardTypes.Resource, CardVariants.Wool, (card) => card),
+      ...cardGenerator(5, CardTypes.Development, CardVariants.Knight, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.Monopoly, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.RoadBuilding, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.VictoryPoint, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.YearOfPlenty, (card) => card)
+    )
     this.stateMachine = createBaseGameStateMachine(state, this.dispatcher)
     this.setState(state)
 

@@ -3,11 +3,11 @@ import { Point } from "./Point";
 
 export const BaseGameTileTypes = {
   Dessert: "Dessert",
-  Forrest: "Forrest",
+  Forest: "Forest",
   Mountains: "Mountains",
-  Lifestock: "Lifestock",
-  Mine: "Mine",
-  Grain: "Grain",
+  Pastures: "Pastures",
+  Hills: "Hills",
+  Fields: "Fields",
 };
 export class LandTiles extends Schema {
   @type(Point) position: Point;
