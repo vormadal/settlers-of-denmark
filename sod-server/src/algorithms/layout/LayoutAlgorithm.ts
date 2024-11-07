@@ -3,7 +3,6 @@ import { GameState } from '../../rooms/schema/GameState'
 import { Intersection } from '../../rooms/schema/Intersection'
 import { LandTiles } from '../../rooms/schema/LandTile'
 import { Point } from '../../rooms/schema/Point'
-import { addPoints, copyPoint } from '../algebra'
 import { NumberProvider } from '../NumberProvider'
 import { TileTypeProvider } from '../TileTypeProvider'
 
@@ -41,8 +40,8 @@ export abstract class LayoutAlgorithm {
   getOrCreateEdge(intersectionA: Intersection, intersectionB: Intersection) {
     let edge = new BorderEdge().assign({
       id: `Edge:${intersectionA.id}->${intersectionB.id}`,
-      pointA: copyPoint(intersectionA.position),
-      pointB: copyPoint(intersectionB.position)
+      pointA: intersectionA.position.copy(),
+      pointB: intersectionB.position.copy()
     })
 
     const existing = this.state.edges.find((x) => areEdgesEqual(x, edge))
@@ -56,8 +55,7 @@ export abstract class LayoutAlgorithm {
   }
 
   getOrCreateIntersection(position: Point, angle: number) {
-    const point = addPoints(
-      position,
+    const point = position.add(
       new Point().assign({
         x: Math.cos(angle) * 100,
         y: Math.sin(angle) * 100

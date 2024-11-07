@@ -1,9 +1,6 @@
-import { BorderEdge } from '../../rooms/schema/BorderEdge'
 import { GameState } from '../../rooms/schema/GameState'
-import { Intersection } from '../../rooms/schema/Intersection'
-import { LandTiles } from '../../rooms/schema/LandTile'
-import { Point } from '../../rooms/schema/Point'
-import { createPoint } from '../algebra'
+import { createPoint } from '../../rooms/schema/Point'
+
 import { NumberProvider } from '../NumberProvider'
 import { TileTypeProvider } from '../TileTypeProvider'
 import { LayoutAlgorithm } from './LayoutAlgorithm'
