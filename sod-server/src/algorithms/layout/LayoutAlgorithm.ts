@@ -3,6 +3,7 @@ import { GameState } from '../../rooms/schema/GameState'
 import { Intersection } from '../../rooms/schema/Intersection'
 import { LandTiles } from '../../rooms/schema/LandTile'
 import { Point } from '../../rooms/schema/Point'
+import { Vector } from '../../utils/Vector'
 import { NumberProvider } from '../NumberProvider'
 import { TileTypeProvider } from '../TileTypeProvider'
 
@@ -10,11 +11,11 @@ export abstract class LayoutAlgorithm {
   state: GameState
   abstract createLayout(state: GameState): GameState
 
-  createTile = (position: Point, type: string, number: number) => {
+  createTile = (position: Vector, type: string, number: number) => {
     const tile = new LandTiles().assign({
       id: `tile:${position.x},${position.y}`,
       type,
-      position,
+      position: position.toPoint(),
       value: number,
       radius: 100
     })
@@ -54,13 +55,8 @@ export abstract class LayoutAlgorithm {
     return edge
   }
 
-  getOrCreateIntersection(position: Point, angle: number) {
-    const point = position.add(
-      new Point().assign({
-        x: Math.cos(angle) * 100,
-        y: Math.sin(angle) * 100
-      })
-    )
+  getOrCreateIntersection(position: Vector, angle: number) {
+    const point = position.add(new Vector(Math.cos(angle), Math.sin(angle)).mul(100)).toPoint()
 
     let intersection = new Intersection().assign({
       id: `Intersection:${point.id}`,

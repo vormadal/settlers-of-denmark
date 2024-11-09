@@ -1,5 +1,4 @@
 import { GameState } from '../../rooms/schema/GameState'
-import { createPoint } from '../../rooms/schema/Point'
 
 import { NumberProvider } from '../NumberProvider'
 import { TileTypeProvider } from '../TileTypeProvider'
