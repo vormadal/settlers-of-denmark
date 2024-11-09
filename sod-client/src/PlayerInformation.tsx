@@ -1,9 +1,7 @@
 import { Box, Container, Typography } from '@mui/material'
+import { PlayerCards } from './components/cards/PlayerCards'
 import { useGameState } from './GameStateContext'
 import { GameState } from './state/GameState'
-import { BaseCard } from './components/cards/BaseCard'
-import { CardGroup } from './components/cards/CardGroup'
-import { colors } from './utils/colors'
 
 interface Props {
   width: number
@@ -11,8 +9,8 @@ interface Props {
 
 function getPhaseLabel(state: GameState) {
   switch (state.phase) {
-    case 'placingHouse':
-      return `${state.currentPlayer} is placing house`
+    case 'placingSettlement':
+      return `${state.currentPlayer} is placing settlement`
     case 'placingRoad':
       return `${state.currentPlayer} is placing road`
     case 'rollingDice':
@@ -54,18 +52,15 @@ export function PlayerInformation({ width }: Props) {
             }}
           >
             <Typography variant="h6">{player.id}</Typography>
-            <Typography variant="body1">Houses: {player.houses.filter((x) => !x.intersection).length}</Typography>
+            <Typography variant="body1">
+              Settlements: {player.settlements.filter((x) => !x.intersection).length}
+            </Typography>
+            <Typography variant="body1">
+              Cities: {player.cities.filter((x) => !x.intersection).length}
+            </Typography>
             <Typography variant="body1">Roads: {player.roads.filter((x) => !x.edge).length}</Typography>
-            <div style={{display: 'flex'}}>
-              <CardGroup
-                color={colors.Mountains}
-                count={3}
-              />
-              <CardGroup
-                color={colors.Grain}
-                count={3}
-              />
-            </div>
+
+            <PlayerCards player={player} />
           </Box>
         ))}
       </Container>

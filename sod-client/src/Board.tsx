@@ -1,7 +1,7 @@
 import { Layer, Stage } from 'react-konva'
 import { useGameState } from './GameStateContext'
 import { EdgeShape } from './shapes/EdgeShape'
-import { HouseShape } from './shapes/HouseShape'
+import { SettlementShape } from './shapes/SettlementShape'
 import { IntersectionShape } from './shapes/IntersectionShape'
 import { Land } from './shapes/LandShape'
 import { RoadShape } from './shapes/RoadShape'
@@ -41,9 +41,9 @@ export function Board({ width: windowWidth }: Props) {
   const offsetX = -windowWidth / 2 + cx * scale
   const offsetY = -window.innerHeight / 2 + cy * scale
 
-  const houses = players
+  const settlements = players
     .map((player, i) =>
-      player.houses.filter((x) => !!x.intersection).map((house) => ({ player, house, color: colors[i] }))
+      player.settlements.filter((x) => !!x.intersection).map((settlement) => ({ player, settlement, color: colors[i] }))
     )
     .flat()
 
@@ -81,19 +81,19 @@ export function Board({ width: windowWidth }: Props) {
           />
         ))}
 
-        {houses.map(({ house, player, color }) => (
-          <HouseShape
-            key={house.id}
+        {settlements.map(({ settlement, player, color }) => (
+          <SettlementShape
+            key={settlement.id}
             color={color}
-            intersection={state.intersections.find((x) => x.id === house.intersection)!}
+            intersection={state.intersections.find((x) => x.id === settlement.intersection)!}
           />
         ))}
 
-        {houses.map(({ house, player, color }) => (
-          <HouseShape
-            key={house.id}
+        {settlements.map(({ settlement, player, color }) => (
+          <SettlementShape
+            key={settlement.id}
             color={color}
-            intersection={state.intersections.find((x) => x.id === house.intersection)!}
+            intersection={state.intersections.find((x) => x.id === settlement.intersection)!}
           />
         ))}
 

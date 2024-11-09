@@ -1,17 +1,19 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema'
-import { House } from './House'
+import { Settlement } from './Settlement'
 import { Road } from './Road'
 import { GameState } from './GameState'
 import { Card } from './Card'
+import { City } from './City'
 
 export class Player extends Schema {
   @type('string') id: string
-  @type([House]) houses = new ArraySchema<House>()
+  @type([Settlement]) settlements = new ArraySchema<Settlement>()
+  @type([City]) cities = new ArraySchema<City>()
   @type([Road]) roads = new ArraySchema<Road>()
   @type([Card]) cards = new ArraySchema<Card>()
 
-  getAvailableHouses() {
-    return this.houses.filter((house) => !house.intersection)
+  getAvailableSettlements() {
+    return this.settlements.filter((settlement) => !settlement.intersection)
   }
 
   getAvailableRoads() {
@@ -19,6 +21,6 @@ export class Player extends Schema {
   }
 
   getOccupiedIntersections(state: GameState) {
-    return this.houses.filter((x) => !!x.intersection).map((house) => house.getIntersection(state))
+    return this.settlements.filter((x) => !!x.intersection).map((settlement) => settlement.getIntersection(state))
   }
 }

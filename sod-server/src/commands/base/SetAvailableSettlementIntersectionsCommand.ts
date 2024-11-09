@@ -3,7 +3,7 @@ import { MyRoom } from '../../rooms/MyRoom'
 interface Payload {
   initialPlacement: boolean
 }
-export class SetAvailableHouseIntersectionsCommand extends Command<MyRoom, Payload> {
+export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const occupiedIntersections = [...this.state.players.values()]
       .map((x) =>

@@ -1,12 +1,11 @@
 import { Command } from '@colyseus/command'
 import { MyRoom } from '../../rooms/MyRoom'
-import { PhaseSteps } from '../../rooms/schema/GameState'
 
 interface Payload {
   intersectionId: string
   playerId: string
 }
-export class PlaceHouseCommand extends Command<MyRoom, Payload> {
+export class PlaceSettlementCommand extends Command<MyRoom, Payload> {
   // validate(payload: this['payload']): boolean {
   //   return (
   //     this.state.phaseStep === PhaseSteps.PlaceInitialSettlement &&
@@ -16,7 +15,7 @@ export class PlaceHouseCommand extends Command<MyRoom, Payload> {
   // }
   execute(payload: Payload) {
     const player = this.room.state.players.get(payload.playerId)
-    const availableHouse = player.houses.find((house) => !house.intersection)
+    const availableHouse = player.settlements.find((settlement) => !settlement.intersection)
     availableHouse.intersection = payload.intersectionId
   }
 }

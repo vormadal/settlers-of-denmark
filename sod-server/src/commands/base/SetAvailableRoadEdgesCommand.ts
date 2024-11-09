@@ -6,15 +6,15 @@ interface Payload {
 }
 export class SetAvailableRoadEdgesCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
-    const houses = this.state.players.get(this.state.currentPlayer).houses.filter((x) => x.intersection)
+    const settlements = this.state.players.get(this.state.currentPlayer).settlements.filter((x) => x.intersection)
 
     const edges = payload.initialPlacement
-      ? houses
+      ? settlements
           .filter((x) => x.intersection)
           .find((x) => x.getRoads(this.state).length === 0)
           .getIntersection(this.state)
           .getEdges(this.state)
-      : houses.map((x) => x.getIntersection(this.state).getEdges(this.state)).flat()
+      : settlements.map((x) => x.getIntersection(this.state).getEdges(this.state)).flat()
 
     //TODO check if any edge is already occupied by another players road
     this.state.availableEdges.push(...edges.map((x) => x.id))

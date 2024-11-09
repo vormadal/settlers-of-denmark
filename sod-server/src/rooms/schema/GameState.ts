@@ -25,7 +25,7 @@ export class GameState extends Schema {
     this.availableIntersections.clear()
     const occupiedIntersections = [...this.players.values()]
       .map((x) => [
-        ...x.houses.map((house) => house.intersection)
+        ...x.settlements.map((settlement) => settlement.intersection)
         // ...x.cities.map(city => city.intersection)
       ])
       .flat()

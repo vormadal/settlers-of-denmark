@@ -6,11 +6,8 @@
 // 
 
 import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@colyseus/schema';
+import { Structure } from './Structure'
 
+export class Settlement extends Structure {
 
-export class House extends Schema {
-    @type("string") public id!: string;
-    @type("string") public owner!: string;
-    @type("string") public intersection!: string;
-    @type("int16") public round!: number;
 }

@@ -2,10 +2,10 @@ import { Dispatcher } from '@colyseus/command'
 import { Client, Room } from '@colyseus/core'
 import { BasicLayoutAlgorithm } from '../algorithms/layout/BasicLayoutAlgorithm'
 import { PercentageTileTypeProvider } from '../algorithms/TileTypeProvider'
-import { PlaceHouseCommand } from '../commands/base/PlaceHouseCommand'
+import { PlaceSettlementCommand } from '../commands/base/PlaceSettlementCommand'
 import { PlaceRoadCommand } from '../commands/base/PlaceRoadCommand'
 import { GamePhases, GameState, PhaseSteps } from './schema/GameState'
-import { House } from './schema/House'
+import { Settlement as Settlement } from './schema/Settlement'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
 
@@ -14,6 +14,8 @@ import { BaseGameTileTypes } from './schema/LandTile'
 import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
 import { Card, CardTypes, CardVariants } from './schema/Card'
 import { HexLayoutAlgorithm } from '../algorithms/layout/HexLayoutAlgorithm'
+import { generate } from '../utils/arrayHelpers'
+import { City } from './schema/City'
 
 function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
   return Array.from({ length: count }, (_, i) => i).map((i) => {
@@ -27,7 +29,7 @@ function cardGenerator(count: number, type: string, variant: string, create: (ca
 
 export interface GameMapOptions {
   numPlayers: number
-  numHouses: number
+  numSettlements: number
   numCities: number
   numRoads: number
 }
@@ -43,7 +45,7 @@ export class MyRoom extends Room<GameState> {
   onCreate(options: GameMapOptions) {
     this.options = {
       numCities: 4,
-      numHouses: 4,
+      numSettlements: 4,
       numPlayers: 2,
       numRoads: 9,
       ...options
@@ -131,24 +133,11 @@ export class MyRoom extends Room<GameState> {
   createPlayer(id: string) {
     const player = new Player()
     player.id = id
-    player.houses.push(
-      ...Array.from({ length: this.options.numHouses }, (_, i) => i).map((i) =>
-        new House().assign({
-          id: `${id}-${i}`,
-          owner: id
-        })
-      )
+    player.settlements.push(
+      ...generate(this.options.numSettlements, (i) => new Settlement().assign({ id: `${id}-${i}`, owner: id }))
     )
-
-    player.houses
-    player.roads.push(
-      ...Array.from({ length: this.options.numRoads }, (_, i) => i).map((i) =>
-        new Road().assign({
-          id: `${id}-${i}`,
-          owner: id
-        })
-      )
-    )
+    player.cities.push(...generate(this.options.numCities, (i) => new City().assign({ id: `${id}-${i}`, owner: id })))
+    player.roads.push(...generate(this.options.numRoads, (i) => new Road().assign({ id: `${id}-${i}`, owner: id })))
 
     return player
   }

@@ -15,7 +15,7 @@ export function IntersectionShape({ intersection, onClick }: Type) {
   const [focus, setFocus] = useState(false)
 
   function handleClick() {
-    room?.send('PLACE_HOUSE', {
+    room?.send('PLACE_SETTLEMENT', {
       intersectionId: intersection.id
     })
     onClick && onClick(intersection)
@@ -32,7 +32,7 @@ export function IntersectionShape({ intersection, onClick }: Type) {
     console.log('render')
   }
 
-  if (!state?.availableIntersections.includes(intersection.id)) return null
+  if (!state?.availableIntersections.includes(intersection.id) || state.currentPlayer !== room?.sessionId) return null
 
   return (
     <Circle

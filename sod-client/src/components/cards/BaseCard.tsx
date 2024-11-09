@@ -31,3 +31,27 @@ export function BaseCard({ children, color, offset }: Props) {
     </Box>
   )
 }
+// css for stacking divs on top of each other
+// .card-group {
+//   display: flex;
+// }
+// .card {
+//   position: relative;
+//   flex: 1;
+// }
+// .card > div {
+//   border-radius: 0.5rem;
+//   border: 1px solid rgba(0, 0, 0, 0.5);
+//   background: rgba(255, 255, 255);
+//   width: 60px;
+//   height: 80px;
+//   padding: 2px;
+//   position: absolute;
+//   top: 0;
+// }
+// .card > div > div {
+//   width: 100%;
+//   height: 100%;
+//   border-radius: 0.5rem;
+// }
+// .card > div > div:nth-child(1) {
