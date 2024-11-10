@@ -91,10 +91,18 @@ export class MyRoom extends Room<GameState> {
 
       this.onMessage('startGame', (client, message) => {
         this.stateMachine.start()
-      })
-
-      this.onMessage('changeTurn', (client, message) => {
-        this.state.currentPlayer = message.id
+        if (message.autoPlace) {
+          for (let i = 0; i < this.state.players.size * 2; i++) {
+            this.stateMachine.send({
+              type: 'PLACE_SETTLEMENT',
+              payload: { playerId: this.state.currentPlayer, intersectionId: this.state.availableIntersections[0] }
+            })
+            this.stateMachine.send({
+              type: 'PLACE_ROAD',
+              payload: { playerId: this.state.currentPlayer, edgeId: this.state.availableEdges[0] }
+            })
+          }
+        }
       })
     }
 
@@ -109,24 +117,6 @@ export class MyRoom extends Room<GameState> {
         }
       } as any)
     })
-
-    // this.onMessage<Pick<PlaceHouseCommand['payload'], 'intersectionId'>>('place_house', (client, message) => {
-    //   this.executeCommand(() => {
-    //     this.dispatcher.dispatch(new PlaceHouseCommand(), {
-    //       intersectionId: message.intersectionId,
-    //       playerId: client.sessionId
-    //     })
-    //   })
-    // })
-
-    // this.onMessage<Pick<PlaceRoadCommand['payload'], 'edgeId'>>('place_road', (client, message) => {
-    //   this.executeCommand(() => {
-    //     this.dispatcher.dispatch(new PlaceRoadCommand(), {
-    //       ...message,
-    //       playerId: client.sessionId
-    //     })
-    //   })
-    // })
   }
 
   executeCommand(execute: () => void) {

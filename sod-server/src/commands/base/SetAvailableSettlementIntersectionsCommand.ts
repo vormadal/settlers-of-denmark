@@ -5,19 +5,14 @@ interface Payload {
 }
 export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
-    const occupiedIntersections = [...this.state.players.values()]
-      .map((x) =>
-        x
-          .getOccupiedIntersections(this.state)
-          .map((intersection) => intersection.getNeighbors(this.state))
-          .flat()
-      )
-      .flat()
-      .map((intersection) => intersection.id)
+    const players = [...this.state.players.values()]
+    const occupiedIntersections = players.map((x) => x.getOccupiedIntersections(this.state).flat()).flat()
+    const neighbours = occupiedIntersections.map((intersection) => intersection.getNeighbors(this.state)).flat()
+    const unavailableIntersections = [...new Set([...occupiedIntersections, ...neighbours])].map((x) => x.id)
 
     this.state.availableIntersections.push(
       ...this.state.intersections
-        .filter((intersection) => !occupiedIntersections.includes(intersection.id))
+        .filter((intersection) => !unavailableIntersections.includes(intersection.id))
         .map((x) => x.id)
     )
   }
