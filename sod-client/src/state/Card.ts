@@ -16,4 +16,5 @@ export class Card extends Schema {
     @type("string") public variant!: string;
     @type({ map: CardCost }) public cost: MapSchema<CardCost> = new MapSchema<CardCost>();
     @type("string") public owner!: string;
+    @type("string") public playedBy!: string;
 }

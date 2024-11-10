@@ -2,10 +2,7 @@ import { BorderEdge } from '../../rooms/schema/BorderEdge'
 import { GameState } from '../../rooms/schema/GameState'
 import { Intersection } from '../../rooms/schema/Intersection'
 import { LandTiles } from '../../rooms/schema/LandTile'
-import { Point } from '../../rooms/schema/Point'
 import { Vector } from '../../utils/Vector'
-import { NumberProvider } from '../NumberProvider'
-import { TileTypeProvider } from '../TileTypeProvider'
 
 export abstract class LayoutAlgorithm {
   state: GameState

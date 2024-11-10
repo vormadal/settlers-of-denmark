@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from '@mui/material'
 import { PlayerCards } from './components/cards/PlayerCards'
-import { useGameState } from './GameStateContext'
+import { useGameState } from './context/GameStateContext'
 import { GameState } from './state/GameState'
 
 interface Props {
@@ -55,14 +55,23 @@ export function PlayerInformation({ width }: Props) {
             <Typography variant="body1">
               Settlements: {player.settlements.filter((x) => !x.intersection).length}
             </Typography>
-            <Typography variant="body1">
-              Cities: {player.cities.filter((x) => !x.intersection).length}
-            </Typography>
+            <Typography variant="body1">Cities: {player.cities.filter((x) => !x.intersection).length}</Typography>
             <Typography variant="body1">Roads: {player.roads.filter((x) => !x.edge).length}</Typography>
 
             <PlayerCards player={player} />
           </Box>
         ))}
+
+        <Box>
+          {state.dice.map((x, i) => (
+            <Typography
+              key={i}
+              variant="body1"
+            >
+              {x.color}: {x.value}
+            </Typography>
+          ))}
+        </Box>
       </Container>
     </Box>
   )

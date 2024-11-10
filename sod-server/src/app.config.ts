@@ -14,17 +14,11 @@ export default config({
      * Define your room handlers:
      */
     gameServer.define('my_room', MyRoom)
+    gameServer.define('debug', MyRoom, { debug: true })
   },
 
   initializeExpress: (app) => {
-    /**
-     * Bind your custom express routes here:
-     * Read more: https://expressjs.com/en/starter/basic-routing.html
-     */
-    app.get('/hello_world', (req, res) => {
-      res.send("It's time to kick ass and chew bubblegum!")
-    })
-
+   
     /**
      * Use @colyseus/playground
      * (It is not recommended to expose this route in a production environment)

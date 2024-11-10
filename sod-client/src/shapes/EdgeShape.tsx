@@ -1,7 +1,7 @@
 import { KonvaEventObject } from 'konva/lib/Node'
 import { useState } from 'react'
 import { Ellipse } from 'react-konva'
-import { useGameState } from '../GameStateContext'
+import { useGameState } from '../context/GameStateContext'
 import { BorderEdge } from '../state/BorderEdge'
 import { Point } from '../state/Point'
 import { getLineRotation } from '../utils/VectorMath'
