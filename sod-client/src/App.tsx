@@ -1,15 +1,13 @@
 import './App.css'
 
 import { BaseGame } from './BaseGame'
-import { useGameState } from './GameStateContext'
-import { Lobby } from './Lobby'
+import { useGameState } from './context/GameStateContext'
 
 function App() {
   const [, room] = useGameState()
 
   return (
     <div>
-      {!room && <Lobby />}
       {room && <BaseGame />}
     </div>
   )

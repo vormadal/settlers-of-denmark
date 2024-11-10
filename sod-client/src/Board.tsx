@@ -1,5 +1,5 @@
 import { Layer, Stage } from 'react-konva'
-import { useGameState } from './GameStateContext'
+import { useGameState } from './context/GameStateContext'
 import { EdgeShape } from './shapes/EdgeShape'
 import { SettlementShape } from './shapes/SettlementShape'
 import { IntersectionShape } from './shapes/IntersectionShape'

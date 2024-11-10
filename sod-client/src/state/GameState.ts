@@ -11,6 +11,7 @@ import { Intersection } from './Intersection'
 import { LandTiles } from './LandTiles'
 import { Player } from './Player'
 import { Card } from './Card'
+import { Die } from './Die'
 
 export class GameState extends Schema {
     @type([ BorderEdge ]) public edges: ArraySchema<BorderEdge> = new ArraySchema<BorderEdge>();
@@ -23,4 +24,5 @@ export class GameState extends Schema {
     @type("number") public round!: number;
     @type([ "string" ]) public availableIntersections: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availableEdges: ArraySchema<string> = new ArraySchema<string>();
+    @type([ Die ]) public dice: ArraySchema<Die> = new ArraySchema<Die>();
 }

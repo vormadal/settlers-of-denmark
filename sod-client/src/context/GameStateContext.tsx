@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { GameState } from './state/GameState'
+import { GameState } from '../state/GameState'
 import { Room } from 'colyseus.js'
 
 type ContextValueType = [

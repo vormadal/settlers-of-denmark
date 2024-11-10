@@ -1,11 +1,13 @@
 import { Box, Button, Container, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { Room, RoomAvailable } from 'colyseus.js'
 import { useEffect, useState } from 'react'
-import { useColyseus } from './ColyseusContext'
-import { useGameState } from './GameStateContext'
+import { useColyseus } from './context/ColyseusContext'
+import { useGameState } from './context/GameStateContext'
 import { GameState } from './state/GameState'
+import { useNavigate } from 'react-router-dom'
 
 export function Lobby() {
+  const navigate = useNavigate()
   const client = useColyseus()
   const [, , setRoom] = useGameState()
   const [rooms, setRooms] = useState<RoomAvailable<GameState>[]>([])
@@ -21,6 +23,7 @@ export function Lobby() {
     sessionStorage.setItem('reconnectionToken', room.reconnectionToken)
     setReconnectionToken(room.reconnectionToken)
     setRoom(room)
+    navigate('/game')
   }
 
   async function createRoom() {

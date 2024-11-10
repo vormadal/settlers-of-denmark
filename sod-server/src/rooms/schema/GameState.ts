@@ -4,6 +4,7 @@ import { Intersection } from './Intersection'
 import { LandTiles } from './LandTile'
 import { Player } from './Player'
 import { Card } from './Card'
+import { Die } from './Die'
 
 export class GameState extends Schema {
   @type([BorderEdge]) edges = new ArraySchema<BorderEdge>()
@@ -20,6 +21,8 @@ export class GameState extends Schema {
 
   @type(['string']) availableIntersections = new ArraySchema<string>()
   @type(['string']) availableEdges = new ArraySchema<string>()
+
+  @type([Die]) dice = new ArraySchema<Die>()
 
   updateAvailableIntersections() {
     this.availableIntersections.clear()

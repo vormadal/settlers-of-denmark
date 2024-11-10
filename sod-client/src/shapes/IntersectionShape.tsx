@@ -1,8 +1,9 @@
 import { KonvaEventObject } from 'konva/lib/Node'
 import { useState } from 'react'
 import { Circle } from 'react-konva'
-import { useGameState } from '../GameStateContext'
+import { useGameState } from '../context/GameStateContext'
 import { Intersection } from '../state/Intersection'
+import { useMyPlayer } from '../context/MeContext'
 
 interface Type {
   intersection: Intersection
@@ -12,6 +13,7 @@ interface Type {
 const activeColor = '#ffffff'
 export function IntersectionShape({ intersection, onClick }: Type) {
   const [state, room] = useGameState()
+  const [me] = useMyPlayer()
   const [focus, setFocus] = useState(false)
 
   function handleClick() {
@@ -28,11 +30,8 @@ export function IntersectionShape({ intersection, onClick }: Type) {
   function handleMouseLeave() {
     setFocus(false)
   }
-  if (intersection.id === 'Intersection:100,0') {
-    console.log('render')
-  }
 
-  if (!state?.availableIntersections.includes(intersection.id) || state.currentPlayer !== room?.sessionId) return null
+  if (!state?.availableIntersections.includes(intersection.id) || state.currentPlayer !== me?.id) return null
 
   return (
     <Circle

@@ -16,6 +16,8 @@ import { Card, CardTypes, CardVariants } from './schema/Card'
 import { HexLayoutAlgorithm } from '../algorithms/layout/HexLayoutAlgorithm'
 import { generate } from '../utils/arrayHelpers'
 import { City } from './schema/City'
+import { Die } from './schema/Die'
+import { BaseGameDiceCup, DiceCup } from '../algorithms/DiceCup'
 
 function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
   return Array.from({ length: count }, (_, i) => i).map((i) => {
@@ -27,22 +29,23 @@ function cardGenerator(count: number, type: string, variant: string, create: (ca
   })
 }
 
-export interface GameMapOptions {
-  numPlayers: number
-  numSettlements: number
-  numCities: number
-  numRoads: number
+export interface RoomOptions {
+  debug?: boolean
+  numPlayers?: number
+  numSettlements?: number
+  numCities?: number
+  numRoads?: number
 }
 
 export class MyRoom extends Room<GameState> {
   maxClients = 2
-  options: GameMapOptions
+  options: RoomOptions
   dispatcher = new Dispatcher(this)
 
   // dummy initialization to get the proper type
   stateMachine = createBaseGameStateMachine(this.state, this.dispatcher)
-
-  onCreate(options: GameMapOptions) {
+  diceCup: DiceCup
+  onCreate(options: RoomOptions) {
     this.options = {
       numCities: 4,
       numSettlements: 4,
@@ -64,6 +67,8 @@ export class MyRoom extends Room<GameState> {
     // const layoutAlgorithm = new BasicLayoutAlgorithm(3, 4, tileTypeProvider, numberProvider)
     const layoutAlgorithm = new HexLayoutAlgorithm(4, tileTypeProvider, numberProvider)
     const state = layoutAlgorithm.createLayout(new GameState())
+    this.diceCup = new BaseGameDiceCup()
+    this.diceCup.init(state)
     state.deck.push(
       ...cardGenerator(14, CardTypes.Resource, CardVariants.Brick, (card) => card),
       ...cardGenerator(14, CardTypes.Resource, CardVariants.Grain, (card) => card),
@@ -79,17 +84,28 @@ export class MyRoom extends Room<GameState> {
     this.stateMachine = createBaseGameStateMachine(state, this.dispatcher)
     this.setState(state)
 
+    if (this.options.debug) {
+      this.onMessage('addPlayer', (client, message) => {
+        this.addPlayer(Date.now().toString())
+      })
+
+      this.onMessage('startGame', (client, message) => {
+        this.stateMachine.start()
+      })
+
+      this.onMessage('changeTurn', (client, message) => {
+        this.state.currentPlayer = message.id
+      })
+    }
+
     this.onMessage('*', (client, type, message) => {
       console.log('received message:', type, message)
-      if (this.state.currentPlayer !== client.sessionId) {
-        //TODO this might not always be the case
-        return
-      }
       this.stateMachine.send({
         type: type,
         payload: {
           ...message,
-          playerId: client.sessionId
+          // in debug we always act as the current player
+          playerId: this.options.debug ? this.state.currentPlayer : client.sessionId
         }
       } as any)
     })
@@ -118,8 +134,7 @@ export class MyRoom extends Room<GameState> {
   }
 
   async onJoin(client: Client, options: any) {
-    const player = this.createPlayer(client.sessionId)
-    this.state.players.set(player.id, player)
+    const player = this.addPlayer(client.sessionId)
 
     if (this.state.players.size === this.options.numPlayers) {
       this.stateMachine.start()
@@ -130,7 +145,7 @@ export class MyRoom extends Room<GameState> {
     }
   }
 
-  createPlayer(id: string) {
+  addPlayer(id: string) {
     const player = new Player()
     player.id = id
     player.settlements.push(
@@ -139,6 +154,7 @@ export class MyRoom extends Room<GameState> {
     player.cities.push(...generate(this.options.numCities, (i) => new City().assign({ id: `${id}-${i}`, owner: id })))
     player.roads.push(...generate(this.options.numRoads, (i) => new Road().assign({ id: `${id}-${i}`, owner: id })))
 
+    this.state.players.set(player.id, player)
     return player
   }
 
