@@ -9,14 +9,16 @@ import { SetAvailableSettlementIntersectionsCommand } from '../commands/base/Set
 import { SetAvailableRoadEdgesCommand } from '../commands/base/SetAvailableRoadEdgesCommand'
 import { ClearAvailableEdgesCommand } from '../commands/base/ClearAvailableEdgesCommand'
 import { ClearAvailableIntersectionsCommand } from '../commands/base/ClearAvailableIntersectionsCommand'
+import { RollDiceCommand } from '../commands/base/RollDiceCommand'
 
 type PlaceSettlementEvent = { type: 'PLACE_SETTLEMENT'; payload: PlaceSettlementCommand['payload'] }
 type PlaceRoadEvent = { type: 'PLACE_ROAD'; payload: PlaceRoadCommand['payload'] }
+type RollDiceEvent = { type: 'ROLL_DICE' }
 export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
   const machine = setup({
     types: {
       context: {} as { state: GameState },
-      events: {} as PlaceSettlementEvent | PlaceRoadEvent | { type: 'ROLL' } | { type: 'END_TURN' }
+      events: {} as PlaceSettlementEvent | PlaceRoadEvent | RollDiceEvent | { type: 'END_TURN' }
     },
     actions: {
       placeSettlement: ({ event }) => {
@@ -33,7 +35,8 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: true }),
       setAvailableEdges: () => dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: true }),
       clearAvailableEdges: () => dispatcher.dispatch(new ClearAvailableEdgesCommand()),
-      clearAvailableIntersections: () => dispatcher.dispatch(new ClearAvailableIntersectionsCommand())
+      clearAvailableIntersections: () => dispatcher.dispatch(new ClearAvailableIntersectionsCommand()),
+      rollDice: () => dispatcher.dispatch(new RollDiceCommand())
     },
     guards: {
       initialRoundIsComplete: ({ context }) => {
@@ -80,7 +83,10 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
       },
       rollingDice: {
         on: {
-          ROLL: 'turn'
+          ROLL_DICE: {
+            target: 'turn',
+            actions: 'rollDice'
+          }
         }
       },
       turn: {
@@ -94,5 +100,6 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
   actor.subscribe((state) => {
     gameState.phase = state.value as string
   })
+
   return actor
 }

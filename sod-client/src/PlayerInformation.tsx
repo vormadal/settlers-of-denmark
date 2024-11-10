@@ -1,7 +1,8 @@
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Button, Container, Typography } from '@mui/material'
 import { PlayerCards } from './components/cards/PlayerCards'
 import { useGameState } from './context/GameStateContext'
 import { GameState } from './state/GameState'
+import { useMyPlayer } from './context/MeContext'
 
 interface Props {
   width: number
@@ -24,6 +25,7 @@ function getPhaseLabel(state: GameState) {
 
 export function PlayerInformation({ width }: Props) {
   const [state, room] = useGameState()
+  const [me] = useMyPlayer()
 
   if (!state) return null
 
@@ -71,6 +73,15 @@ export function PlayerInformation({ width }: Props) {
               {x.color}: {x.value}
             </Typography>
           ))}
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => room?.send('ROLL_DICE')}
+            disabled={state.phase !== 'rollingDice' && me?.id === state.currentPlayer}
+          >
+            Roll Dice
+          </Button>
         </Box>
       </Container>
     </Box>

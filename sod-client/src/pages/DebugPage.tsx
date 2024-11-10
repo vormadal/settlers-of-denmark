@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from '@mui/material'
+import { Box, Button, Checkbox, FormControl, FormControlLabel, TextField } from '@mui/material'
 import { Board } from '../Board'
 import { useColyseus } from '../context/ColyseusContext'
 import { useCallback, useEffect, useState } from 'react'
@@ -10,8 +10,9 @@ import { useMyPlayer } from '../context/MeContext'
 const sidebarWidth = 300
 function DebugPage() {
   const [numPlayers, setNumPlayers] = useState(2)
+  const [autoPlace, setAutoPlace] = useState(false)
   const client = useColyseus()
-  const [state, , setRoom] = useGameState()
+  const [state, room, setRoom] = useGameState()
   const [, setMe] = useMyPlayer()
 
   const newGame = useCallback(async () => {
@@ -20,17 +21,13 @@ function DebugPage() {
     for (let i = 1; i < numPlayers; i++) {
       room.send('addPlayer')
     }
-    room?.send('startGame')
-  }, [client, setRoom, numPlayers])
+    room?.send('startGame', { autoPlace })
+  }, [client, autoPlace, setRoom, numPlayers])
 
   useEffect(() => {
     if (!state) return
     setMe(state.currentPlayer)
   }, [state, setMe])
-
-  useEffect(() => {
-    newGame()
-  }, [newGame])
 
   return (
     <Box sx={{ width: '100%', background: '#7CB3FF', display: 'flex' }}>
@@ -43,6 +40,18 @@ function DebugPage() {
             value={numPlayers}
             onChange={(e) => setNumPlayers(Number(e.target.value))}
           />
+          <FormControl>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={autoPlace}
+                  onChange={(e) => setAutoPlace(e.target.checked)}
+                />
+              }
+              label="Auto place"
+            />
+            Auto placement
+          </FormControl>
           <Button
             onClick={newGame}
             variant="contained"
