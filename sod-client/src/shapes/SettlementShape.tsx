@@ -7,7 +7,7 @@ interface Props {
 }
 
 const points = [10, 10, -10, 10, -10, -5, 0, -15, 10, -5]
-export function SettlementShape({ intersection, color = '#00ff00' }: Props) {
+export function SettlementShape({ intersection, color = '#000000' }: Props) {
   return (
     <Line
       points={points}
