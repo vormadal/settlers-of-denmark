@@ -1,4 +1,5 @@
 import { GameState } from '../../rooms/schema/GameState'
+import { Vector } from '../../utils/Vector'
 
 import { NumberProvider } from '../NumberProvider'
 import { TileTypeProvider } from '../TileTypeProvider'
@@ -36,11 +37,11 @@ export class BasicLayoutAlgorithm extends LayoutAlgorithm {
 function CalculatePoint(m: number, n: number) {
   const x = 3 * m * 100
   const y = n * 100 * Math.sqrt(3)
-  return createPoint(x, y)
+  return new Vector(x, y)
 }
 
 function CalculatePointAlt(m: number, n: number) {
   const x = 3 * m * 100 + (3 * 100) / 2
   const y = (n * 100 + 0.5 * 100) * Math.sqrt(3)
-  return createPoint(x, y)
+  return new Vector(x, y)
 }
