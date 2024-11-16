@@ -10,7 +10,16 @@ interface Props {
   width: number
 }
 
-const colors = ['#ff0000', '#00ff00', '#0000ff', '#f0000f']
+function getUniqueColor(n: number) {
+  const rgb = [0, 0, 0]
+  for (let i = 0; i < 24; i++) {
+    rgb[i % 3] <<= 1
+    rgb[i % 3] |= n & 0x01
+    n >>= 1
+  }
+  return '#' + rgb.reduce((a, c) => (c > 0x0f ? c.toString(16) : '0' + c.toString(16)) + a, '')
+}
+const colors = new Array(8).fill(0).map((_, i) => getUniqueColor(i))
 export function Board({ width: windowWidth }: Props) {
   const [state] = useGameState()
   const players = [...(state?.players?.values() || [])]

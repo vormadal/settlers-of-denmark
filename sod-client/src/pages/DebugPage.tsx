@@ -16,11 +16,8 @@ function DebugPage() {
   const [, setMe] = useMyPlayer()
 
   const newGame = useCallback(async () => {
-    const room = await client.create<GameState>('debug')
+    const room = await client.create<GameState>('debug', { numPlayers, autoPlace })
     setRoom(room)
-    for (let i = 1; i < numPlayers; i++) {
-      room.send('addPlayer')
-    }
     room?.send('startGame', { autoPlace })
   }, [client, autoPlace, setRoom, numPlayers])
 
