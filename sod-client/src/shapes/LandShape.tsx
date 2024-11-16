@@ -21,34 +21,39 @@ export function Land({ tile }: Type) {
         fill={color}
       />
 
-      <Circle
-        radius={20}
-        fill={'#ffffff'}
-        x={tile.position.x}
-        y={tile.position.y}
-        opacity={0.6}
-      />
-      <Circle
-        radius={20}
-        stroke={'#000000'}
-        strokeWidth={2}
-        x={tile.position.x}
-        y={tile.position.y}
-      />
+      {tile.value !== undefined && (
+        <>
+          <Circle
+            radius={20}
+            fill={'#ffffff'}
+            x={tile.position.x}
+            y={tile.position.y}
+            opacity={0.6}
+          />
 
-      <Text
-        text={tile.value.toString()}
-        fontSize={18}
-        align="center"
-        verticalAlign="middle"
-        width={50}
-        height={50}
-        x={tile.position.x - 50 / 2}
-        y={tile.position.y - 50 / 2}
-        // scale={{ x: 0.01, y: 0.01 }}
-        // offsetX={10}
-        // offsetY={7}
-      />
+          <Circle
+            radius={20}
+            stroke={'#000000'}
+            strokeWidth={2}
+            x={tile.position.x}
+            y={tile.position.y}
+          />
+
+          <Text
+            text={tile.value?.toString() ?? ''}
+            fontSize={18}
+            align="center"
+            verticalAlign="middle"
+            width={50}
+            height={50}
+            x={tile.position.x - 50 / 2}
+            y={tile.position.y - 50 / 2}
+            // scale={{ x: 0.01, y: 0.01 }}
+            // offsetX={10}
+            // offsetY={7}
+          />
+        </>
+      )}
     </Group>
   )
 }
