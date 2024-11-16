@@ -18,6 +18,7 @@ import { generate } from '../utils/arrayHelpers'
 import { City } from './schema/City'
 import { Die } from './schema/Die'
 import { BaseGameDiceCup, DiceCup } from '../algorithms/DiceCup'
+import { HexFactory } from '../algorithms/HexFactory'
 
 function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
   return Array.from({ length: count }, (_, i) => i).map((i) => {
@@ -54,20 +55,17 @@ export class MyRoom extends Room<GameState> {
       ...options
     }
 
+    const state = new GameState()
     this.maxClients = this.options.numPlayers
-    const tileTypeProvider = new PercentageTileTypeProvider({
-      [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
-      [BaseGameTileTypes.Forest]: (4 / 19) * 100,
-      [BaseGameTileTypes.Fields]: (4 / 19) * 100,
-      [BaseGameTileTypes.Pastures]: (4 / 19) * 100,
-      [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
-      [BaseGameTileTypes.Hills]: (3 / 19) * 100
-    })
-    const numberProvider = new DebugNumberProvider()
-    // const layoutAlgorithm = new BasicLayoutAlgorithm(3, 4, tileTypeProvider, numberProvider)
-    const layoutAlgorithm = new HexLayoutAlgorithm(3, tileTypeProvider, numberProvider)
-    const state = layoutAlgorithm.createLayout(new GameState())
+
+    const positions = new HexLayoutAlgorithm(3).createLayout()
+    new HexFactory().createHexMap(state, positions)
+    PercentageTileTypeProvider.default().assign(state)
+    // new DebugNumberProvider().assign(state)
+    new BalancedNumberProvider().assign(state)
+
     this.diceCup = new BaseGameDiceCup()
+
     this.diceCup.init(state)
     state.deck.push(
       ...cardGenerator(14, CardTypes.Resource, CardVariants.Brick, (card) => card),

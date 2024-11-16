@@ -14,45 +14,48 @@ import { RollDiceCommand } from '../commands/base/RollDiceCommand'
 type PlaceSettlementEvent = { type: 'PLACE_SETTLEMENT'; payload: PlaceSettlementCommand['payload'] }
 type PlaceRoadEvent = { type: 'PLACE_ROAD'; payload: PlaceRoadCommand['payload'] }
 type RollDiceEvent = { type: 'ROLL_DICE' }
-export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
-  const machine = setup({
-    types: {
-      context: {} as { state: GameState },
-      events: {} as PlaceSettlementEvent | PlaceRoadEvent | RollDiceEvent | { type: 'END_TURN' }
-    },
-    actions: {
-      placeSettlement: ({ event }) => {
-        const e = event as PlaceSettlementEvent
-        dispatcher.dispatch(new PlaceSettlementCommand(), e.payload)
-      },
 
-      placeRoad: ({ event }) => {
-        const e = event as PlaceRoadEvent
-        dispatcher.dispatch(new PlaceRoadCommand(), e.payload)
-      },
-      nextPlayer: () => dispatcher.dispatch(new NextPlayerCommand()),
-      setAvailableIntersections: () =>
-        dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: true }),
-      setAvailableEdges: () => dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: true }),
-      clearAvailableEdges: () => dispatcher.dispatch(new ClearAvailableEdgesCommand()),
-      clearAvailableIntersections: () => dispatcher.dispatch(new ClearAvailableIntersectionsCommand()),
-      rollDice: () => dispatcher.dispatch(new RollDiceCommand())
+const machineConfig = setup({
+  types: {
+    input: { gameState: GameState, dispatcher: Dispatcher<MyRoom> },
+    context: {} as { gameState: GameState; dispatcher: Dispatcher<MyRoom> },
+    events: {} as PlaceSettlementEvent | PlaceRoadEvent | RollDiceEvent | { type: 'END_TURN' }
+  },
+  actions: {
+    placeSettlement: ({ event, context }) => {
+      const e = event as PlaceSettlementEvent
+      context.dispatcher.dispatch(new PlaceSettlementCommand(), e.payload)
     },
-    guards: {
-      initialRoundIsComplete: ({ context }) => {
-        const players = Array.from(context.state.players.values())
-        const playersWithMissingRoad = players.filter((player) => player.roads.filter((road) => road.edge).length < 2)
-        // we perform the guard before the last road is placed
-        // therefore we need to check if there is only one player left
-        return playersWithMissingRoad.length === 1
-      }
+
+    placeRoad: ({ event, context }) => {
+      const e = event as PlaceRoadEvent
+      context.dispatcher.dispatch(new PlaceRoadCommand(), e.payload)
+    },
+    nextPlayer: ({ context }) => context.dispatcher.dispatch(new NextPlayerCommand()),
+    setAvailableIntersections: ({ context }) =>
+      context.dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: true }),
+    setAvailableEdges: ({ context }) =>
+      context.dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: true }),
+    clearAvailableEdges: ({ context }) => context.dispatcher.dispatch(new ClearAvailableEdgesCommand()),
+    clearAvailableIntersections: ({ context }) => context.dispatcher.dispatch(new ClearAvailableIntersectionsCommand()),
+    rollDice: ({ context }) => context.dispatcher.dispatch(new RollDiceCommand())
+  },
+  guards: {
+    initialRoundIsComplete: ({ context }) => {
+      const players = Array.from(context.gameState.players.values())
+      const playersWithMissingRoad = players.filter((player) => player.roads.filter((road) => road.edge).length < 2)
+      // we perform the guard before the last road is placed
+      // therefore we need to check if there is only one player left
+      return playersWithMissingRoad.length === 1
     }
-  }).createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqACQHsBXWMAYgAUAZAQQGEBRAPq0A8gFUAyvwDaABgC6iUGXqxcAF1z18SkAA9EAZgBMANhIAOYxYCMxgJymA7IdsAWAKxuANCACeiDZOTiSehnYehs7GsiYAvnG+aFh4hKSU1PhQAEr06BAcPAKC2SLcACJyikggKmqa2roGCBZusiSmbaamsfZurha+AQg2HvYkTrF2sg52phZWCUkYOATE5FSYNLn5hXxCpRXSNtXKqhpaOjXNJuZWtg7OrjaePv6ItiQesj+yo7IWUz2P6GJYgZKrNIkABO9AoFBo5VwmDYpU4nCqujqF0a10CJhCTm+f1Mxg8806HiGgWBXxshhm-SJQVMQTBENS63UjGh+FY-AAcuVBAAVMTZAWYmrYhpXUDNenGQnEmyk8mAzzUkZtEggv72VXGMzdUFg-D0CBwXQctZELHnWVNRAAWlMWtdut+Xu9sic7JWnPSmxoDGYYHt9UuToQbmMWrmX0chjcFjGvsM9icNn9KVtG0yOTyEAjOLl+kQPWMJAzslJfVise68bc5ljjgWNhstYZ1hzkPWsPhiOR4elDqjeJGNgNoUMROMhlcDjJVPeIysJHsj1aFnshi8TlMfcDJG5vJLjsnLyBJBsFicbQZ+4ZC3jqdC25Te4PHj9CTiQA */
-    context: { state: gameState },
+  }
+})
 
+export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
+  const machine = machineConfig.createMachine({
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNxwEYALAFZ3V9+7vuADQgAJ6IrgDsESReVq42EQCc7hGeafYAvhnBaFh4hKSU1PhQAEq66BA8AiKipQDy-AAi6lpIIHoGRiZmlgiO7mokAWp2iTY2nkmOiRHBYQiunokkEWpxEzajVqPrWTkYOATE5FSYNOWV1UJiDc0qrm06+obGpu19tg7Obl4+fgF5og3DFEmDEmoZstXI5PPsQLkjgUSAAnXQUCg0Jq4TBgTgNXi8URNACSIlaZk6rx6H3CtmiqTUahsvkmrjsbiBizsDMcAX8fhs7NSEXhiPyJwYAFcUfhOEomqJJABVUqKCntKndd6gPquWwrRIctw2I3xXxc1yREguAJjXxg9mmrLZED4XQQOBmcXHIiUl7a3qIAC0di5oZITKj0ZjotdPuRRXOJXoTBYbA4-q6byDCHcNkt9hIyzsVlSAJhsysYsOEsKZwuFQgWepOosiDszJIVghdjsnki9lGYdC4X8MVNPKsnkhZZ5NbyvtR6MxJWxuJbgdpi1ciVcMTLA4iO18MyCo8WzhI41mMOZsUSjgXSMlMrbWpz248EX3gzsptnTxnCAy1YQnI0RUcAYTzsF0MiAA */
+    context: { gameState: gameState, dispatcher: dispatcher },
     initial: 'placingSettlement',
-
     states: {
       placingSettlement: {
         entry: ['nextPlayer', 'setAvailableIntersections'],

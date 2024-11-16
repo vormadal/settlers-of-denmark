@@ -1,23 +1,33 @@
+import { GameState } from '../rooms/schema/GameState'
 import { BaseGameTileTypes } from '../rooms/schema/LandTile'
+import { shuffleArray } from '../utils/arrayHelpers'
 
 export interface TileTypeProvider {
-  init(totalCount: number): void
-  nextType(): string
+  assign(gameState: GameState): void
 }
 
 export class RandomTileTypeProvider implements TileTypeProvider {
   constructor(private readonly availableTypes: string[]) {}
 
-  init(totalCount: number): void {}
-
-  nextType(): string {
-    const index = Math.round(Math.random() * this.availableTypes.length)
-    return this.availableTypes[index]
+  assign(gameState: GameState) {
+    for (const tile of gameState.landTiles) {
+      const index = Math.round(Math.random() * this.availableTypes.length)
+      tile.type = this.availableTypes[index]
+    }
   }
 }
 
 export class PercentageTileTypeProvider implements TileTypeProvider {
-  availableTiles: string[] = []
+  static default() {
+    return new PercentageTileTypeProvider({
+      [BaseGameTileTypes.Dessert]: (1 / 19) * 100,
+      [BaseGameTileTypes.Forest]: (4 / 19) * 100,
+      [BaseGameTileTypes.Fields]: (4 / 19) * 100,
+      [BaseGameTileTypes.Pastures]: (4 / 19) * 100,
+      [BaseGameTileTypes.Mountains]: (3 / 19) * 100,
+      [BaseGameTileTypes.Hills]: (3 / 19) * 100
+    })
+  }
   constructor(private readonly tileDistribution: { [key: string]: number }) {
     const values = Object.values(tileDistribution)
     const total = values.reduce((v, percentage) => {
@@ -28,8 +38,10 @@ export class PercentageTileTypeProvider implements TileTypeProvider {
     }
   }
 
-  init(totalCount: number): void {
-    this.availableTiles = []
+  assign(gameState: GameState) {
+    const totalCount = gameState.landTiles.length
+    let index = 0
+    let availableTiles = []
     const keys = Object.keys(this.tileDistribution)
     let sum = 0
     for (let i = 0; i < keys.length; i++) {
@@ -41,17 +53,17 @@ export class PercentageTileTypeProvider implements TileTypeProvider {
       }
 
       for (let j = 0; j < count; j++) {
-        this.availableTiles.push(type)
+        availableTiles.push(type)
       }
 
       sum += count
     }
-  }
 
-  nextType(): string {
-    const index = Math.round(Math.random() * this.availableTiles.length)
-    const type = this.availableTiles.splice(index, 1)[0]
+    availableTiles = shuffleArray(availableTiles)
 
-    return type ?? BaseGameTileTypes.Dessert
+    for (const tile of gameState.landTiles) {
+      const type = availableTiles[index++ % availableTiles.length]
+      tile.type = type ?? BaseGameTileTypes.Dessert
+    }
   }
 }

@@ -14,11 +14,12 @@ export default config({
      * Define your room handlers:
      */
     gameServer.define('my_room', MyRoom)
-    gameServer.define('debug', MyRoom, { debug: true })
+    if (process.env.NODE_ENV !== 'production') {
+      gameServer.define('debug', MyRoom, { debug: true })
+    }
   },
 
   initializeExpress: (app) => {
-   
     /**
      * Use @colyseus/playground
      * (It is not recommended to expose this route in a production environment)

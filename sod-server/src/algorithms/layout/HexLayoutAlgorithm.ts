@@ -1,27 +1,14 @@
-import { BorderEdge } from '../../rooms/schema/BorderEdge'
-import { GameState } from '../../rooms/schema/GameState'
-import { Intersection } from '../../rooms/schema/Intersection'
-import { LandTiles } from '../../rooms/schema/LandTile'
-import { Point } from '../../rooms/schema/Point'
 import { Vector } from '../../utils/Vector'
-import { NumberProvider } from '../NumberProvider'
-import { TileTypeProvider } from '../TileTypeProvider'
 import { LayoutAlgorithm } from './LayoutAlgorithm'
 
-const width = Math.sqrt(3) * 100
-export class HexLayoutAlgorithm extends LayoutAlgorithm {
-  constructor(
-    private readonly r: number,
-    private readonly tileTypeProvider: TileTypeProvider,
-    private readonly numberProvider: NumberProvider
-  ) {
-    super()
-  }
-  createLayout(state: GameState): GameState {
-    this.state = state
+export const HEX_RADIUS = 100
+export const HEX_WIDTH = Math.sqrt(3) * HEX_RADIUS
+
+export class HexLayoutAlgorithm implements LayoutAlgorithm {
+  constructor(private readonly r: number) {}
+
+  createLayout(): Vector[] {
     const numEdges = 6
-    const totalNumTiles = this.r * numEdges + 1
-    this.tileTypeProvider.init(totalNumTiles)
 
     const allPoints: Vector[] = []
 
@@ -54,14 +41,8 @@ export class HexLayoutAlgorithm extends LayoutAlgorithm {
       } else {
         allPoints.push(...layerPoints)
       }
-
     }
-
-    for (const point of allPoints) {
-      this.state.landTiles.push(this.createTile(point, this.tileTypeProvider.nextType(), this.numberProvider.next()))
-    }
-
-    return state
+    return allPoints
   }
 
   getPointAngle(offset: number, numTiles: number, j: number) {
@@ -71,14 +52,14 @@ export class HexLayoutAlgorithm extends LayoutAlgorithm {
   CreatePointsBetween = (previousPoint: Vector, p: Vector) => {
     const points: Vector[] = []
     const distance = Math.abs(previousPoint.len(p))
-    if (distance - width > 10) {
-      const numPoints = Math.round(distance / width)
+    if (distance - HEX_WIDTH > 10) {
+      const numPoints = Math.round(distance / HEX_WIDTH)
       for (let k = 1; k < numPoints; k++) {
         const newPoint = previousPoint.add(
           p
             .sub(previousPoint)
             .norm()
-            .mul(width * k)
+            .mul(HEX_WIDTH * k)
         )
 
         points.push(newPoint)
@@ -90,7 +71,7 @@ export class HexLayoutAlgorithm extends LayoutAlgorithm {
 
 function CalculatePoint(r: number, angle: number) {
   // angle = angle + Math.PI / 6
-  const x = width * r * Math.cos(angle)
-  const y = width * r * Math.sin(angle)
+  const x = HEX_WIDTH * r * Math.cos(angle)
+  const y = HEX_WIDTH * r * Math.sin(angle)
   return new Vector(x, y)
 }
