@@ -9,7 +9,7 @@ import { Settlement as Settlement } from './schema/Settlement'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
 
-import { BalancedNumberProvider, DebugNumberProvider, RandomNumberProvider } from '../algorithms/NumberProvider'
+import { DefaultNumberTokenProvider, DebugNumberTokenProvider } from '../algorithms/NumberTokenProvider'
 import { BaseGameTileTypes } from './schema/LandTile'
 import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
 import { Card, CardTypes, CardVariants } from './schema/Card'
@@ -61,8 +61,8 @@ export class MyRoom extends Room<GameState> {
     const positions = new HexLayoutAlgorithm(3).createLayout()
     new HexFactory().createHexMap(state, positions)
     PercentageTileTypeProvider.default().assign(state)
-    // new DebugNumberProvider().assign(state)
-    new BalancedNumberProvider().assign(state)
+    // new DebugNumberTokenProvider().assign(state)
+    new DefaultNumberTokenProvider().assign(state)
 
     this.diceCup = new BaseGameDiceCup()
 
