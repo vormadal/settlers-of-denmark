@@ -10,5 +10,6 @@ export class PlaceSettlementCommand extends Command<MyRoom, Payload> {
     const player = this.room.state.players.get(payload.playerId)
     const availableHouse = player.settlements.find((settlement) => !settlement.intersection)
     availableHouse.intersection = payload.intersectionId
+    availableHouse.round = this.room.state.round
   }
 }

@@ -6,6 +6,7 @@ interface Props {
   count: number
 }
 export function CardGroup({ color, count }: Props) {
+  if(count === 0) return null
   return (
     <Box sx={{ display: 'flex' }}>
       <Box

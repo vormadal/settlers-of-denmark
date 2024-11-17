@@ -10,6 +10,7 @@ import { SetAvailableRoadEdgesCommand } from '../commands/base/SetAvailableRoadE
 import { ClearAvailableEdgesCommand } from '../commands/base/ClearAvailableEdgesCommand'
 import { ClearAvailableIntersectionsCommand } from '../commands/base/ClearAvailableIntersectionsCommand'
 import { RollDiceCommand } from '../commands/base/RollDiceCommand'
+import { ProduceInitialResourcesCommand } from '../commands/base/ProduceInitialResourcesCommand'
 
 type PlaceSettlementEvent = { type: 'PLACE_SETTLEMENT'; payload: PlaceSettlementCommand['payload'] }
 type PlaceRoadEvent = { type: 'PLACE_ROAD'; payload: PlaceRoadCommand['payload'] }
@@ -38,7 +39,11 @@ const machineConfig = setup({
       context.dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: true }),
     clearAvailableEdges: ({ context }) => context.dispatcher.dispatch(new ClearAvailableEdgesCommand()),
     clearAvailableIntersections: ({ context }) => context.dispatcher.dispatch(new ClearAvailableIntersectionsCommand()),
-    rollDice: ({ context }) => context.dispatcher.dispatch(new RollDiceCommand())
+    rollDice: ({ context }) => context.dispatcher.dispatch(new RollDiceCommand()),
+    produceInitialResources: ({ context, event }) => {
+      const e = event as PlaceSettlementEvent
+      context.dispatcher.dispatch(new ProduceInitialResourcesCommand(), e.payload)
+    }
   },
   guards: {
     initialRoundIsComplete: ({ context }) => {
@@ -63,7 +68,7 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         on: {
           PLACE_SETTLEMENT: {
             target: 'placingRoad',
-            actions: 'placeSettlement'
+            actions: ['placeSettlement', 'produceInitialResources']
           }
         }
       },

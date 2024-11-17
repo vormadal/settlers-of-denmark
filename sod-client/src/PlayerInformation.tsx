@@ -3,6 +3,7 @@ import { PlayerCards } from './components/cards/PlayerCards'
 import { useGameState } from './context/GameStateContext'
 import { GameState } from './state/GameState'
 import { useMyPlayer } from './context/MeContext'
+import { getUniqueColor } from './utils/colors'
 
 interface Props {
   width: number
@@ -50,7 +51,8 @@ export function PlayerInformation({ width }: Props) {
           <Box
             key={player.id}
             sx={{
-              borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
+              borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+              backgroundColor: getUniqueColor(index, 160)
             }}
           >
             <Typography variant="h6">{player.id}</Typography>
