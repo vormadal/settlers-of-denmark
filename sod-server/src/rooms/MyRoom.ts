@@ -19,6 +19,8 @@ import { City } from './schema/City'
 import { Die } from './schema/Die'
 import { BaseGameDiceCup, DiceCup } from '../algorithms/DiceCup'
 import { HexFactory } from '../algorithms/HexFactory'
+import { HexProduction } from './schema/HexProduction'
+import { Structure } from './schema/Structure'
 
 function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
   return Array.from({ length: count }, (_, i) => i).map((i) => {
@@ -56,6 +58,18 @@ export class MyRoom extends Room<GameState> {
     }
 
     const state = new GameState()
+    state.hexProductions.push(
+      HexProduction.createResource(BaseGameTileTypes.Fields, 'settlement', CardVariants.Grain),
+      HexProduction.createResource(BaseGameTileTypes.Fields, 'city', CardVariants.Grain, CardVariants.Grain),
+      HexProduction.createResource(BaseGameTileTypes.Forest, 'settlement', CardVariants.Lumber),
+      HexProduction.createResource(BaseGameTileTypes.Forest, 'city', CardVariants.Lumber, CardVariants.Lumber),
+      HexProduction.createResource(BaseGameTileTypes.Hills, 'settlement', CardVariants.Brick),
+      HexProduction.createResource(BaseGameTileTypes.Hills, 'city', CardVariants.Brick, CardVariants.Brick),
+      HexProduction.createResource(BaseGameTileTypes.Mountains, 'settlement', CardVariants.Ore),
+      HexProduction.createResource(BaseGameTileTypes.Mountains, 'city', CardVariants.Ore, CardVariants.Ore),
+      HexProduction.createResource(BaseGameTileTypes.Pastures, 'settlement', CardVariants.Wool),
+      HexProduction.createResource(BaseGameTileTypes.Pastures, 'city', CardVariants.Wool, CardVariants.Wool)
+    )
     this.maxClients = this.options.numPlayers
 
     const positions = new HexLayoutAlgorithm(3).createLayout()

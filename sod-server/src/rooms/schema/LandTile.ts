@@ -9,6 +9,7 @@ export const BaseGameTileTypes = {
   Hills: "Hills",
   Fields: "Fields",
 };
+
 export class LandTiles extends Schema {
   @type(Point) position: Point;
   @type("number") radius: number;

@@ -9,7 +9,7 @@ interface Props {
 export function PlayerCards({ player }: Props) {
   const resourceCards = player.cards.filter((x) => x.type === 'Resource')
   // Get all the unique variants of the resource cards
-  const resourceVariants = [...new Set(...resourceCards.map((x) => x.variant).sort((a, b) => a.localeCompare(b)))]
+  const resourceVariants = [...new Set(resourceCards.map((x) => x.variant).sort((a, b) => a.localeCompare(b)))]
   return (
     <Box sx={{ display: 'flex' }}>
       {resourceVariants.map((variant) => (

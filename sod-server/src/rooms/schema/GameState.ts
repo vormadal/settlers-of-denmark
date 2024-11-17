@@ -5,6 +5,7 @@ import { LandTiles } from './LandTile'
 import { Player } from './Player'
 import { Card } from './Card'
 import { Die } from './Die'
+import { HexProduction } from './HexProduction'
 
 export class GameState extends Schema {
   @type([BorderEdge]) edges = new ArraySchema<BorderEdge>()
@@ -17,6 +18,7 @@ export class GameState extends Schema {
   @type('string') phase: string = GamePhases.WaitingForPlayers
   @type('string') currentPlayer: string = ''
 
+  @type([HexProduction]) hexProductions = new ArraySchema<HexProduction>()
   @type('number') round = 1
 
   @type(['string']) availableIntersections = new ArraySchema<string>()
@@ -39,24 +41,6 @@ export class GameState extends Schema {
         .filter((intersection) => !occupiedIntersections.includes(intersection.id))
         .map((intersection) => intersection.id)
     )
-  }
-
-  nextPlayer() {
-    const playerIds = [...this.players.keys()]
-    const currentPlayerIndex = playerIds.indexOf(this.currentPlayer)
-    let nextPlayerIndex =
-      this.round === 1 ? (currentPlayerIndex + 1) % playerIds.length : (currentPlayerIndex - 1) % playerIds.length
-
-    if (this.phase === GamePhases.Establishment) {
-      // this means the last player has placed their second initial settlement
-      if (currentPlayerIndex < 0) {
-        this.round++
-        nextPlayerIndex = 0
-        this.phase = GamePhases.InProgress
-      }
-    }
-
-    this.currentPlayer = playerIds[nextPlayerIndex]
   }
 }
 

@@ -18,4 +18,10 @@ export class Intersection extends Schema {
   getEdges(state: GameState) {
     return state.edges.filter((edge) => edge.pointA.id === this.position.id || edge.pointB.id === this.position.id)
   }
+
+  GetSurroundingHexes(state: GameState) {
+    return state.landTiles.filter((hex) => {
+      return hex.intersections.some((intersectionId) => intersectionId === this.id)
+    })
+  }
 }

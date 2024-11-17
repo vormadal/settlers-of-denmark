@@ -12,11 +12,11 @@ function DebugPage() {
   const [numPlayers, setNumPlayers] = useState(2)
   const [autoPlace, setAutoPlace] = useState(false)
   const client = useColyseus()
-  const [state, room, setRoom] = useGameState()
+  const [state, , setRoom] = useGameState()
   const [, setMe] = useMyPlayer()
 
   const newGame = useCallback(async () => {
-    const room = await client.create<GameState>('debug', { numPlayers, autoPlace })
+    const room = await client.create<GameState>('debug', { numPlayers: numPlayers - 1, autoPlace })
     setRoom(room)
     room?.send('startGame', { autoPlace })
   }, [client, autoPlace, setRoom, numPlayers])

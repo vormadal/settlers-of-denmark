@@ -5,20 +5,13 @@ import { SettlementShape } from './shapes/SettlementShape'
 import { IntersectionShape } from './shapes/IntersectionShape'
 import { Land } from './shapes/LandShape'
 import { RoadShape } from './shapes/RoadShape'
+import { getUniqueColor } from './utils/colors'
 
 interface Props {
   width: number
 }
 
-function getUniqueColor(n: number) {
-  const rgb = [0, 0, 0]
-  for (let i = 0; i < 24; i++) {
-    rgb[i % 3] <<= 1
-    rgb[i % 3] |= n & 0x01
-    n >>= 1
-  }
-  return '#' + rgb.reduce((a, c) => (c > 0x0f ? c.toString(16) : '0' + c.toString(16)) + a, '')
-}
+
 const colors = new Array(8).fill(0).map((_, i) => getUniqueColor(i))
 export function Board({ width: windowWidth }: Props) {
   const [state] = useGameState()
