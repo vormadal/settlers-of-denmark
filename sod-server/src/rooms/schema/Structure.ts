@@ -5,6 +5,7 @@ import { Road } from './Road'
 
 export class Structure extends Schema {
   @type('string') id: string
+  @type('string') type: string
   @type('string') owner: string
   @type('string') intersection?: string
   @type('int16') round?: number
@@ -15,6 +16,10 @@ export class Structure extends Schema {
 
   getRoads(state: GameState): Road[] {
     const edges = this.getIntersection(state)?.getEdges(state) ?? []
-    return state.players.get(this.owner).roads.filter((road) => edges.some((edge) => edge.id === road.edge))
+    return state.roads.filter((road) => road.owner === this.owner && edges.some((edge) => edge.id === road.edge))
+  }
+
+  getEdges(state: GameState) {
+    return this.getIntersection(state)?.getEdges(state) ?? []
   }
 }

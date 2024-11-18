@@ -6,17 +6,25 @@ interface Payload {
 }
 export class SetAvailableRoadEdgesCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
-    const settlements = this.state.players.get(this.state.currentPlayer).settlements.filter((x) => x.intersection) ?? []
+    const player = this.state.players.get(this.state.currentPlayer)
+    const structures = player.structures.filter((x) => x.intersection) ?? []
+    if (payload.initialPlacement) {
+      const settlement = structures.find((x) => x.getRoads(this.state).length === 0)
+      this.state.availableEdges.push(...settlement.getEdges(this.state).map((x) => x.id))
+      return
+    }
 
-    const edges = payload.initialPlacement
-      ? settlements
-          .filter((x) => x.intersection)
-          .find((x) => x.getRoads(this.state).length === 0)
-          ?.getIntersection(this.state)
-          ?.getEdges(this.state) ?? []
-      : settlements.map((x) => x.getIntersection(this.state).getEdges(this.state)).flat()
+    const playerOccupiedEdges = player.roads
+      .filter((x) => x.edge)
+      .map((x) => this.state.edges.find((edge) => edge.id === x.edge))
 
-    //TODO check if any edge is already occupied by another players road
-    this.state.availableEdges.push(...edges.map((x) => x.id))
+    const totalOccupiedEdgeIds = this.state.roads.filter((x) => x.edge).map((x) => x.edge)
+
+    const availableEdges = playerOccupiedEdges
+      .map((x) => x.getConnectedEdges(this.state))
+      .flat()
+      .filter((x) => !totalOccupiedEdgeIds.includes(x.id))
+
+    this.state.availableEdges.push(...availableEdges.map((x) => x.id))
   }
 }

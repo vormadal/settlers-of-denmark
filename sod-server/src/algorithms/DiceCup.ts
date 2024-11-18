@@ -10,10 +10,7 @@ export class BaseGameDiceCup implements DiceCup {
 
   init(state: GameState): void {
     this.state = state
-    state.dice.push(
-      new Die().assign({ color: 'yellow', type: 'number', value: 1 }),
-      new Die().assign({ color: 'red', type: 'number', value: 1 })
-    )
+    state.dice.push(Die.createRegular('yellow'), Die.createRegular('red'))
   }
   roll(): void {
     this.state.dice.forEach((die) => {

@@ -8,7 +8,7 @@ interface Payload {
 export class PlaceRoadCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const player = this.room.state.players.get(payload.playerId)
-    const availableRoad = player.roads.find((road) => !road.edge)
+    const availableRoad = player.roads.find((x) => !x.edge)
     if (availableRoad) {
       availableRoad.edge = payload.edgeId
     }

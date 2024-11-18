@@ -8,7 +8,7 @@
 import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@colyseus/schema';
 import { BorderEdge } from './BorderEdge'
 import { Intersection } from './Intersection'
-import { LandTiles } from './LandTiles'
+import { Hex } from './Hex'
 import { Player } from './Player'
 import { Card } from './Card'
 import { HexProduction } from './HexProduction'
@@ -17,7 +17,7 @@ import { Die } from './Die'
 export class GameState extends Schema {
     @type([ BorderEdge ]) public edges: ArraySchema<BorderEdge> = new ArraySchema<BorderEdge>();
     @type([ Intersection ]) public intersections: ArraySchema<Intersection> = new ArraySchema<Intersection>();
-    @type([ LandTiles ]) public landTiles: ArraySchema<LandTiles> = new ArraySchema<LandTiles>();
+    @type([ Hex ]) public hexes: ArraySchema<Hex> = new ArraySchema<Hex>();
     @type({ map: Player }) public players: MapSchema<Player> = new MapSchema<Player>();
     @type([ Card ]) public deck: ArraySchema<Card> = new ArraySchema<Card>();
     @type("string") public phase!: string;
