@@ -93,6 +93,8 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         }
       },
       turn: {
+        entry: ['setAvailableIntersections', 'setAvailableEdges'],
+        exit: ['clearAvailableIntersections', 'clearAvailableEdges'],
         on: {
           END_TURN: {
             target: 'rollingDice',
