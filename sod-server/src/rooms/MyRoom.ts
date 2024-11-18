@@ -100,13 +100,18 @@ export class MyRoom extends Room<GameState> {
         this.stateMachine.start()
         if (message?.autoPlace) {
           for (let i = 0; i < this.state.players.size * 2; i++) {
+            const intersectionIndex = Math.floor(Math.random() * this.state.availableIntersections.length) - 1
             this.stateMachine.send({
               type: 'PLACE_SETTLEMENT',
-              payload: { playerId: this.state.currentPlayer, intersectionId: this.state.availableIntersections[0] }
+              payload: {
+                playerId: this.state.currentPlayer,
+                intersectionId: this.state.availableIntersections[intersectionIndex]
+              }
             })
+            const edgeIndex = Math.floor(Math.random() * this.state.availableEdges.length) - 1
             this.stateMachine.send({
               type: 'PLACE_ROAD',
-              payload: { playerId: this.state.currentPlayer, edgeId: this.state.availableEdges[0] }
+              payload: { playerId: this.state.currentPlayer, edgeId: this.state.availableEdges[edgeIndex] }
             })
           }
         }
@@ -114,14 +119,15 @@ export class MyRoom extends Room<GameState> {
     }
 
     this.onMessage('*', (client, type, message) => {
-      console.log('received message:', type, message)
+      const payload = {
+        ...message,
+        // in debug we always act as the current player
+        playerId: this.options.debug ? this.state.currentPlayer : client.sessionId
+      }
+      console.log('received message:', type, payload)
       this.stateMachine.send({
         type: type,
-        payload: {
-          ...message,
-          // in debug we always act as the current player
-          playerId: this.options.debug ? this.state.currentPlayer : client.sessionId
-        }
+        payload
       } as any)
     })
   }
