@@ -14,8 +14,9 @@ export class BorderEdge extends Schema {
   }
 
   getConnectedEdges(state: GameState) {
-    return state.edges.filter(
-      (edge) => edge.pointA.id === this.pointA.id || (edge.pointB.id === this.pointB.id && edge.id !== this.id)
-    )
+    return state.edges.filter((edge) => {
+      const myPoints = [this.pointA.id, this.pointB.id]
+      return (myPoints.includes(edge.pointA.id) || myPoints.includes(edge.pointB.id)) && edge.id !== this.id
+    })
   }
 }

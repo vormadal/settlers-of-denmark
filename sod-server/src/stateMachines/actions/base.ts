@@ -26,11 +26,11 @@ function nextPlayer({ context }: InputType) {
 }
 
 function setAvailableIntersections({ context }: InputType) {
-  context.dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: true })
+  context.dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: context.gameState.round < 3 })
 }
 
 function setAvailableEdges({ context }: InputType) {
-  context.dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: true })
+  context.dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: context.gameState.round < 3 })
 }
 
 function clearAvailableEdges({ context }: InputType) {

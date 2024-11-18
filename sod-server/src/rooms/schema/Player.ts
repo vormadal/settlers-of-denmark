@@ -3,6 +3,7 @@ import { City } from './City'
 import { Road } from './Road'
 import { Settlement } from './Settlement'
 import { Structure } from './Structure'
+import { GameState } from './GameState'
 
 export class Player extends Schema {
   @type('string') id: string
@@ -20,5 +21,13 @@ export class Player extends Schema {
 
   getAvailableRoads() {
     return this.roads.filter((road) => !road.edge)
+  }
+
+  cards(state: GameState) {
+    const cards = state.deck.filter((card) => card.owner === this.id)
+    return cards.reduce<{ [key: string]: number }>((acc, card) => {
+      acc[card.variant] = acc[card.variant] ? acc[card.variant] + 1 : 1
+      return acc
+    }, {})
   }
 }
