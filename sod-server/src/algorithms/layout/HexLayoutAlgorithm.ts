@@ -13,14 +13,14 @@ export class HexLayoutAlgorithm implements LayoutAlgorithm {
     const allPoints: Vector[] = []
 
     for (let i = 0; i < this.r; i++) {
-      const numTiles = i == 0 ? 1 : i * numEdges + 1 - ((i - 1) * numEdges + 1)
-      const angleOffset = Math.PI / numTiles
+      const numHexes = i == 0 ? 1 : i * numEdges + 1 - ((i - 1) * numEdges + 1)
+      const angleOffset = Math.PI / numHexes
       let previousPoint: Vector | null = null
       const layerPoints: Vector[] = []
 
       // layer
-      for (let j = 0; j < numTiles; j++) {
-        const angle = this.getPointAngle(angleOffset, numTiles, j)
+      for (let j = 0; j < numHexes; j++) {
+        const angle = this.getPointAngle(angleOffset, numHexes, j)
         const p = CalculatePoint(i, angle)
         if (previousPoint) {
           layerPoints.push(...this.CreatePointsBetween(previousPoint, p))
@@ -30,7 +30,7 @@ export class HexLayoutAlgorithm implements LayoutAlgorithm {
       }
 
       layerPoints.push(
-        ...this.CreatePointsBetween(previousPoint, CalculatePoint(i, this.getPointAngle(angleOffset, numTiles, 0)))
+        ...this.CreatePointsBetween(previousPoint, CalculatePoint(i, this.getPointAngle(angleOffset, numHexes, 0)))
       )
 
       // we need to rotate the outer layers so that sequence of points is in a nice clockwise outgoing spiral
@@ -45,8 +45,8 @@ export class HexLayoutAlgorithm implements LayoutAlgorithm {
     return allPoints
   }
 
-  getPointAngle(offset: number, numTiles: number, j: number) {
-    return offset + ((Math.PI * 2) / numTiles) * j
+  getPointAngle(offset: number, numHexes: number, j: number) {
+    return offset + ((Math.PI * 2) / numHexes) * j
   }
 
   CreatePointsBetween = (previousPoint: Vector, p: Vector) => {

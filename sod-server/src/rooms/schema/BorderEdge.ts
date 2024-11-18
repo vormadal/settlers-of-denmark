@@ -12,4 +12,10 @@ export class BorderEdge extends Schema {
       (intersection) => intersection.position.id === this.pointA.id || intersection.position.id === this.pointB.id
     )
   }
+
+  getConnectedEdges(state: GameState) {
+    return state.edges.filter(
+      (edge) => edge.pointA.id === this.pointA.id || (edge.pointB.id === this.pointB.id && edge.id !== this.id)
+    )
+  }
 }

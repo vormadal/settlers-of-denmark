@@ -17,8 +17,8 @@ export function Board({ width: windowWidth }: Props) {
   const [state] = useGameState()
   const players = [...(state?.players?.values() || [])]
 
-  const xs = state?.landTiles.map((x) => x.position.x).sort((a, b) => a - b) || [0]
-  const ys = state?.landTiles.map((x) => x.position.y).sort((a, b) => a - b) || [0]
+  const xs = state?.hexes.map((x) => x.position.x).sort((a, b) => a - b) || [0]
+  const ys = state?.hexes.map((x) => x.position.y).sort((a, b) => a - b) || [0]
 
   const buffer = 100
   const xMin = xs.slice(0, 1)[0] - buffer
@@ -62,7 +62,7 @@ export function Board({ width: windowWidth }: Props) {
       offsetY={offsetY}
     >
       <Layer scale={{ x: scale, y: scale }}>
-        {state?.landTiles.map((x) => (
+        {state?.hexes.map((x) => (
           <Land
             key={x.id}
             tile={x}

@@ -1,26 +1,21 @@
 import { Dispatcher } from '@colyseus/command'
 import { Client, Room } from '@colyseus/core'
-import { BasicLayoutAlgorithm } from '../algorithms/layout/BasicLayoutAlgorithm'
-import { PercentageTileTypeProvider } from '../algorithms/TileTypeProvider'
-import { PlaceSettlementCommand } from '../commands/base/PlaceSettlementCommand'
-import { PlaceRoadCommand } from '../commands/base/PlaceRoadCommand'
-import { GamePhases, GameState, PhaseSteps } from './schema/GameState'
-import { Settlement as Settlement } from './schema/Settlement'
+import { PercentageHexTypeProvider } from '../algorithms/HexTypeProvider'
+import { GameState } from './schema/GameState'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
+import { Settlement } from './schema/Settlement'
 
-import { DefaultNumberTokenProvider, DebugNumberTokenProvider } from '../algorithms/NumberTokenProvider'
-import { BaseGameTileTypes } from './schema/LandTile'
-import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
-import { Card, CardTypes, CardVariants } from './schema/Card'
-import { HexLayoutAlgorithm } from '../algorithms/layout/HexLayoutAlgorithm'
-import { generate } from '../utils/arrayHelpers'
-import { City } from './schema/City'
-import { Die } from './schema/Die'
 import { BaseGameDiceCup, DiceCup } from '../algorithms/DiceCup'
 import { HexFactory } from '../algorithms/HexFactory'
+import { HexLayoutAlgorithm } from '../algorithms/layout/HexLayoutAlgorithm'
+import { DefaultNumberTokenProvider } from '../algorithms/NumberTokenProvider'
+import { createBaseGameStateMachine } from '../stateMachines/BaseGameStateMachine'
+import { generate } from '../utils/arrayHelpers'
+import { Card, CardTypes, CardVariants } from './schema/Card'
+import { City } from './schema/City'
+import { HexTypes } from './schema/Hex'
 import { HexProduction } from './schema/HexProduction'
-import { Structure } from './schema/Structure'
 
 function cardGenerator(count: number, type: string, variant: string, create: (card: Card) => Card) {
   return Array.from({ length: count }, (_, i) => i).map((i) => {
@@ -59,22 +54,22 @@ export class MyRoom extends Room<GameState> {
 
     const state = new GameState()
     state.hexProductions.push(
-      HexProduction.createResource(BaseGameTileTypes.Fields, 'settlement', CardVariants.Grain),
-      HexProduction.createResource(BaseGameTileTypes.Fields, 'city', CardVariants.Grain, CardVariants.Grain),
-      HexProduction.createResource(BaseGameTileTypes.Forest, 'settlement', CardVariants.Lumber),
-      HexProduction.createResource(BaseGameTileTypes.Forest, 'city', CardVariants.Lumber, CardVariants.Lumber),
-      HexProduction.createResource(BaseGameTileTypes.Hills, 'settlement', CardVariants.Brick),
-      HexProduction.createResource(BaseGameTileTypes.Hills, 'city', CardVariants.Brick, CardVariants.Brick),
-      HexProduction.createResource(BaseGameTileTypes.Mountains, 'settlement', CardVariants.Ore),
-      HexProduction.createResource(BaseGameTileTypes.Mountains, 'city', CardVariants.Ore, CardVariants.Ore),
-      HexProduction.createResource(BaseGameTileTypes.Pastures, 'settlement', CardVariants.Wool),
-      HexProduction.createResource(BaseGameTileTypes.Pastures, 'city', CardVariants.Wool, CardVariants.Wool)
+      HexProduction.createResource(HexTypes.Fields, Settlement.Type, CardVariants.Grain),
+      HexProduction.createResource(HexTypes.Fields, City.Type, CardVariants.Grain, CardVariants.Grain),
+      HexProduction.createResource(HexTypes.Forest, Settlement.Type, CardVariants.Lumber),
+      HexProduction.createResource(HexTypes.Forest, City.Type, CardVariants.Lumber, CardVariants.Lumber),
+      HexProduction.createResource(HexTypes.Hills, Settlement.Type, CardVariants.Brick),
+      HexProduction.createResource(HexTypes.Hills, City.Type, CardVariants.Brick, CardVariants.Brick),
+      HexProduction.createResource(HexTypes.Mountains, Settlement.Type, CardVariants.Ore),
+      HexProduction.createResource(HexTypes.Mountains, City.Type, CardVariants.Ore, CardVariants.Ore),
+      HexProduction.createResource(HexTypes.Pastures, Settlement.Type, CardVariants.Wool),
+      HexProduction.createResource(HexTypes.Pastures, City.Type, CardVariants.Wool, CardVariants.Wool)
     )
     this.maxClients = this.options.numPlayers
 
     const positions = new HexLayoutAlgorithm(3).createLayout()
     new HexFactory().createHexMap(state, positions)
-    PercentageTileTypeProvider.default().assign(state)
+    PercentageHexTypeProvider.default().assign(state)
     // new DebugNumberTokenProvider().assign(state)
     new DefaultNumberTokenProvider().assign(state)
 
@@ -140,21 +135,15 @@ export class MyRoom extends Room<GameState> {
 
     if (this.state.players.size === this.options.numPlayers) {
       this.stateMachine.start()
-      // this.state.phase = GamePhases.Establishment
-      // this.state.phaseStep = PhaseSteps.PlaceInitialSettlement
-      // this.state.currentPlayer = Array.from(this.state.players.keys())[0]
-      // this.state.availableIntersections.push(...this.state.intersections.map((x) => x.id))
     }
   }
 
   addPlayer(id: string) {
     const player = new Player()
     player.id = id
-    player.settlements.push(
-      ...generate(this.options.numSettlements, (i) => new Settlement().assign({ id: `${id}-${i}`, owner: id }))
-    )
-    player.cities.push(...generate(this.options.numCities, (i) => new City().assign({ id: `${id}-${i}`, owner: id })))
-    player.roads.push(...generate(this.options.numRoads, (i) => new Road().assign({ id: `${id}-${i}`, owner: id })))
+    player.settlements.push(...generate(this.options.numSettlements, (i) => Settlement.create(`${id}-${i}`, id)))
+    player.cities.push(...generate(this.options.numCities, (i) => City.create(`${id}-${i}`, id)))
+    player.roads.push(...generate(this.options.numRoads, (i) => Road.create(`${id}-${i}`, id)))
 
     this.state.players.set(player.id, player)
     return player

@@ -5,16 +5,19 @@ interface Props {
   color: string
   count: number
 }
+const spacing = 5
+const cardWidth = 40
+const cardHeight = 60
 export function CardGroup({ color, count }: Props) {
-  if(count === 0) return null
+  if (count === 0) return null
   return (
     <Box sx={{ display: 'flex' }}>
       <Box
         sx={{
           position: 'relative',
           flex: '1',
-          width: 60 + count * 10,
-          height: 80,
+          width: cardWidth + count * spacing,
+          height: cardHeight,
           marginBottom: '1rem'
         }}
       >
@@ -22,7 +25,9 @@ export function CardGroup({ color, count }: Props) {
           <BaseCard
             key={`${color}-${index}`}
             color={color}
-            offset={index * 10}
+            offset={index * spacing}
+            width={cardWidth}
+            height={cardHeight}
           />
         ))}
       </Box>

@@ -11,6 +11,7 @@ import { ClearAvailableEdgesCommand } from '../commands/base/ClearAvailableEdges
 import { ClearAvailableIntersectionsCommand } from '../commands/base/ClearAvailableIntersectionsCommand'
 import { RollDiceCommand } from '../commands/base/RollDiceCommand'
 import { ProduceInitialResourcesCommand } from '../commands/base/ProduceInitialResourcesCommand'
+import { ProduceResourcesCommand } from '../commands/base/ProduceResourcesCommand'
 
 type PlaceSettlementEvent = { type: 'PLACE_SETTLEMENT'; payload: PlaceSettlementCommand['payload'] }
 type PlaceRoadEvent = { type: 'PLACE_ROAD'; payload: PlaceRoadCommand['payload'] }
@@ -43,6 +44,9 @@ const machineConfig = setup({
     produceInitialResources: ({ context, event }) => {
       const e = event as PlaceSettlementEvent
       context.dispatcher.dispatch(new ProduceInitialResourcesCommand(), e.payload)
+    },
+    produceResources: ({ context }) => {
+      context.dispatcher.dispatch(new ProduceResourcesCommand())
     }
   },
   guards: {
@@ -79,7 +83,7 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
           PLACE_ROAD: [
             {
               target: 'rollingDice',
-              actions: 'placeRoad',
+              actions: ['placeRoad', 'nextPlayer'],
               guard: 'initialRoundIsComplete'
             },
             {
@@ -93,13 +97,16 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         on: {
           ROLL_DICE: {
             target: 'turn',
-            actions: 'rollDice'
+            actions: ['rollDice', 'produceResources']
           }
         }
       },
       turn: {
         on: {
-          END_TURN: 'rollingDice'
+          END_TURN: {
+            target: 'rollingDice',
+            actions: 'nextPlayer'
+          }
         }
       }
     }

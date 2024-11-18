@@ -1,9 +1,9 @@
 import { Circle, Group, RegularPolygon, Text } from 'react-konva'
-import { LandTiles } from '../state/LandTiles'
+import { Hex } from '../state/Hex'
 import { colors } from '../utils/colors'
 
 interface Type {
-  tile: LandTiles
+  tile: Hex
 }
 
 export function Land({ tile }: Type) {

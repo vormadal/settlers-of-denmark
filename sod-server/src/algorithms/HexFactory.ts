@@ -1,7 +1,7 @@
 import { BorderEdge } from '../rooms/schema/BorderEdge'
 import { GameState } from '../rooms/schema/GameState'
 import { Intersection } from '../rooms/schema/Intersection'
-import { LandTiles } from '../rooms/schema/LandTile'
+import { Hex } from '../rooms/schema/Hex'
 import { Vector } from '../utils/Vector'
 
 export class HexFactory {
@@ -9,8 +9,8 @@ export class HexFactory {
   edges: BorderEdge[] = []
   createHexMap = (gameState: GameState, positions: Vector[]) => {
     for (const position of positions) {
-      const tile = this.createTile(position)
-      gameState.landTiles.push(tile)
+      const hex = this.createHex(position)
+      gameState.hexes.push(hex)
     }
     gameState.intersections.clear()
     gameState.edges.clear()
@@ -18,9 +18,9 @@ export class HexFactory {
     gameState.edges.push(...this.edges)
   }
 
-  createTile = (position: Vector) => {
-    const tile = new LandTiles().assign({
-      id: `tile:${position.x},${position.y}`,
+  createHex = (position: Vector) => {
+    const hex = new Hex().assign({
+      id: `hex:${position.x},${position.y}`,
       position: position.toPoint(),
       radius: 100
     })
@@ -32,15 +32,15 @@ export class HexFactory {
       intersections.push(intersection)
     }
 
-    tile.intersections.push(...intersections.map((x) => x.id))
+    hex.intersections.push(...intersections.map((x) => x.id))
 
     const edges: BorderEdge[] = []
     for (let index = 0; index < 6; index++) {
       const edge = this.getOrCreateEdge(intersections[(index + 1) % 6], intersections[index])
       edges.push(edge)
     }
-    tile.edges.push(...edges.map((x) => x.id))
-    return tile
+    hex.edges.push(...edges.map((x) => x.id))
+    return hex
   }
 
   getOrCreateEdge(intersectionA: Intersection, intersectionB: Intersection) {

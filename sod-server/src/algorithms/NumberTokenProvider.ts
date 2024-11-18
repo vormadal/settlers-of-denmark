@@ -1,5 +1,5 @@
 import { GameState } from '../rooms/schema/GameState'
-import { BaseGameTileTypes, LandTiles } from '../rooms/schema/LandTile'
+import { HexTypes, Hex } from '../rooms/schema/Hex'
 import { shuffleArray } from '../utils/arrayHelpers'
 
 export interface NumberTokenProvider {
@@ -9,7 +9,7 @@ export interface NumberTokenProvider {
 export class RandomNumberTokenProvider implements NumberTokenProvider {
   values = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
   assign(gameState: GameState): void {
-    for (const hex of gameState.landTiles) {
+    for (const hex of gameState.hexes) {
       hex.value = this.values[Math.round(Math.random() * (this.values.length - 1))]
     }
   }
@@ -18,7 +18,7 @@ export class RandomNumberTokenProvider implements NumberTokenProvider {
 export class DebugNumberTokenProvider implements NumberTokenProvider {
   assign(gameState: GameState): void {
     let value = 0
-    for (const hex of gameState.landTiles) {
+    for (const hex of gameState.hexes) {
       hex.value = value++
     }
   }
@@ -29,8 +29,8 @@ export class BalancedNumberTokenProvider implements NumberTokenProvider {
 
   assign(gameState: GameState): void {
     let index = 0
-    for (const hex of gameState.landTiles) {
-      if (hex.type !== BaseGameTileTypes.Dessert) {
+    for (const hex of gameState.hexes) {
+      if (hex.type !== HexTypes.Dessert) {
         hex.value = this.values[index++ % this.values.length]
       }
     }
@@ -42,8 +42,8 @@ export class DefaultNumberTokenProvider implements NumberTokenProvider {
 
   assign(gameState: GameState): void {
     let index = 0
-    for (const hex of gameState.landTiles) {
-      if (hex.type !== BaseGameTileTypes.Dessert) {
+    for (const hex of gameState.hexes) {
+      if (hex.type !== HexTypes.Dessert) {
         hex.value = this.values[index % this.values.length]
         index++
       }

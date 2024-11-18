@@ -1,16 +1,18 @@
 import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema'
 import { BorderEdge } from './BorderEdge'
-import { Intersection } from './Intersection'
-import { LandTiles } from './LandTile'
-import { Player } from './Player'
 import { Card } from './Card'
 import { Die } from './Die'
+import { Hex } from './Hex'
 import { HexProduction } from './HexProduction'
+import { Intersection } from './Intersection'
+import { Player } from './Player'
+import { Road } from './Road'
+import { Structure } from './Structure'
 
 export class GameState extends Schema {
   @type([BorderEdge]) edges = new ArraySchema<BorderEdge>()
   @type([Intersection]) intersections = new ArraySchema<Intersection>()
-  @type([LandTiles]) landTiles = new ArraySchema<LandTiles>()
+  @type([Hex]) hexes = new ArraySchema<Hex>()
   @type({ map: Player }) players = new MapSchema<Player>()
 
   @type([Card]) deck = new ArraySchema<Card>()
@@ -26,15 +28,24 @@ export class GameState extends Schema {
 
   @type([Die]) dice = new ArraySchema<Die>()
 
+  get playerList() {
+    return [...this.players.values()]
+  }
+
+  get roads(): Road[] {
+    return this.playerList.map((player) => player.roads.map((x) => x)).flat()
+  }
+
+  get structures(): Structure[] {
+    return this.playerList.map((player) => player.structures).flat()
+  }
+  getOccupiedIntersections() {
+    return this.structures.filter((x) => !!x.intersection).map((settlement) => settlement.getIntersection(this))
+  }
+
   updateAvailableIntersections() {
     this.availableIntersections.clear()
-    const occupiedIntersections = [...this.players.values()]
-      .map((x) => [
-        ...x.settlements.map((settlement) => settlement.intersection)
-        // ...x.cities.map(city => city.intersection)
-      ])
-      .flat()
-      .filter((x) => x !== undefined)
+    const occupiedIntersections = this.getOccupiedIntersections().map((intersection) => intersection.id)
 
     this.availableIntersections.push(
       ...this.intersections

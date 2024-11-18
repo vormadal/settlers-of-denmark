@@ -7,9 +7,10 @@ interface Payload {
 }
 export class PlaceSettlementCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
-    const player = this.room.state.players.get(payload.playerId)
-    const availableHouse = player.settlements.find((settlement) => !settlement.intersection)
-    availableHouse.intersection = payload.intersectionId
-    availableHouse.round = this.room.state.round
+    const player = this.state.players.get(payload.playerId)
+    const availableSettlement = player.settlements.find((x) => !x.intersection)
+
+    availableSettlement.intersection = payload.intersectionId
+    availableSettlement.round = this.room.state.round
   }
 }

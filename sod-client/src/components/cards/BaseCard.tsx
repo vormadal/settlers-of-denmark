@@ -4,16 +4,18 @@ interface Props {
   children?: React.ReactNode
   color?: string
   offset: number
+  width: number
+  height: number
 }
-export function BaseCard({ children, color, offset }: Props) {
+export function BaseCard({ children, color, offset, width, height }: Props) {
   return (
     <Box
       sx={{
         borderRadius: '0.5rem',
         border: '1px solid rgba(0, 0, 0, 0.5)',
         background: 'rgba(255, 255, 255)',
-        width: 60,
-        height: 80,
+        width: width,
+        height: height,
         padding: '2px',
         position: 'absolute',
         top: 0,

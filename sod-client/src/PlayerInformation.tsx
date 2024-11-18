@@ -66,7 +66,7 @@ export function PlayerInformation({ width }: Props) {
           </Box>
         ))}
 
-        <Box>
+        <Box sx={{gap: 1, display: 'flex', flexDirection: 'column'}}>
           {state.dice.map((x, i) => (
             <Typography
               key={i}
@@ -80,9 +80,19 @@ export function PlayerInformation({ width }: Props) {
             color="primary"
             fullWidth
             onClick={() => room?.send('ROLL_DICE')}
-            disabled={state.phase !== 'rollingDice' && me?.id === state.currentPlayer}
+            disabled={state.phase !== 'rollingDice' || me?.id !== state.currentPlayer}
           >
             Roll Dice
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => room?.send('END_TURN')}
+            disabled={state.phase !== 'turn' || me?.id !== state.currentPlayer}
+          >
+            End Turn
           </Button>
         </Box>
       </Container>
