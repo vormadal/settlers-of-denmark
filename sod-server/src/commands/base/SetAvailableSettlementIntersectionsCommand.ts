@@ -1,4 +1,5 @@
 import { Command } from '@colyseus/command'
+import { ArraySchema } from '@colyseus/schema'
 import { MyRoom } from '../../rooms/MyRoom'
 import { CardVariants } from '../../rooms/schema/Card'
 interface Payload {
@@ -6,7 +7,6 @@ interface Payload {
 }
 export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
-    this.state.availableIntersections.clear();
     if (!payload.initialPlacement) {
       const player = this.state.players.get(this.state.currentPlayer)
       const cards = player.cards(this.state)
@@ -22,7 +22,7 @@ export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, 
     const neighbours = occupiedIntersections.map((intersection) => intersection.getNeighbors(this.state)).flat()
     const unavailableIntersections = [...new Set([...occupiedIntersections, ...neighbours])].map((x) => x.id)
 
-    this.state.availableIntersections.push(
+    this.state.availableIntersections = new ArraySchema<string>(
       ...this.state.intersections
         .filter((intersection) => !unavailableIntersections.includes(intersection.id))
         .map((x) => x.id)
