@@ -43,7 +43,7 @@ export function EdgeShape({ edge }: Props) {
   const center = getCenter(edge.pointA, edge.pointB)
   const rotation = getLineRotation(edge.pointA, edge.pointB)
 
-  if (!availableEdges.includes(edge.id) || player?.id !== currentPlayer) return null
+  if (!availableEdges.includes(edge.id) || player?.id !== currentPlayer?.id) return null
 
   return (
     <Ellipse

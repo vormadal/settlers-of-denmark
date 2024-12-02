@@ -30,8 +30,8 @@ export function PlayerInformation({ width }: Props) {
           }}
         >
           <Typography variant="h6">Settlers of Denmark</Typography>
-          <Typography variant="body1">Player: {me?.id}</Typography>
-          <Typography variant="body1">Current Player: {currentPlayer}</Typography>
+          <Typography variant="body1">Player: {me?.name}</Typography>
+          <Typography variant="body1">Current Player: {currentPlayer?.name}</Typography>
           <Typography variant="body1">Room ID: {room?.roomId}</Typography>
           <Typography variant="body1">{phase.label}</Typography>
           <Typography variant="body1">Available intersections: {room.state.availableIntersections.length}</Typography>
@@ -45,7 +45,7 @@ export function PlayerInformation({ width }: Props) {
               backgroundColor: getUniqueColor(index, 160)
             }}
           >
-            <Typography variant="h6">{player.id}</Typography>
+            <Typography variant="h6">{player.name}{player.connected ? '' : ' (left)'}</Typography>
             <Typography variant="body1">
               Settlements: {player.settlements.filter((x) => !x.intersection).length}
             </Typography>
@@ -70,7 +70,7 @@ export function PlayerInformation({ width }: Props) {
             color="primary"
             fullWidth
             onClick={() => room?.send('ROLL_DICE')}
-            disabled={phase.key !== 'rollingDice' || me?.id !== currentPlayer}
+            disabled={phase.key !== 'rollingDice' || me?.id !== currentPlayer?.id}
           >
             Roll Dice
           </Button>
@@ -80,7 +80,7 @@ export function PlayerInformation({ width }: Props) {
             color="primary"
             fullWidth
             onClick={() => room?.send('END_TURN')}
-            disabled={phase.key !== 'turn' || me?.id !== currentPlayer}
+            disabled={phase.key !== 'turn' || me?.id !== currentPlayer?.id}
           >
             End Turn
           </Button>

@@ -18,7 +18,7 @@ export function IntersectionShape({ intersection, onClick }: Type) {
   const availableIntersections = useAvailableIntersections()
   const player = usePlayer()
   const currentPlayer = useCurrentPlayer()
-  
+
   function handleClick() {
     room?.send('PLACE_SETTLEMENT', {
       intersectionId: intersection.id
@@ -34,7 +34,7 @@ export function IntersectionShape({ intersection, onClick }: Type) {
     setFocus(false)
   }
 
-  if (!availableIntersections.includes(intersection.id) || currentPlayer !== player?.id) return null
+  if (!availableIntersections.includes(intersection.id) || currentPlayer?.id !== player?.id) return null
 
   return (
     <Circle

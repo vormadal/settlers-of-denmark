@@ -1,4 +1,4 @@
-import { Box, Button, Container, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { Box, Button, Container, List, ListItem, ListItemText, TextField, Typography } from '@mui/material'
 import { RoomAvailable } from 'colyseus.js'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { useColyseus } from './context/ColyseusContext'
 
 export function Lobby() {
   const navigate = useNavigate()
+  const [name, setName] = useState('')
   const client = useColyseus()
   const [rooms, setRooms] = useState<RoomAvailable<GameState>[]>([])
 
@@ -18,13 +19,13 @@ export function Lobby() {
   }, [client, setRooms])
 
   async function createRoom() {
-    const room = await client.createRoom(RoomNames.OneVsOne)
+    const room = await client.createRoom(RoomNames.OneVsOne, { name })
     if (!room) return
     joinRoom(room.id)
   }
 
   async function joinRoom(id: string) {
-    navigate(`/game/${id}`, {
+    navigate(`/game/${id}?name=${name}`, {
       viewTransition: true
     })
   }
@@ -39,6 +40,13 @@ export function Lobby() {
         >
           Lobby
         </Typography>
+        <TextField
+          name="name"
+          label="Name"
+          fullWidth
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
         <List>
           {!rooms.length && <Typography variant="body1">No available rooms</Typography>}
           {rooms.map((x) => (

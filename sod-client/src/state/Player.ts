@@ -12,6 +12,8 @@ import { Road } from './Road'
 
 export class Player extends Schema {
     @type("string") public id!: string;
+    @type("string") public name!: string;
+    @type("boolean") public connected!: boolean;
     @type([ Settlement ]) public settlements: ArraySchema<Settlement> = new ArraySchema<Settlement>();
     @type([ City ]) public cities: ArraySchema<City> = new ArraySchema<City>();
     @type([ Road ]) public roads: ArraySchema<Road> = new ArraySchema<Road>();

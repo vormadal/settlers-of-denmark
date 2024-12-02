@@ -1,6 +1,6 @@
 import { Room } from 'colyseus.js'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { BaseGame } from '../BaseGame'
 import { useColyseus } from '../context/ColyseusContext'
 import { PlayerContextProvider } from '../context/PlayerContext'
@@ -9,15 +9,16 @@ import { GameState } from '../state/GameState'
 
 function GamePage() {
   const { roomId } = useParams()
+  const [params] = useSearchParams()
   const client = useColyseus()
   const [gameRoom, setRoom] = useState<Room<GameState> | null>(client.room)
 
   useEffect(() => {
     if (!roomId) return
-    client.joinRoom(roomId).then((room) => {
+    client.joinRoom(roomId, params.get('name')).then((room) => {
       setRoom(room)
     })
-  }, [client, roomId])
+  }, [client, roomId, params])
 
   if (!gameRoom) return null
   return (

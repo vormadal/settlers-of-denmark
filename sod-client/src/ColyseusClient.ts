@@ -42,15 +42,19 @@ export class ColyseusClient {
     return this.room
   }
 
-  async joinRoom(roomId: string): Promise<Room<GameState> | null> {
+  async joinRoom(roomId: string, name?: string | null): Promise<Room<GameState> | null> {
     if (this.isConnecting) return this.room
     if (this.room) return this.room
     this.isConnecting = true
 
     console.log('colyseus: joining room:', roomId)
-    this.room = this.reconnectionToken?.includes(roomId)
-      ? await this.reconnect()
-      : await this.client.joinById<GameState>(roomId)
+    if (!this.reconnectionToken) {
+      this.room = await this.reconnect()
+    }
+
+    if (!this.room) {
+      this.room = await this.client.joinById<GameState>(roomId, { name })
+    }
 
     if (this.room) {
       this.reconnectionToken = this.room.reconnectionToken
@@ -61,8 +65,15 @@ export class ColyseusClient {
 
   private async reconnect() {
     if (!this.reconnectionToken) return this.room
-    this.room = await this.client.reconnect(this.reconnectionToken)
-    return this.room
+
+    try {
+      this.room = await this.client.reconnect(this.reconnectionToken)
+      return this.room
+    } catch (e) {
+      console.error('colyseus: reconnect failed:', e)
+      this.reconnectionToken = null
+      return null
+    }
   }
 
   // TODO add listener instead perhaps?
