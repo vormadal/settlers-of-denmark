@@ -1,36 +1,22 @@
 import { Box, Button, Container, Typography } from '@mui/material'
 import { PlayerCards } from './components/cards/PlayerCards'
-import { useGameState } from './context/GameStateContext'
-import { GameState } from './state/GameState'
-import { useMyPlayer } from './context/MeContext'
+import { usePlayer } from './context/PlayerContext'
+import { useRoom } from './context/RoomContext'
+import { useCurrentPlayer, useDice, usePhase, usePlayers } from './hooks/stateHooks'
 import { getUniqueColor } from './utils/colors'
+import { Link } from 'react-router-dom'
 
 interface Props {
   width: number
 }
 
-function getPhaseLabel(state: GameState) {
-  switch (state.phase) {
-    case 'placingSettlement':
-      return `${state.currentPlayer} is placing settlement`
-    case 'placingRoad':
-      return `${state.currentPlayer} is placing road`
-    case 'rollingDice':
-      return `${state.currentPlayer} is Rolling Dice`
-    case 'turn':
-      return `${state.currentPlayer}'s Turn`
-    default:
-      return state.phase
-  }
-}
-
 export function PlayerInformation({ width }: Props) {
-  const [state, room] = useGameState()
-  const [me] = useMyPlayer()
-
-  if (!state) return null
-
-  const players = [...state.players.values()].sort((a, b) => (a.id === room?.sessionId ? -1 : 1))
+  const room = useRoom()
+  const me = usePlayer()
+  const players = usePlayers()
+  const currentPlayer = useCurrentPlayer()
+  const phase = usePhase()
+  const dice = useDice()
   return (
     <Box
       component="section"
@@ -44,8 +30,12 @@ export function PlayerInformation({ width }: Props) {
           }}
         >
           <Typography variant="h6">Settlers of Denmark</Typography>
-          <Typography variant="body1">{room?.roomId}</Typography>
-          <Typography variant="body1">{getPhaseLabel(state)}</Typography>
+          <Typography variant="body1">Player: {me?.id}</Typography>
+          <Typography variant="body1">Current Player: {currentPlayer}</Typography>
+          <Typography variant="body1">Room ID: {room?.roomId}</Typography>
+          <Typography variant="body1">{phase.label}</Typography>
+          <Typography variant="body1">Available intersections: {room.state.availableIntersections.length}</Typography>
+          <Typography variant="body1">Available edges: {room.state.availableEdges.length}</Typography>
         </Box>
         {players.map((player, index) => (
           <Box
@@ -66,8 +56,8 @@ export function PlayerInformation({ width }: Props) {
           </Box>
         ))}
 
-        <Box sx={{gap: 1, display: 'flex', flexDirection: 'column'}}>
-          {state.dice.map((x, i) => (
+        <Box sx={{ gap: 1, display: 'flex', flexDirection: 'column' }}>
+          {dice.map((x, i) => (
             <Typography
               key={i}
               variant="body1"
@@ -80,7 +70,7 @@ export function PlayerInformation({ width }: Props) {
             color="primary"
             fullWidth
             onClick={() => room?.send('ROLL_DICE')}
-            disabled={state.phase !== 'rollingDice' || me?.id !== state.currentPlayer}
+            disabled={phase.key !== 'rollingDice' || me?.id !== currentPlayer}
           >
             Roll Dice
           </Button>
@@ -90,9 +80,19 @@ export function PlayerInformation({ width }: Props) {
             color="primary"
             fullWidth
             onClick={() => room?.send('END_TURN')}
-            disabled={state.phase !== 'turn' || me?.id !== state.currentPlayer}
+            disabled={phase.key !== 'turn' || me?.id !== currentPlayer}
           >
             End Turn
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            component={Link}
+            to="/"
+          >
+            Exit
           </Button>
         </Box>
       </Container>

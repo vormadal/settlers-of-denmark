@@ -1,24 +1,27 @@
 import { Layer, Stage } from 'react-konva'
-import { useGameState } from './context/GameStateContext'
 import { EdgeShape } from './shapes/EdgeShape'
 import { SettlementShape } from './shapes/SettlementShape'
 import { IntersectionShape } from './shapes/IntersectionShape'
 import { Land } from './shapes/LandShape'
 import { RoadShape } from './shapes/RoadShape'
 import { getUniqueColor } from './utils/colors'
+import { useEdges, useHexes, useIntersections, usePlayers } from './hooks/stateHooks'
 
 interface Props {
   width: number
 }
 
-
 const colors = new Array(8).fill(0).map((_, i) => getUniqueColor(i))
 export function Board({ width: windowWidth }: Props) {
-  const [state] = useGameState()
-  const players = [...(state?.players?.values() || [])]
+  const players = usePlayers()
+  const hexes = useHexes()
+  const edges = useEdges()
+  const intersections = useIntersections()
 
-  const xs = state?.hexes.map((x) => x.position.x).sort((a, b) => a - b) || [0]
-  const ys = state?.hexes.map((x) => x.position.y).sort((a, b) => a - b) || [0]
+  if(hexes.length === 0) return null
+  
+  const xs = hexes.map((x) => x.position.x).sort((a, b) => a - b) || [0]
+  const ys = hexes.map((x) => x.position.y).sort((a, b) => a - b) || [0]
 
   const buffer = 100
   const xMin = xs.slice(0, 1)[0] - buffer
@@ -53,7 +56,6 @@ export function Board({ width: windowWidth }: Props) {
     .map((player, i) => player.roads.filter((x) => !!x.edge).map((road) => ({ player, road, color: colors[i] })))
     .flat()
 
-  if (!state) return null
   return (
     <Stage
       width={windowWidth}
@@ -62,21 +64,21 @@ export function Board({ width: windowWidth }: Props) {
       offsetY={offsetY}
     >
       <Layer scale={{ x: scale, y: scale }}>
-        {state?.hexes.map((x) => (
+        {hexes.map((x) => (
           <Land
             key={x.id}
             tile={x}
           />
         ))}
 
-        {state?.edges.map((x) => (
+        {edges.map((x) => (
           <EdgeShape
             key={x.id}
             edge={x}
           />
         ))}
 
-        {state?.intersections.map((x) => (
+        {intersections.map((x) => (
           <IntersectionShape
             key={x.id}
             intersection={x}
@@ -87,7 +89,7 @@ export function Board({ width: windowWidth }: Props) {
           <SettlementShape
             key={settlement.id}
             color={color}
-            intersection={state.intersections.find((x) => x.id === settlement.intersection)!}
+            intersection={intersections.find((x) => x.id === settlement.intersection)!}
           />
         ))}
 
@@ -95,7 +97,7 @@ export function Board({ width: windowWidth }: Props) {
           <SettlementShape
             key={settlement.id}
             color={color}
-            intersection={state.intersections.find((x) => x.id === settlement.intersection)!}
+            intersection={intersections.find((x) => x.id === settlement.intersection)!}
           />
         ))}
 
@@ -103,7 +105,7 @@ export function Board({ width: windowWidth }: Props) {
           <RoadShape
             key={road.id}
             color={color}
-            edge={state.edges.find((x) => x.id === road.edge)!}
+            edge={edges.find((x) => x.id === road.edge)!}
           />
         ))}
       </Layer>

@@ -1,45 +1,32 @@
 import { Box, Button, Container, List, ListItem, ListItemText, Typography } from '@mui/material'
-import { Room, RoomAvailable } from 'colyseus.js'
+import { RoomAvailable } from 'colyseus.js'
 import { useEffect, useState } from 'react'
-import { useColyseus } from './context/ColyseusContext'
-import { useGameState } from './context/GameStateContext'
-import { GameState } from './state/GameState'
 import { useNavigate } from 'react-router-dom'
+import { GameState } from './state/GameState'
+import { RoomNames } from './utils/RoomNames'
+import { useColyseus } from './context/ColyseusContext'
 
 export function Lobby() {
   const navigate = useNavigate()
   const client = useColyseus()
-  const [, , setRoom] = useGameState()
   const [rooms, setRooms] = useState<RoomAvailable<GameState>[]>([])
-  const [reconnectionToken, setReconnectionToken] = useState(sessionStorage.getItem('reconnectionToken'))
 
   useEffect(() => {
-    client.getAvailableRooms<GameState>().then((rooms) => {
+    client.getRooms().then((rooms) => {
       setRooms(rooms)
     })
-  }, [setRooms, client])
-
-  function attachStateListener(room: Room<GameState>) {
-    sessionStorage.setItem('reconnectionToken', room.reconnectionToken)
-    setReconnectionToken(room.reconnectionToken)
-    setRoom(room)
-    navigate('/game')
-  }
+  }, [client, setRooms])
 
   async function createRoom() {
-    const room = await client.create<GameState>('my_room')
-    attachStateListener(room)
+    const room = await client.createRoom(RoomNames.OneVsOne)
+    if (!room) return
+    joinRoom(room.id)
   }
 
   async function joinRoom(id: string) {
-    const room = await client.joinById<GameState>(id)
-    attachStateListener(room)
-  }
-
-  async function handleReconnect() {
-    if (!reconnectionToken) return
-    const room = await client.reconnect<GameState>(reconnectionToken)
-    attachStateListener(room)
+    navigate(`/game/${id}`, {
+      viewTransition: true
+    })
   }
 
   return (
@@ -52,7 +39,6 @@ export function Lobby() {
         >
           Lobby
         </Typography>
-        {reconnectionToken && <Button onClick={handleReconnect}>Reconnect</Button>}
         <List>
           {!rooms.length && <Typography variant="body1">No available rooms</Typography>}
           {rooms.map((x) => (
