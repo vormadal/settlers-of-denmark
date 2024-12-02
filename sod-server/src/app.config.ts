@@ -13,7 +13,8 @@ export default config({
     /**
      * Define your room handlers:
      */
-    gameServer.define('my_room', MyRoom)
+    gameServer.define('1v1', MyRoom, { numPlayers: 2, numRoads: 15, numSettlements: 5, numCities: 4 })
+    gameServer.define('4p', MyRoom, { numPlayers: 4, numRoads: 15, numSettlements: 5, numCities: 4 })
     if (process.env.NODE_ENV !== 'production') {
       gameServer.define('debug', MyRoom, { debug: true })
     }
