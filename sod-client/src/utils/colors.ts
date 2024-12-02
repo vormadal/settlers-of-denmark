@@ -21,7 +21,7 @@ export function getUniqueColor(n: number, brightness = 160) {
     rgb[i % 3] |= n & 0x01
     n >>= 1
   }
-  console.log(rgb)
+  
   return (
     '#' +
     rgb

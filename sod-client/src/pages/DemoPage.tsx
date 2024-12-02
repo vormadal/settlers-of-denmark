@@ -3,12 +3,12 @@ import { Room } from 'colyseus.js'
 import { useCallback, useState } from 'react'
 import { Board } from '../Board'
 import { PlayerInformation } from '../PlayerInformation'
-import { useColyseus } from '../context/ColyseusContext'
 import { PlayerContextProvider } from '../context/PlayerContext'
 import { RoomContext } from '../context/RoomContext'
 import { GameState } from '../state/GameState'
 import { Player } from '../state/Player'
 import { RoomNames } from '../utils/RoomNames'
+import { useColyseus } from '../context/ColyseusContext'
 
 const sidebarWidth = 300
 function DebugPage() {
@@ -26,8 +26,6 @@ function DebugPage() {
     })
     setRoom(room)
   }, [client, autoPlace, setRoom, numPlayers])
-
-  
 
   return (
     <Box sx={{ width: '100%', background: '#7CB3FF', display: 'flex' }}>

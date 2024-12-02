@@ -1,10 +1,12 @@
 import { KonvaEventObject } from 'konva/lib/Node'
 import { useState } from 'react'
 import { Ellipse } from 'react-konva'
-import { useGameState } from '../context/GameStateContext'
 import { BorderEdge } from '../state/BorderEdge'
 import { Point } from '../state/Point'
 import { getLineRotation } from '../utils/VectorMath'
+import { useRoom } from '../context/RoomContext'
+import { useAvailableEdges, useCurrentPlayer } from '../hooks/stateHooks'
+import { usePlayer } from '../context/PlayerContext'
 
 interface Props {
   edge: BorderEdge
@@ -18,8 +20,11 @@ function getCenter(pointA: Point, pointB: Point) {
 }
 
 export function EdgeShape({ edge }: Props) {
-  const [state, room] = useGameState()
+  const room = useRoom()
+  const player = usePlayer()
+  const currentPlayer = useCurrentPlayer()
   const [focus, setFocus] = useState(false)
+  const availableEdges = useAvailableEdges()
 
   function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
     setFocus(true)
@@ -38,8 +43,8 @@ export function EdgeShape({ edge }: Props) {
   const center = getCenter(edge.pointA, edge.pointB)
   const rotation = getLineRotation(edge.pointA, edge.pointB)
 
-  if (!state?.availableEdges.includes(edge.id)) return null
-  
+  if (!availableEdges.includes(edge.id) || player?.id !== currentPlayer) return null
+
   return (
     <Ellipse
       x={center.x}
