@@ -37,12 +37,14 @@ export function useAvailableEdges() {
 
 export function useCurrentPlayer() {
   const gameRoom = useRoom()
-  const [currentPlayer, setCurrentPlayer] = useState<string | null>(gameRoom.state.currentPlayer)
+  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(
+    gameRoom.state.players.get(gameRoom.state.currentPlayer) || null
+  )
   useEffect(() => {
     if (!gameRoom) return
 
     gameRoom.state.listen('currentPlayer', (value) => {
-      setCurrentPlayer(value)
+      setCurrentPlayer(gameRoom.state.players.get(value) || null)
     })
   }, [gameRoom])
   return currentPlayer
