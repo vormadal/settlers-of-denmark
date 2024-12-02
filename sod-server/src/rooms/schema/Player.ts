@@ -25,11 +25,29 @@ export class Player extends Schema {
     return this.roads.filter((road) => !road.edge)
   }
 
-  cards(state: GameState) {
-    const cards = state.deck.filter((card) => card.owner === this.id)
-    return cards.reduce<{ [key: string]: number }>((acc, card) => {
-      acc[card.variant] = acc[card.variant] ? acc[card.variant] + 1 : 1
-      return acc
-    }, {})
+  cards(state: GameState){
+    return state.deck.filter((card) => card.owner === this.id)
+  }
+
+  cardsOfType(state: GameState, cardType: string){
+    const cards = this.cards(state)
+    return cards.filter((card) => card.type === cardType)
+  }
+
+  cardsOfTypeWithAmount(state: GameState, cardType: string, amount: number){
+    const cards = this.cardsOfType(state, cardType)
+    const numberOfCards = cards.length
+
+    if(numberOfCards < amount){
+      return null
+    }
+
+    let cardsOut = []
+
+    for (let index = 0; index < amount - 1; index++) {
+      cardsOut.push(cards [index])
+    }
+
+    return cardsOut
   }
 }

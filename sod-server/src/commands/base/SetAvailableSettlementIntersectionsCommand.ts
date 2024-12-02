@@ -9,10 +9,9 @@ export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, 
   execute(payload: Payload) {
     if (!payload.initialPlacement) {
       const player = this.state.players.get(this.state.currentPlayer)
-      const cards = player.cards(this.state)
       if (
         ![CardVariants.Brick, CardVariants.Grain, CardVariants.Lumber, CardVariants.Wool].every(
-          (variant) => cards[variant] > 0
+          (variant) => player.cardsOfType(this.state, variant).length > 0
         )
       ) {
         return
