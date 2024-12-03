@@ -1,4 +1,5 @@
 import { Schema, type } from '@colyseus/schema'
+import { GameState } from './GameState'
 
 export class Road extends Schema {
   @type('string') id: string
@@ -10,5 +11,9 @@ export class Road extends Schema {
       id,
       owner
     })
+  }
+
+  getEdge(state: GameState) {
+    return state.edges.find((edge) => edge.id === this.edge)
   }
 }
