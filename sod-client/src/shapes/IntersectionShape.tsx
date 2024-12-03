@@ -43,6 +43,7 @@ export function IntersectionShape({ intersection, onClick }: Type) {
       radius={9}
       fill={activeColor}
       onClick={handleClick}
+      onTouchEnd={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       scaleX={focus ? 1.6 : 1}

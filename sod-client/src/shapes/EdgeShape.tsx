@@ -50,6 +50,7 @@ export function EdgeShape({ edge }: Props) {
       x={center.x}
       y={center.y}
       onClick={handleClick}
+      onTouchEnd={handleClick}
       radiusX={11}
       radiusY={6}
       rotation={rotation}
