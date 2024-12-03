@@ -9,40 +9,36 @@ import { useEdges, useHexes, useIntersections, usePlayers } from './hooks/stateH
 
 interface Props {
   width: number
+  height: number
 }
 
 const colors = new Array(8).fill(0).map((_, i) => getUniqueColor(i))
-export function Board({ width: windowWidth }: Props) {
+export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const players = usePlayers()
   const hexes = useHexes()
   const edges = useEdges()
   const intersections = useIntersections()
 
-  if(hexes.length === 0) return null
-  
-  const xs = hexes.map((x) => x.position.x).sort((a, b) => a - b) || [0]
-  const ys = hexes.map((x) => x.position.y).sort((a, b) => a - b) || [0]
+  if (hexes.length === 0) return null
 
-  const buffer = 100
-  const xMin = xs.slice(0, 1)[0] - buffer
-  const xMax = xs.slice(-1)[0] + buffer
-  const yMin = ys.slice(0, 1)[0] - buffer
-  const yMax = ys.slice(-1)[0] + buffer
+  const x_all = edges.map((x) => x.pointA.x).sort((a, b) => a - b) || [0]
+  const y_all = edges.map((x) => x.pointA.y).sort((a, b) => a - b) || [0]
+
+  const buffer = 20
+  const xMin = x_all.slice(0, 1)[0] - buffer
+  const xMax = x_all.slice(-1)[0] + buffer
+  const yMin = y_all.slice(0, 1)[0] - buffer
+  const yMax = y_all.slice(-1)[0] + buffer
 
   const [cx, cy] = [(xMin + xMax) / 2, (yMin + yMax) / 2]
 
   const width = xMax - xMin
   const height = yMax - yMin
 
-  const windowHeight = window.innerHeight
-
-  // const scaleWidth = width / windowWidth;
   const scaleWidth = windowWidth / width
-  // const scaleHeight = height / windowHeight;
   const scaleHeight = windowHeight / height
   let scale = scaleHeight > scaleWidth ? scaleWidth : scaleHeight
-  if (scale < 0.5) scale = 1
-
+  
   const offsetX = -windowWidth / 2 + cx * scale
   const offsetY = -window.innerHeight / 2 + cy * scale
 
@@ -59,7 +55,7 @@ export function Board({ width: windowWidth }: Props) {
   return (
     <Stage
       width={windowWidth}
-      height={window.innerHeight}
+      height={windowHeight}
       offsetX={offsetX}
       offsetY={offsetY}
     >
