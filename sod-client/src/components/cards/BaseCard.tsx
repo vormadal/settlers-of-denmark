@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 interface Props {
   children?: React.ReactNode
   color?: string
-  offset: number
+  offset?: number
   width: number
   height: number
 }
@@ -27,9 +27,13 @@ export function BaseCard({ children, color, offset, width, height }: Props) {
           width: '100%',
           height: '100%',
           backgroundColor: color,
-          borderRadius: '0.5rem'
+          borderRadius: '0.5rem',
+          margin: 'auto 0',
+          textAlign: 'center'
         }}
-      ></Box>
+      >
+        {children}
+      </Box>
     </Box>
   )
 }
