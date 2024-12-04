@@ -31,21 +31,4 @@ export class Player extends Schema {
     const cards = this.cards(state)
     return cards.filter((card) => card.type === cardType)
   }
-
-  cardsOfTypeWithAmount(state: GameState, cardType: string, amount: number){
-    const cards = this.cardsOfType(state, cardType)
-    const numberOfCards = cards.length
-
-    if(numberOfCards < amount){
-      return null
-    }
-
-    let cardsOut = []
-
-    for (let index = 0; index < amount - 1; index++) {
-      cardsOut.push(cards [index])
-    }
-
-    return cardsOut
-  }
 }

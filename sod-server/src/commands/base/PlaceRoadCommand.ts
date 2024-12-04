@@ -1,12 +1,12 @@
 import { Command } from '@colyseus/command'
 import { MyRoom } from '../../rooms/MyRoom'
-import { Card, CardNames } from '../../rooms/schema/Card'
+import { CardNames } from '../../rooms/schema/Card'
 
 interface Payload {
   edgeId: string
   playerId: string
 }
-export class PlaceRoadCommand extends Command<MyRoom, Payload> {
+export class PlaceInitRoadCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const player = this.room.state.players.get(payload.playerId)
     const availableRoad = player.roads.find((x) => !x.edge)
@@ -16,15 +16,16 @@ export class PlaceRoadCommand extends Command<MyRoom, Payload> {
   }
 }
 
-export class PlaceRoadWithPayCommand extends Command<MyRoom, Payload> {
+export class PlaceRoadCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const player = this.room.state.players.get(payload.playerId)
     const state = this.room.state
 
     let cardsToBePayedToBank = []
-    cardsToBePayedToBank.push(...player.cardsOfTypeWithAmount(state, CardNames.Brick, 1))
-    cardsToBePayedToBank.push(...player.cardsOfTypeWithAmount(state, CardNames.Lumber, 1))
-    if(cardsToBePayedToBank.includes(null)){
+    cardsToBePayedToBank.push(...player.cardsOfType(state, CardNames.Brick).slice(0,1))
+    cardsToBePayedToBank.push(...player.cardsOfType(state, CardNames.Lumber).slice(0,1))
+    
+    if(cardsToBePayedToBank.length != 2){
       return
     }
 
