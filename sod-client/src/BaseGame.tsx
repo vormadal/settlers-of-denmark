@@ -1,10 +1,10 @@
 import { Box } from '@mui/material'
-import { Board } from './Board'
-import { usePlayers } from './hooks/stateHooks'
-import { PlayerInfo } from './components/PlayerInfo'
 import { useEffect, useState } from 'react'
-import { colors, getUniqueColor } from './utils/colors'
+import { Board } from './Board'
 import ActionMenu from './components/ActionMenu'
+import { PlayerInfo } from './components/PlayerInfo'
+import { usePlayers } from './hooks/stateHooks'
+import { getUniqueColor } from './utils/colors'
 
 export function BaseGame() {
   const players = usePlayers()
@@ -34,7 +34,7 @@ export function BaseGame() {
           />
         ))}
       </Box>
-      <Box sx={{ width: '100%', paddingLeft: '10px' }}>
+      <Box sx={{ width: '100%', height: height - 100, paddingLeft: '10px' }}>
         <Board
           width={width - 20}
           height={height - 100}

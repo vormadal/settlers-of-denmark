@@ -40,7 +40,7 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
   let scale = scaleHeight > scaleWidth ? scaleWidth : scaleHeight
   
   const offsetX = -windowWidth / 2 + cx * scale
-  const offsetY = -window.innerHeight / 2 + cy * scale
+  const offsetY = -windowHeight / 2 + cy * scale
 
   const settlements = players
     .map((player, i) =>
