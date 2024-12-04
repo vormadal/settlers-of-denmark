@@ -3,6 +3,7 @@ import { Box, Fab } from '@mui/material'
 import { usePlayer } from '../context/PlayerContext'
 import { useRoom } from '../context/RoomContext'
 import { useCurrentPlayer, useDice, usePhase } from '../hooks/stateHooks'
+import { PlayerCards } from './cards/PlayerCards'
 export default function ActionMenu() {
   const room = useRoom()
   const player = usePlayer()
@@ -12,6 +13,7 @@ export default function ActionMenu() {
 
   return (
     <Box sx={{ padding: '0.5rem', display: 'flex', gap: 1 }}>
+      <Box sx={{ flex: 1 }}>{player && <PlayerCards player={player} />}</Box>
       <Fab
         color="primary"
         aria-label="end turn"
