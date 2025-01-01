@@ -1,65 +1,34 @@
-import { Box, Button, Checkbox, FormControl, FormControlLabel, TextField } from '@mui/material'
-import { Board } from '../Board'
+import { Box } from '@mui/material'
+import { Room } from 'colyseus.js'
+import { useState } from 'react'
+import { BaseGame } from '../BaseGame'
+import DebugMenu from '../components/debug/DebugMenu'
 import { useColyseus } from '../context/ColyseusContext'
-import { useCallback, useEffect, useState } from 'react'
-import { useGameState } from '../context/GameStateContext'
+import { PlayerContextProvider } from '../context/PlayerContext'
+import { RoomContext } from '../context/RoomContext'
 import { GameState } from '../state/GameState'
-import { PlayerInformation } from '../PlayerInformation'
-import { useMyPlayer } from '../context/MeContext'
+import { Player } from '../state/Player'
 
-const sidebarWidth = 300
 function DebugPage() {
-  const [numPlayers, setNumPlayers] = useState(2)
-  const [autoPlace, setAutoPlace] = useState(false)
   const client = useColyseus()
-  const [state, , setRoom] = useGameState()
-  const [, setMe] = useMyPlayer()
-
-  const newGame = useCallback(async () => {
-    const room = await client.create<GameState>('debug', { numPlayers: numPlayers - 1, autoPlace })
-    setRoom(room)
-    room?.send('startGame', { autoPlace })
-  }, [client, autoPlace, setRoom, numPlayers])
-
-  useEffect(() => {
-    if (!state) return
-    setMe(state.currentPlayer)
-  }, [state, setMe])
+  const [gameRoom, setRoom] = useState<Room<GameState> | null>(client.room)
+  const [player, setPlayer] = useState<Player | undefined>(undefined)
 
   return (
     <Box sx={{ width: '100%', background: '#7CB3FF', display: 'flex' }}>
-      <Box sx={{ width: sidebarWidth, background: '#fff' }}>
-        <Box sx={{ gap: 1, display: 'flex', flexDirection: 'column', padding: 1 }}>
-          <TextField
-            name="numPlayers"
-            label="Number of Players"
-            type="number"
-            value={numPlayers}
-            onChange={(e) => setNumPlayers(Number(e.target.value))}
-          />
-          <FormControl>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={autoPlace}
-                  onChange={(e) => setAutoPlace(e.target.checked)}
-                />
-              }
-              label="Auto place"
-            />
-            Auto placement
-          </FormControl>
-          <Button
-            onClick={newGame}
-            variant="contained"
-            color="primary"
-          >
-            New Game
-          </Button>
-        </Box>
-        <PlayerInformation width={sidebarWidth} />
-      </Box>
-      <Board width={window.innerWidth - sidebarWidth} />
+      <DebugMenu
+        player={player}
+        room={gameRoom}
+        setPlayer={setPlayer}
+        setRoom={setRoom}
+      />
+      {gameRoom && (
+        <RoomContext.Provider value={gameRoom}>
+          <PlayerContextProvider override={player}>
+            <BaseGame />
+          </PlayerContextProvider>
+        </RoomContext.Provider>
+      )}
     </Box>
   )
 }

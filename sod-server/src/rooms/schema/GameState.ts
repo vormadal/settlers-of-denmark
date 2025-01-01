@@ -42,17 +42,6 @@ export class GameState extends Schema {
   getOccupiedIntersections() {
     return this.structures.filter((x) => !!x.intersection).map((settlement) => settlement.getIntersection(this))
   }
-
-  updateAvailableIntersections() {
-    this.availableIntersections.clear()
-    const occupiedIntersections = this.getOccupiedIntersections().map((intersection) => intersection.id)
-
-    this.availableIntersections.push(
-      ...this.intersections
-        .filter((intersection) => !occupiedIntersections.includes(intersection.id))
-        .map((intersection) => intersection.id)
-    )
-  }
 }
 
 export const PhaseSteps = {

@@ -1,16 +1,14 @@
 import { createContext, useContext } from 'react'
-import * as Colyseus from 'colyseus.js'
+import { ColyseusClient } from '../ColyseusClient'
 
-const client = new Colyseus.Client(
-  process.env.NODE_ENV === 'production' ? `wss://${window.location.hostname}` : 'ws://localhost:2567'
-)
-const ColyseusContext = createContext(client)
+export const ColyseusContext = createContext<ColyseusClient>(ColyseusClient.instance)
 
 interface Props {
-  children: React.ReactElement
+  children: React.ReactNode
 }
-export function ColyseusContextProvider({ children }: Props) {
-  return <ColyseusContext.Provider value={client}>{children}</ColyseusContext.Provider>
+
+export const ColyseusProvider = ({ children }: Props) => {
+  return <ColyseusContext.Provider value={ColyseusClient.instance}>{children}</ColyseusContext.Provider>
 }
 
 export function useColyseus() {

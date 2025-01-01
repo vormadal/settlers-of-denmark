@@ -7,6 +7,8 @@ import { GameState } from './GameState'
 
 export class Player extends Schema {
   @type('string') id: string
+  @type('string') name: string
+  @type('boolean') connected: boolean = true
   @type([Settlement]) settlements = new ArraySchema<Settlement>()
   @type([City]) cities = new ArraySchema<City>()
   @type([Road]) roads = new ArraySchema<Road>()

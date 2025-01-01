@@ -33,6 +33,8 @@ export interface RoomOptions {
   numSettlements?: number
   numCities?: number
   numRoads?: number
+
+  name?: string // player name
 }
 
 export class MyRoom extends Room<GameState> {
@@ -77,15 +79,15 @@ export class MyRoom extends Room<GameState> {
 
     this.diceCup.init(state)
     state.deck.push(
-      ...cardGenerator(14, CardTypes.Resource, CardVariants.Brick, (card) => card),
-      ...cardGenerator(14, CardTypes.Resource, CardVariants.Grain, (card) => card),
-      ...cardGenerator(14, CardTypes.Resource, CardVariants.Lumber, (card) => card),
-      ...cardGenerator(14, CardTypes.Resource, CardVariants.Ore, (card) => card),
-      ...cardGenerator(14, CardTypes.Resource, CardVariants.Wool, (card) => card),
-      ...cardGenerator(5, CardTypes.Development, CardVariants.Knight, (card) => card),
+      ...cardGenerator(19, CardTypes.Resource, CardVariants.Brick, (card) => card),
+      ...cardGenerator(19, CardTypes.Resource, CardVariants.Grain, (card) => card),
+      ...cardGenerator(19, CardTypes.Resource, CardVariants.Lumber, (card) => card),
+      ...cardGenerator(19, CardTypes.Resource, CardVariants.Ore, (card) => card),
+      ...cardGenerator(19, CardTypes.Resource, CardVariants.Wool, (card) => card),
+      ...cardGenerator(14, CardTypes.Development, CardVariants.Knight, (card) => card),
       ...cardGenerator(2, CardTypes.Development, CardVariants.Monopoly, (card) => card),
       ...cardGenerator(2, CardTypes.Development, CardVariants.RoadBuilding, (card) => card),
-      ...cardGenerator(2, CardTypes.Development, CardVariants.VictoryPoint, (card) => card),
+      ...cardGenerator(5, CardTypes.Development, CardVariants.VictoryPoint, (card) => card),
       ...cardGenerator(2, CardTypes.Development, CardVariants.YearOfPlenty, (card) => card)
     )
     this.stateMachine = createBaseGameStateMachine(state, this.dispatcher)
@@ -137,16 +139,17 @@ export class MyRoom extends Room<GameState> {
   }
 
   async onJoin(client: Client, options: any) {
-    const player = this.addPlayer(client.sessionId)
-
+    const player = this.addPlayer(client.sessionId, options.name)
+    console.log(client.sessionId, 'joined!')
     if (this.state.players.size === this.options.numPlayers) {
       this.stateMachine.start()
     }
   }
 
-  addPlayer(id: string) {
+  addPlayer(id: string, name?: string) {
     const player = new Player()
     player.id = id
+    player.name = name || id
     player.settlements.push(...generate(this.options.numSettlements, (i) => Settlement.create(`${id}-${i}`, id)))
     player.cities.push(...generate(this.options.numCities, (i) => City.create(`${id}-${i}`, id)))
     player.roads.push(...generate(this.options.numRoads, (i) => Road.create(`${id}-${i}`, id)))
@@ -156,7 +159,11 @@ export class MyRoom extends Room<GameState> {
   }
 
   onLeave(client: Client, consented: boolean) {
-    this.allowReconnection(client, 60)
+    if (!consented) {
+      this.allowReconnection(client, 600)
+      console.log(client.sessionId, 'left! Reconnection allowed for 1 hour.')
+    }
+    this.state.players.get(client.sessionId).connected = false
     console.log(client.sessionId, 'left!')
   }
 }

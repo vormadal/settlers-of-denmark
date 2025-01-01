@@ -1,6 +1,7 @@
-import { Circle, Group, RegularPolygon, Text } from 'react-konva'
+import { Group, RegularPolygon } from 'react-konva'
 import { Hex } from '../state/Hex'
 import { colors } from '../utils/colors'
+import NumberToken from './NumberToken'
 
 interface Type {
   tile: Hex
@@ -22,37 +23,10 @@ export function Land({ tile }: Type) {
       />
 
       {tile.value !== undefined && (
-        <>
-          <Circle
-            radius={20}
-            fill={'#ffffff'}
-            x={tile.position.x}
-            y={tile.position.y}
-            opacity={0.6}
-          />
-
-          <Circle
-            radius={20}
-            stroke={'#000000'}
-            strokeWidth={2}
-            x={tile.position.x}
-            y={tile.position.y}
-          />
-
-          <Text
-            text={tile.value?.toString() ?? ''}
-            fontSize={18}
-            align="center"
-            verticalAlign="middle"
-            width={50}
-            height={50}
-            x={tile.position.x - 50 / 2}
-            y={tile.position.y - 50 / 2}
-            // scale={{ x: 0.01, y: 0.01 }}
-            // offsetX={10}
-            // offsetY={7}
-          />
-        </>
+        <NumberToken
+          value={tile.value}
+          position={tile.position}
+        />
       )}
     </Group>
   )

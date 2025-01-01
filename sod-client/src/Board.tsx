@@ -1,47 +1,46 @@
 import { Layer, Stage } from 'react-konva'
-import { useGameState } from './context/GameStateContext'
 import { EdgeShape } from './shapes/EdgeShape'
 import { SettlementShape } from './shapes/SettlementShape'
 import { IntersectionShape } from './shapes/IntersectionShape'
 import { Land } from './shapes/LandShape'
 import { RoadShape } from './shapes/RoadShape'
 import { getUniqueColor } from './utils/colors'
+import { useEdges, useHexes, useIntersections, usePlayers } from './hooks/stateHooks'
 
 interface Props {
   width: number
+  height: number
 }
 
-
 const colors = new Array(8).fill(0).map((_, i) => getUniqueColor(i))
-export function Board({ width: windowWidth }: Props) {
-  const [state] = useGameState()
-  const players = [...(state?.players?.values() || [])]
+export function Board({ width: windowWidth, height: windowHeight }: Props) {
+  const players = usePlayers()
+  const hexes = useHexes()
+  const edges = useEdges()
+  const intersections = useIntersections()
 
-  const xs = state?.hexes.map((x) => x.position.x).sort((a, b) => a - b) || [0]
-  const ys = state?.hexes.map((x) => x.position.y).sort((a, b) => a - b) || [0]
+  if (hexes.length === 0) return null
 
-  const buffer = 100
-  const xMin = xs.slice(0, 1)[0] - buffer
-  const xMax = xs.slice(-1)[0] + buffer
-  const yMin = ys.slice(0, 1)[0] - buffer
-  const yMax = ys.slice(-1)[0] + buffer
+  const x_all = edges.map((x) => x.pointA.x).sort((a, b) => a - b) || [0]
+  const y_all = edges.map((x) => x.pointA.y).sort((a, b) => a - b) || [0]
+
+  const buffer = 20
+  const xMin = x_all.slice(0, 1)[0] - buffer
+  const xMax = x_all.slice(-1)[0] + buffer
+  const yMin = y_all.slice(0, 1)[0] - buffer
+  const yMax = y_all.slice(-1)[0] + buffer
 
   const [cx, cy] = [(xMin + xMax) / 2, (yMin + yMax) / 2]
 
   const width = xMax - xMin
   const height = yMax - yMin
 
-  const windowHeight = window.innerHeight
-
-  // const scaleWidth = width / windowWidth;
   const scaleWidth = windowWidth / width
-  // const scaleHeight = height / windowHeight;
   const scaleHeight = windowHeight / height
   let scale = scaleHeight > scaleWidth ? scaleWidth : scaleHeight
-  if (scale < 0.5) scale = 1
-
+  
   const offsetX = -windowWidth / 2 + cx * scale
-  const offsetY = -window.innerHeight / 2 + cy * scale
+  const offsetY = -windowHeight / 2 + cy * scale
 
   const settlements = players
     .map((player, i) =>
@@ -53,30 +52,29 @@ export function Board({ width: windowWidth }: Props) {
     .map((player, i) => player.roads.filter((x) => !!x.edge).map((road) => ({ player, road, color: colors[i] })))
     .flat()
 
-  if (!state) return null
   return (
     <Stage
       width={windowWidth}
-      height={window.innerHeight}
+      height={windowHeight}
       offsetX={offsetX}
       offsetY={offsetY}
     >
       <Layer scale={{ x: scale, y: scale }}>
-        {state?.hexes.map((x) => (
+        {hexes.map((x) => (
           <Land
             key={x.id}
             tile={x}
           />
         ))}
 
-        {state?.edges.map((x) => (
+        {edges.map((x) => (
           <EdgeShape
             key={x.id}
             edge={x}
           />
         ))}
 
-        {state?.intersections.map((x) => (
+        {intersections.map((x) => (
           <IntersectionShape
             key={x.id}
             intersection={x}
@@ -87,7 +85,7 @@ export function Board({ width: windowWidth }: Props) {
           <SettlementShape
             key={settlement.id}
             color={color}
-            intersection={state.intersections.find((x) => x.id === settlement.intersection)!}
+            intersection={intersections.find((x) => x.id === settlement.intersection)!}
           />
         ))}
 
@@ -95,7 +93,7 @@ export function Board({ width: windowWidth }: Props) {
           <SettlementShape
             key={settlement.id}
             color={color}
-            intersection={state.intersections.find((x) => x.id === settlement.intersection)!}
+            intersection={intersections.find((x) => x.id === settlement.intersection)!}
           />
         ))}
 
@@ -103,7 +101,7 @@ export function Board({ width: windowWidth }: Props) {
           <RoadShape
             key={road.id}
             color={color}
-            edge={state.edges.find((x) => x.id === road.edge)!}
+            edge={edges.find((x) => x.id === road.edge)!}
           />
         ))}
       </Layer>
