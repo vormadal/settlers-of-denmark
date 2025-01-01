@@ -31,6 +31,6 @@ export class Player extends Schema {
 
   cardsOfType(state: GameState, cardType: string){
     const cards = this.cards(state)
-    return cards.filter((card) => card.type === cardType)
+    return cards.filter((card) => card.variant === cardType)
   }
 }

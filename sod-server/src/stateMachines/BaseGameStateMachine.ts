@@ -3,6 +3,7 @@ import { createActor, setup } from 'xstate'
 import { MyRoom } from '../rooms/MyRoom'
 import { GameState } from '../rooms/schema/GameState'
 import {
+  buyRoad,
   clearAvailableEdges,
   clearAvailableIntersections,
   nextPlayer,
@@ -33,6 +34,7 @@ const machineConfig = setup({
   actions: {
     placeSettlement,
     placeRoad,
+    buyRoad,
     nextPlayer,
     setAvailableIntersections,
     setAvailableEdges,
@@ -50,7 +52,7 @@ const machineConfig = setup({
 
 export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
   const machine = machineConfig.createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNxwEYALDfceAnAHY7Rz8AGhAAT0RXIJJXV38-ezcfG387AF800LQsPEJSSmp8KAAlXXQIHgERUWKAeX4AEXUtJBA9AyMTM0sERx81GPc1OzUfHys1VxsXUIiEVzsfEitFgNcAVj8-SbV3RwysjBwCYnIqTBpS8sqhMTrGlVcWnX1DY1NWnqtbGNGrMbUKXc7h8jlmiB8rhidhhNism3sCRcBxA2WOeRIACddBQKDQGrhMGBOHVeLxRA0AJIiZpmdpvLqfSJWLYkLwA9ZRUHAmzg+as9zrKyxNwBdbAjwotG5U4MACumPwnCUDVEkgAqsVFLTWvTOh9QD1XCylu5AuK7OK4a5AXy3CR1monbs-LZXH4zekUfhdBA4GZpSciHTXvruogALR2PlRqVHGX5c40ehMFhsDghjrvcMITx83wkPY+daOSb2KyeTxxnJBs6FEplCCZhkGiyIS1QvrDWJbeE2dbrfOLZbTRwlvtqb7Tavo07Y3H4wlgZthpnzLwDcZ+R0JJ0+OzuKx8mxqdZOUfblYD6eZVHx2vyxUr7Nrhb2JxTCa2QGW-z5rwkKCxYlnCEyCv4GQZEAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNxwEYbATjWuArABZXO0crABoQAE9EG18SOzi7Kw8fR2cAdldbAF9MsLQsPEJSSmp8KAAlXXQIHgERUTKAeX4AEXUtJBA9AyMTM0sERy8SVz81O1dUqytgm0mwyIRXD1SSD0C7NUc7VM2rNR87bNyMHAJicipMGgqqmqExRpaVV3adfUNjUw7+qZthtQ8VlSW3cqSSflS80QriWJHSVh86ymdgOfkcRxAeVOhRIACddBQKDRmrhMGBOI1eLxRM0AJIiNpmLofXrfaEBKyrGyeDyzIKOUaQiLWbaxWwQvx+IFqMH7DFYgrnBgAV1x+E4SmaokkAFUyopGR1mT0vqB+hkwSQ-EF0jNEtabFDFq41CQ1Na3B4An57FZXPKTorSCq1Xc6o9Wpome8TX1oY4fH9JomrJK-EkRnYnQ4wclBi4fKkbFYNn5sjkQPhdBA4GYFWciNHup84wgALRZ4XtxyunYBF1BCFqMb+iv1nHFK6lehMFhsDhNlmmiyIH1OiaON0ln3LEvBRIB-INi4lcqVCCL2NshAo1xOLx2KX+d2FzsLJYrLa7nvbaZ2DyHti5z4oSxKkmAl4tte7ijKsQJovsKIQrYTrFn4JAlssUojGMMpBIBQYkCGy7GlBZrQnY9hOO4-hpmCMKhF2rjOFaPh7F6wSOKkwI2GW5ZAA */
     context: { gameState: gameState, dispatcher: dispatcher },
     initial: 'placingSettlement',
     states: {
@@ -99,6 +101,13 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
           END_TURN: {
             target: 'rollingDice',
             actions: 'nextPlayer',
+            guard: 'isPlayerTurn'
+          },
+          PLACE_ROAD: {
+            target: 'turn',
+            // forces the exit and entry transitions on 'turn' state to be rerun
+            reenter: true,
+            actions: 'buyRoad',
             guard: 'isPlayerTurn'
           }
         }

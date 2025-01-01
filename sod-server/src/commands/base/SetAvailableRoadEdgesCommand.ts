@@ -6,7 +6,7 @@ import { CardVariants } from '../../rooms/schema/Card'
 interface Payload {
   initialPlacement: boolean
 }
-export class SetAvailableRoadEdgesCommand extends Command<MyRoom, Payload> {
+export class SetAvailableEdgesCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const player = this.state.players.get(this.state.currentPlayer)
 
@@ -17,8 +17,9 @@ export class SetAvailableRoadEdgesCommand extends Command<MyRoom, Payload> {
       return
     }
 
-    const cards = player.numberOfCards(this.state)
-    if (![CardVariants.Brick, CardVariants.Lumber].every((variant) => cards[variant] > 0)) {
+    if (
+      ![CardVariants.Brick, CardVariants.Lumber].every((variant) => player.cardsOfType(this.state, variant).length > 0)
+    ) {
       return
     }
 
