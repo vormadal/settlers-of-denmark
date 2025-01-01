@@ -1,7 +1,7 @@
 import { ClearAvailableEdgesCommand } from '../../commands/base/ClearAvailableEdgesCommand'
 import { ClearAvailableIntersectionsCommand } from '../../commands/base/ClearAvailableIntersectionsCommand'
 import { NextPlayerCommand } from '../../commands/base/NextPlayerCommand'
-import { PlaceRoadCommand } from '../../commands/base/PlaceRoadCommand'
+import { PlaceInitialRoadCommand } from '../../commands/base/PlaceInitialRoadCommand'
 import { PlaceSettlementCommand } from '../../commands/base/PlaceSettlementCommand'
 import { ProduceInitialResourcesCommand } from '../../commands/base/ProduceInitialResourcesCommand'
 import { ProduceResourcesCommand } from '../../commands/base/ProduceResourcesCommand'
@@ -18,7 +18,7 @@ function placeSettlement({ event, context }: InputType) {
 
 function placeRoad({ event, context }: InputType) {
   const e = event as PlaceRoadEvent
-  context.dispatcher.dispatch(new PlaceRoadCommand(), e.payload)
+  context.dispatcher.dispatch(new PlaceInitialRoadCommand(), e.payload)
 }
 
 function nextPlayer({ context }: InputType) {

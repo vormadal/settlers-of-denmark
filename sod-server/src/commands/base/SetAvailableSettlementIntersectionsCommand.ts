@@ -12,7 +12,7 @@ export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, 
       const cards = player.cards(this.state)
       if (
         ![CardVariants.Brick, CardVariants.Grain, CardVariants.Lumber, CardVariants.Wool].every(
-          (variant) => cards[variant] > 0
+          (variant) => player.cardsOfType(this.state, variant).length > 0
         )
       ) {
         return

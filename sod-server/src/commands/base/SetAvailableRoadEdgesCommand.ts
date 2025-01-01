@@ -17,7 +17,7 @@ export class SetAvailableRoadEdgesCommand extends Command<MyRoom, Payload> {
       return
     }
 
-    const cards = player.cards(this.state)
+    const cards = player.numberOfCards(this.state)
     if (![CardVariants.Brick, CardVariants.Lumber].every((variant) => cards[variant] > 0)) {
       return
     }
