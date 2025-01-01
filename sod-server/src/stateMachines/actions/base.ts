@@ -2,11 +2,12 @@ import { ClearAvailableEdgesCommand } from '../../commands/base/ClearAvailableEd
 import { ClearAvailableIntersectionsCommand } from '../../commands/base/ClearAvailableIntersectionsCommand'
 import { NextPlayerCommand } from '../../commands/base/NextPlayerCommand'
 import { PlaceInitialRoadCommand } from '../../commands/base/PlaceInitialRoadCommand'
+import { PlaceRoadCommand } from '../../commands/base/PlaceRoadCommand'
 import { PlaceSettlementCommand } from '../../commands/base/PlaceSettlementCommand'
 import { ProduceInitialResourcesCommand } from '../../commands/base/ProduceInitialResourcesCommand'
 import { ProduceResourcesCommand } from '../../commands/base/ProduceResourcesCommand'
 import { RollDiceCommand } from '../../commands/base/RollDiceCommand'
-import { SetAvailableRoadEdgesCommand } from '../../commands/base/SetAvailableRoadEdgesCommand'
+import { SetAvailableEdgesCommand } from '../../commands/base/SetAvailableRoadEdgesCommand'
 import { SetAvailableSettlementIntersectionsCommand } from '../../commands/base/SetAvailableSettlementIntersectionsCommand'
 import { InputType } from '../BaseGameStateMachine'
 import { PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
@@ -21,6 +22,11 @@ function placeRoad({ event, context }: InputType) {
   context.dispatcher.dispatch(new PlaceInitialRoadCommand(), e.payload)
 }
 
+function buyRoad({ event, context }: InputType) {
+  const e = event as PlaceRoadEvent
+  context.dispatcher.dispatch(new PlaceRoadCommand(), e.payload)
+}
+
 function nextPlayer({ context }: InputType) {
   context.dispatcher.dispatch(new NextPlayerCommand())
 }
@@ -30,7 +36,7 @@ function setAvailableIntersections({ context }: InputType) {
 }
 
 function setAvailableEdges({ context }: InputType) {
-  context.dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), { initialPlacement: context.gameState.round < 3 })
+  context.dispatcher.dispatch(new SetAvailableEdgesCommand(), { initialPlacement: context.gameState.round < 3 })
 }
 
 function clearAvailableEdges({ context }: InputType) {
@@ -56,7 +62,7 @@ function produceResources({ context }: InputType) {
 
 export {
     clearAvailableEdges,
-    clearAvailableIntersections, nextPlayer, placeRoad, placeSettlement, produceInitialResources,
+    clearAvailableIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, produceInitialResources,
     produceResources, rollDice, setAvailableEdges, setAvailableIntersections
 }
 
