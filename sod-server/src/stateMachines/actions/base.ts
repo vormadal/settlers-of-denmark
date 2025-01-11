@@ -3,6 +3,7 @@ import { ClearAvailableIntersectionsCommand } from '../../commands/base/ClearAva
 import { NextPlayerCommand } from '../../commands/base/NextPlayerCommand'
 import { PlaceInitialRoadCommand } from '../../commands/base/PlaceInitialRoadCommand'
 import { PlaceRoadCommand } from '../../commands/base/PlaceRoadCommand'
+import { PlaceInitialSettlementCommand } from '../../commands/base/PlaceInitialSettlementCommand'
 import { PlaceSettlementCommand } from '../../commands/base/PlaceSettlementCommand'
 import { ProduceInitialResourcesCommand } from '../../commands/base/ProduceInitialResourcesCommand'
 import { ProduceResourcesCommand } from '../../commands/base/ProduceResourcesCommand'
@@ -13,6 +14,11 @@ import { InputType } from '../BaseGameStateMachine'
 import { PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
 
 function placeSettlement({ event, context }: InputType) {
+  const e = event as PlaceSettlementEvent
+  context.dispatcher.dispatch(new PlaceInitialSettlementCommand(), e.payload)
+}
+
+function buySettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
   context.dispatcher.dispatch(new PlaceSettlementCommand(), e.payload)
 }
@@ -62,7 +68,7 @@ function produceResources({ context }: InputType) {
 
 export {
     clearAvailableEdges,
-    clearAvailableIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, produceInitialResources,
+    clearAvailableIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, produceInitialResources,
     produceResources, rollDice, setAvailableEdges, setAvailableIntersections
 }
 

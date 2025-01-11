@@ -4,6 +4,7 @@ import { MyRoom } from '../rooms/MyRoom'
 import { GameState } from '../rooms/schema/GameState'
 import {
   buyRoad,
+  buySettlement,
   clearAvailableEdges,
   clearAvailableIntersections,
   nextPlayer,
@@ -33,6 +34,7 @@ const machineConfig = setup({
   },
   actions: {
     placeSettlement,
+    buySettlement,
     placeRoad,
     buyRoad,
     nextPlayer,
@@ -108,6 +110,13 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
             actions: 'buyRoad',
+            guard: 'isPlayerTurn'
+          },
+          PLACE_SETTLEMENT: {
+            target: 'turn',
+            // forces the exit and entry transitions on 'turn' state to be rerun
+            reenter: true,
+            actions: 'buySettlement',
             guard: 'isPlayerTurn'
           }
         }
