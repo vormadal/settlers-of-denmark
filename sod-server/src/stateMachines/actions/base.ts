@@ -11,7 +11,9 @@ import { RollDiceCommand } from '../../commands/base/RollDiceCommand'
 import { SetAvailableEdgesCommand } from '../../commands/base/SetAvailableRoadEdgesCommand'
 import { SetAvailableSettlementIntersectionsCommand } from '../../commands/base/SetAvailableSettlementIntersectionsCommand'
 import { InputType } from '../BaseGameStateMachine'
-import { PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
+import { PlaceCityEvent, PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
+import { SetAvailableCityIntersectionsCommand } from '../../commands/base/SetAvailableCityIntersectionsCommand'
+import { PlaceCityCommand } from '../../commands/base/PlaceCityCommand'
 
 function placeSettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
@@ -21,6 +23,11 @@ function placeSettlement({ event, context }: InputType) {
 function buySettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
   context.dispatcher.dispatch(new PlaceSettlementCommand(), e.payload)
+}
+
+function buyCity({ event, context }: InputType) {
+  const e = event as PlaceCityEvent
+  context.dispatcher.dispatch(new PlaceCityCommand(), e.payload)
 }
 
 function placeRoad({ event, context }: InputType) {
@@ -39,6 +46,7 @@ function nextPlayer({ context }: InputType) {
 
 function setAvailableIntersections({ context }: InputType) {
   context.dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: context.gameState.round < 3 })
+  context.dispatcher.dispatch(new SetAvailableCityIntersectionsCommand(), { initialPlacement: context.gameState.round < 3 })
 }
 
 function setAvailableEdges({ context }: InputType) {
@@ -69,6 +77,6 @@ function produceResources({ context }: InputType) {
 export {
     clearAvailableEdges,
     clearAvailableIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, produceInitialResources,
-    produceResources, rollDice, setAvailableEdges, setAvailableIntersections
+    produceResources, rollDice, setAvailableEdges, setAvailableIntersections, buyCity
 }
 

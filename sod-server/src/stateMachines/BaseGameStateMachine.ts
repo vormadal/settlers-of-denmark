@@ -5,6 +5,7 @@ import { GameState } from '../rooms/schema/GameState'
 import {
   buyRoad,
   buySettlement,
+  buyCity,
   clearAvailableEdges,
   clearAvailableIntersections,
   nextPlayer,
@@ -35,6 +36,7 @@ const machineConfig = setup({
   actions: {
     placeSettlement,
     buySettlement,
+    buyCity,
     placeRoad,
     buyRoad,
     nextPlayer,
@@ -54,7 +56,7 @@ const machineConfig = setup({
 
 export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
   const machine = machineConfig.createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNxwEYbATjWuArABZXO0crABoQAE9EG18SOzi7Kw8fR2cAdldbAF9MsLQsPEJSSmp8KAAlXXQIHgERUTKAeX4AEXUtJBA9AyMTM0sERy8SVz81O1dUqytgm0mwyIRXD1SSD0C7NUc7VM2rNR87bNyMHAJicipMGgqqmqExRpaVV3adfUNjUw7+qZthtQ8VlSW3cqSSflS80QriWJHSVh86ymdgOfkcRxAeVOhRIACddBQKDRmrhMGBOI1eLxRM0AJIiNpmLofXrfaEBKyrGyeDyzIKOUaQiLWbaxWwQvx+IFqMH7DFYgrnBgAV1x+E4SmaokkAFUyopGR1mT0vqB+hkwSQ-EF0jNEtabFDFq41CQ1Na3B4An57FZXPKTorSCq1Xc6o9Wpome8TX1oY4fH9JomrJK-EkRnYnQ4wclBi4fKkbFYNn5sjkQPhdBA4GYFWciNHup84wgALRZ4XtxyunYBF1BCFqMb+iv1nHFK6lehMFhsDhNlmmiyIH1OiaON0ln3LEvBRIB-INi4lcqVCCL2NshAo1xOLx2KX+d2FzsLJYrLa7nvbaZ2DyHti5z4oSxKkmAl4tte7ijKsQJovsKIQrYTrFn4JAlssUojGMMpBIBQYkCGy7GlBZrQnY9hOO4-hpmCMKhF2rjOFaPh7F6wSOKkwI2GW5ZAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNxwEYbATjWuArABZXO0crABoQAE9EG18SOzi7Kw8fR2cAdldbAF9MsLQsPEJSSmp8KAAlXXQIHgERUTKAeX4AEXUtJBA9AyMTM0sERy8SVz81O1dUqytgm0mwyIRXD1SSD0C7NUc7VM2rNR87bNyMHAJicipMGgqqmqExRpaVV3adfUNjUw7+qZthtQ8VlSW3cqSSflS80QriWJHSVh86ymdgOfkcRxAeVOhRIACddBQKDRmrhMGBOI1eLxRM0AJIiNpmLofXrfaEBKyrGyeDyzIKOUaQiLWbaxWwQvx+IFqMH7DFYgrnBgAV1x+E4SmaokkAFUyopGR1mT0vqB+hkwSQ-EF0jNEtabFDFq41CQ1Na3B4An57FZXPKTorSCq1Xc6o9Wpome8TX1oSiVpMfDYrJK-EkRnYnRCSP5koMXD5UimNn4A-kzsHVeq+PdxFIZPIlKoo0aY5844svK44W5PGmwTCnS7Xe787zHEWS9kciB8LoIHAzArK9Huh22QgALRZ4XbxKrfwulJjXmpVKHWcrnHFK6lehMFhsDhrlmmiyIH3D4Fuqx2H3LH+wSJOW2LnLe1yVBAr6xpuKI9oMYxSv4Y4XsOyxOHYgGOGMkxbB4oFBniBJEqUJJkjBG5mtCNijKsQJovsKIQrYTopn4JB-ssUojGMMpBIRlYkCG77GlRH6LHY9hOO4-gDmsGTDs4Vo+HsXrBI457OGWM5AA */
     context: { gameState: gameState, dispatcher: dispatcher },
     initial: 'placingSettlement',
     states: {
@@ -117,6 +119,13 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
             actions: 'buySettlement',
+            guard: 'isPlayerTurn'
+          },
+          BUY_CITY: {
+            target: 'turn',
+            // forces the exit and entry transitions on 'turn' state to be rerun
+            reenter: true,
+            actions: 'buyCity',
             guard: 'isPlayerTurn'
           }
         }
