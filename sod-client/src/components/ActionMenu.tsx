@@ -19,43 +19,50 @@ export default function ActionMenu() {
     <Box sx={{ 
       padding: isMobile ? '0.5rem 0.25rem' : '0.75rem 0.5rem', 
       display: 'flex', 
-      flexDirection: 'column', 
       gap: isMobile ? 0.75 : 1, 
       minWidth: 0,
       height: '100%'
     }}>
-      {/* Dice row - at the top */}
+      {/* Cards - takes full height and most width */}
       <Box sx={{ 
-        display: 'flex', 
-        gap: 0.5, 
-        justifyContent: 'right', 
-        alignItems: 'center',
-        minHeight: 0
+        flex: 1, 
+        minWidth: 0, 
+        height: '100%',
+        display: 'flex',
+        alignItems: 'flex-start'
       }}>
-        {dice.map((x, i) => (
-          <DiceComponent
-            key={x.color}
-            value={x.value}
-            color={x.color}
-            disabled={player?.id !== currentPlayer?.id || phase.key !== 'rollingDice'}
-            onClick={() => room?.send('ROLL_DICE')}
-            size={isMobile ? 'small' : 'medium'}
-          />
-        ))}
+        {player && <PlayerCards player={player} />}
       </Box>
 
-      {/* Cards and button row - at the bottom */}
+      {/* Right column - dice and button stacked */}
       <Box sx={{ 
         display: 'flex', 
-        gap: isMobile ? 0.75 : 1, 
-        alignItems: 'center', 
-        minWidth: 0,
-        flex: 1,
-        minHeight: 0
+        flexDirection: 'column',
+        gap: isMobile ? 0.75 : 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        minWidth: 'fit-content'
       }}>
-        <Box sx={{ flex: 1, minWidth: 0, minHeight: 0 }}>
-          {player && <PlayerCards player={player} />}
+        {/* Dice at the top */}
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 0.5, 
+          alignItems: 'center'
+        }}>
+          {dice.map((x, i) => (
+            <DiceComponent
+              key={x.color}
+              value={x.value}
+              color={x.color}
+              disabled={player?.id !== currentPlayer?.id || phase.key !== 'rollingDice'}
+              onClick={() => room?.send('ROLL_DICE')}
+              size={isMobile ? 'small' : 'medium'}
+            />
+          ))}
         </Box>
+
+  
+        {/* End Turn button at the bottom */}
         <IconButton
           disabled={player?.id !== currentPlayer?.id || phase.key !== 'turn'}
           onClick={() => room?.send('END_TURN')}
