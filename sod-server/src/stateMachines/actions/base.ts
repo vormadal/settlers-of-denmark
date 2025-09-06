@@ -1,5 +1,6 @@
 import { ClearAvailableEdgesCommand } from '../../commands/base/ClearAvailableEdgesCommand'
-import { ClearAvailableIntersectionsCommand } from '../../commands/base/ClearAvailableIntersectionsCommand'
+import { ClearAvailableSettlementIntersectionsCommand } from '../../commands/base/ClearAvailableSettlementIntersectionsCommand'
+import { ClearAvailableCityIntersectionsCommand } from '../../commands/base/ClearAvailableCityIntersectionsCommand'
 import { NextPlayerCommand } from '../../commands/base/NextPlayerCommand'
 import { PlaceInitialRoadCommand } from '../../commands/base/PlaceInitialRoadCommand'
 import { PlaceRoadCommand } from '../../commands/base/PlaceRoadCommand'
@@ -11,7 +12,9 @@ import { RollDiceCommand } from '../../commands/base/RollDiceCommand'
 import { SetAvailableEdgesCommand } from '../../commands/base/SetAvailableRoadEdgesCommand'
 import { SetAvailableSettlementIntersectionsCommand } from '../../commands/base/SetAvailableSettlementIntersectionsCommand'
 import { InputType } from '../BaseGameStateMachine'
-import { PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
+import { PlaceCityEvent, PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
+import { SetAvailableCityIntersectionsCommand } from '../../commands/base/SetAvailableCityIntersectionsCommand'
+import { PlaceCityCommand } from '../../commands/base/PlaceCityCommand'
 
 function placeSettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
@@ -21,6 +24,11 @@ function placeSettlement({ event, context }: InputType) {
 function buySettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
   context.dispatcher.dispatch(new PlaceSettlementCommand(), e.payload)
+}
+
+function buyCity({ event, context }: InputType) {
+  const e = event as PlaceCityEvent
+  context.dispatcher.dispatch(new PlaceCityCommand(), e.payload)
 }
 
 function placeRoad({ event, context }: InputType) {
@@ -37,8 +45,12 @@ function nextPlayer({ context }: InputType) {
   context.dispatcher.dispatch(new NextPlayerCommand())
 }
 
-function setAvailableIntersections({ context }: InputType) {
+function setAvailableSettlementIntersections({ context }: InputType) {
   context.dispatcher.dispatch(new SetAvailableSettlementIntersectionsCommand(), { initialPlacement: context.gameState.round < 3 })
+}
+
+function setAvailableCityIntersections({ context }: InputType) {
+  context.dispatcher.dispatch(new SetAvailableCityIntersectionsCommand(), { initialPlacement: context.gameState.round < 3 })
 }
 
 function setAvailableEdges({ context }: InputType) {
@@ -49,8 +61,12 @@ function clearAvailableEdges({ context }: InputType) {
   context.dispatcher.dispatch(new ClearAvailableEdgesCommand())
 }
 
-function clearAvailableIntersections({ context }: InputType) {
-  context.dispatcher.dispatch(new ClearAvailableIntersectionsCommand())
+function clearAvailableSettlementIntersections({ context }: InputType) {
+  context.dispatcher.dispatch(new ClearAvailableSettlementIntersectionsCommand())
+}
+
+function clearAvailableCityIntersections({ context }: InputType) {
+  context.dispatcher.dispatch(new ClearAvailableCityIntersectionsCommand())
 }
 
 function rollDice({ context }: InputType) {
@@ -67,8 +83,7 @@ function produceResources({ context }: InputType) {
 }
 
 export {
-    clearAvailableEdges,
-    clearAvailableIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, produceInitialResources,
-    produceResources, rollDice, setAvailableEdges, setAvailableIntersections
+    clearAvailableEdges, clearAvailableSettlementIntersections, clearAvailableCityIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, buyCity, produceInitialResources,
+    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections
 }
 

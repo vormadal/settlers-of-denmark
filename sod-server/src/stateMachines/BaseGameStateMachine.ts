@@ -5,8 +5,10 @@ import { GameState } from '../rooms/schema/GameState'
 import {
   buyRoad,
   buySettlement,
+  buyCity,
   clearAvailableEdges,
-  clearAvailableIntersections,
+  clearAvailableSettlementIntersections,
+  clearAvailableCityIntersections,
   nextPlayer,
   placeRoad,
   placeSettlement,
@@ -14,7 +16,8 @@ import {
   produceResources,
   rollDice,
   setAvailableEdges,
-  setAvailableIntersections
+  setAvailableSettlementIntersections,
+  setAvailableCityIntersections
 } from './actions/base'
 import { Events } from './events/base'
 import { guard, initialRoundIsComplete, isPlayerTurn } from './guards/base'
@@ -35,13 +38,16 @@ const machineConfig = setup({
   actions: {
     placeSettlement,
     buySettlement,
+    buyCity,
     placeRoad,
     buyRoad,
     nextPlayer,
-    setAvailableIntersections,
+    setAvailableSettlementIntersections,
+    setAvailableCityIntersections,
     setAvailableEdges,
     clearAvailableEdges,
-    clearAvailableIntersections,
+    clearAvailableSettlementIntersections,
+    clearAvailableCityIntersections,
     rollDice,
     produceInitialResources,
     produceResources
@@ -54,13 +60,13 @@ const machineConfig = setup({
 
 export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
   const machine = machineConfig.createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNxwEYbATjWuArABZXO0crABoQAE9EG18SOzi7Kw8fR2cAdldbAF9MsLQsPEJSSmp8KAAlXXQIHgERUTKAeX4AEXUtJBA9AyMTM0sERy8SVz81O1dUqytgm0mwyIRXD1SSD0C7NUc7VM2rNR87bNyMHAJicipMGgqqmqExRpaVV3adfUNjUw7+qZthtQ8VlSW3cqSSflS80QriWJHSVh86ymdgOfkcRxAeVOhRIACddBQKDRmrhMGBOI1eLxRM0AJIiNpmLofXrfaEBKyrGyeDyzIKOUaQiLWbaxWwQvx+IFqMH7DFYgrnBgAV1x+E4SmaokkAFUyopGR1mT0vqB+hkwSQ-EF0jNEtabFDFq41CQ1Na3B4An57FZXPKTorSCq1Xc6o9Wpome8TX1oY4fH9JomrJK-EkRnYnQ4wclBi4fKkbFYNn5sjkQPhdBA4GYFWciNHup84wgALRZ4XtxyunYBF1BCFqMb+iv1nHFK6lehMFhsDhNlmmiyIH1OiaON0ln3LEvBRIB-INi4lcqVCCL2NshAo1xOLx2KX+d2FzsLJYrLa7nvbaZ2DyHti5z4oSxKkmAl4tte7ijKsQJovsKIQrYTrFn4JAlssUojGMMpBIBQYkCGy7GlBZrQnY9hOO4-hpmCMKhF2rjOFaPh7F6wSOKkwI2GW5ZAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNx2oCcARkd2A7Fc8eAKwANCAAnogALGo+JIE+LlaRvmo2Lh5WAL6ZoWhYeISklNT4UABKuugQPAIiomUA8vwAIupaSCB6BkYmZpYIjm5qJB7RkW4JrkmOPqERCFaDTmmDkT5uNoFqvnbZuRg4BMTkVJg0FVU1QmKNLSoe7Tr6hsamHf1WPo4jnz6RHm4knYNrNwogbJFIiQ7MCbF4YkEJjY9iA8odCiQAE66CgUGjNXCYMCcRq8XiiZoASREbTMXRevXeiAyPliELcMzsNm2gRsEzm1gmJCGdg8Pl5HhcPjUjhRaIKxwYAFdMfhOEpmqJJABVMqKWkdek9N6gfostwkZIzQIS9aRWwChZqDzC3luDm-QKODx2QJyg4K0jK1VXOq3VqaOnPY19Zm+4aBKweDJ2SLOZIZR02PyW7YQ+yuMXef35I5BlVqvjXcRSGTyJSqSOG6OvWMIH1wpySyHS3l8mxWR1i2KRRM8xyQxyrEvoxUVzgAIW1AE1RIJKZJlwant1W0z2zCrCQZV7NgOrKlB2CBi7xu7HIEhotC25sjkQPhdBA4GZ5WWo7ujKmogAC0diOmBM6BicJR0IwzCsOwDAAQyJoWFENiOlYwLCpE9hqPESY+BkUFljBZylBcEAoTG+6+i6gwEdEtisqykRYUsrJ2Jeax2FYSaRKRGLYri+KEmANF7sB7YQsMgJ+P4dqOLYITXnhDjZtxzoThOahWH675-hiwZoUaUnoQe-zCnyfF-Nx8SqfMnxQvpgJpFyyYzH8b6ZEAA */
     context: { gameState: gameState, dispatcher: dispatcher },
     initial: 'placingSettlement',
     states: {
       placingSettlement: {
-        entry: ['nextPlayer', 'setAvailableIntersections'],
-        exit: ['clearAvailableIntersections'],
+        entry: ['nextPlayer', 'setAvailableSettlementIntersections'],
+        exit: ['clearAvailableSettlementIntersections'],
         on: {
           PLACE_SETTLEMENT: {
             target: 'placingRoad',
@@ -97,8 +103,8 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         }
       },
       turn: {
-        entry: ['setAvailableIntersections', 'setAvailableEdges'],
-        exit: ['clearAvailableIntersections', 'clearAvailableEdges'],
+        entry: ['setAvailableSettlementIntersections', 'setAvailableCityIntersections', 'setAvailableEdges'],
+        exit: ['clearAvailableSettlementIntersections', 'clearAvailableCityIntersections', 'clearAvailableEdges'],
         on: {
           END_TURN: {
             target: 'rollingDice',
@@ -117,6 +123,13 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
             actions: 'buySettlement',
+            guard: 'isPlayerTurn'
+          },
+          PLACE_CITY: {
+            target: 'turn',
+            // forces the exit and entry transitions on 'turn' state to be rerun
+            reenter: true,
+            actions: 'buyCity',
             guard: 'isPlayerTurn'
           }
         }

@@ -246,14 +246,14 @@ export class MyRoom extends Room<GameState> {
           for (let i = 0; i < this.state.players.size * 2; i++) {
             const intersectionIndex =
               Math.floor(
-                Math.random() * this.state.availableIntersections.length
+                Math.random() * this.state.availableSettlementIntersections.length
               ) - 1;
             this.stateMachine.send({
               type: "PLACE_SETTLEMENT",
               payload: {
                 playerId: this.state.currentPlayer,
                 intersectionId:
-                  this.state.availableIntersections[intersectionIndex],
+                  this.state.availableSettlementIntersections[intersectionIndex],
               },
             });
             const edgeIndex =

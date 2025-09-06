@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Circle } from 'react-konva'
 import { usePlayer } from '../context/PlayerContext'
 import { useRoom } from '../context/RoomContext'
-import { useAvailableIntersections, useCurrentPlayer } from '../hooks/stateHooks'
+import { useAvailableSettlementIntersections, useCurrentPlayer } from '../hooks/stateHooks'
 import { Intersection } from '../state/Intersection'
 
 interface Type {
@@ -15,7 +15,7 @@ const activeColor = '#ffffff'
 export function IntersectionShape({ intersection, onClick }: Type) {
   const room = useRoom()
   const [focus, setFocus] = useState(false)
-  const availableIntersections = useAvailableIntersections()
+  const availableIntersections = useAvailableSettlementIntersections()
   const player = usePlayer()
   const currentPlayer = useCurrentPlayer()
 
