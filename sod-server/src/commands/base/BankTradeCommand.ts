@@ -36,19 +36,17 @@ export class BankTradeCommand extends Command<MyRoom, Payload> {
 
 		let amountToReceive = 0
 		for (const receive of payload.receive) {
-			amountToReceive += receive.count
-		}
-		if (amountToReceive !== buyingPower) {
-			return
-		}
-
-		for (const receive of payload.receive) {
-			const availableCards = state.getAvailableCardsByType(receive.type)
+            const availableCards = state.getAvailableCardsByType(receive.type)
 			if (availableCards.length < receive.count) {
 				return
 			}
+			amountToReceive += receive.count
 		}
-
+        
+		if (amountToReceive !== buyingPower) {
+			return
+		}
+        
 		for (const give of payload.give) {
 			let cardsToReturn = player.cardsOfType(state, give.type)
 			cardsToReturn = cardsToReturn.slice(0, give.count)
