@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import { Player } from '../state/Player'
 import { useCurrentPlayer, useDeck } from '../hooks/stateHooks'
 import { CartoonStatCard } from './CartoonStatCard'
+import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
 
 interface Props {
   width: number
@@ -68,49 +69,49 @@ export function PlayerInfo({ width, player, color }: Props) {
       <Box
         sx={{
           display: 'flex',
-          gap: isMobile ? '4px' : '8px',
+          gap: isMobile ? '2px' : '4px',
           marginBottom: isMobile ? '4px' : '8px',
           justifyContent: 'center',
           position: 'relative',
           zIndex: 1,
-          flexWrap: isMobile ? 'wrap' : 'nowrap',
+          flexWrap: 'nowrap', // Prevent wrapping with smaller cards
         }}
       >
         <CartoonStatCard
-          icon="🔬"
           count={developmentCardsCount}
-          color="#DDA0DD"
           label="Development Cards"
           compact={isMobile}
-        />
+        >
+          <DevelopmentIcon size={isMobile ? 12 : 16} color="#8B4513" />
+        </CartoonStatCard>
         <CartoonStatCard
-          icon="💎"
           count={resourceCardsCount}
-          color="#87CEEB"
           label="Resource Cards"
           compact={isMobile}
-        />
+        >
+          <ResourceIcon size={isMobile ? 12 : 16} color="#D2691E" />
+        </CartoonStatCard>
         <CartoonStatCard
-          icon="🛤️"
           count={availableRoads}
-          color="#FFB347"
           label="Available Roads"
           compact={isMobile}
-        />
+        >
+          <RoadIcon size={isMobile ? 12 : 16} color="#8B4513" />
+        </CartoonStatCard>
         <CartoonStatCard
-          icon="🏘️"
           count={availableSettlements}
-          color="#90EE90"
           label="Available Settlements"
           compact={isMobile}
-        />
+        >
+          <SettlementIcon size={isMobile ? 12 : 16} color="#DEB887" />
+        </CartoonStatCard>
         <CartoonStatCard
-          icon="🏰"
           count={availableCities}
-          color="#FFB6C1"
           label="Available Cities"
           compact={isMobile}
-        />
+        >
+          <CityIcon size={isMobile ? 12 : 16} color="#708090" />
+        </CartoonStatCard>
       </Box>
 
       {/* Player Name */}

@@ -6,33 +6,17 @@ interface Props {
   color: string
 }
 
-// Castle-like city shape with multiple towers
+// Simple building shape matching the city icon design
 const points = [
-  // Left tower
-  -12, 12,
-  -12, -8,
-  -8, -12,
-  -8, -8,
-  // Left wall
-  -8, -8,
-  -4, -8,
-  // Center tower (tallest)
-  -4, -8,
-  -4, -16,
-  0, -20,
-  4, -16,
-  4, -8,
-  // Right wall
-  4, -8,
-  8, -8,
-  // Right tower
-  8, -8,
-  8, -12,
-  12, -8,
-  12, 12,
-  // Base
-  12, 12,
-  -12, 12
+  // Start from bottom right and go clockwise
+  14, 14,   // bottom right
+  -14, 14,  // bottom left
+  -14, -14, // top left
+  -4, -14,  // notch start left
+  -4, -4,   // notch inner left
+  4, -4,    // notch inner right
+  4, -14,   // notch end right
+  14, -14,  // top right
 ]
 
 export function CityShape({ intersection, color = '#000000' }: Props) {
@@ -44,9 +28,10 @@ export function CityShape({ intersection, color = '#000000' }: Props) {
       closed={true}
       shadowEnabled={true}
       shadowColor="#000000"
-      shadowOffsetX={3}
-      shadowBlur={6}
-      shadowOpacity={0.7}
+      shadowOffsetX={1}
+      shadowOffsetY={1}
+      shadowBlur={2}
+      shadowOpacity={0.3}
       strokeWidth={1.2}
       stroke={'#000000'}
       fill={color}
