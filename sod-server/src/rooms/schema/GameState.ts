@@ -43,6 +43,10 @@ export class GameState extends Schema {
   getOccupiedIntersections() {
     return this.structures.filter((x) => !!x.intersection).map((settlement) => settlement.getIntersection(this))
   }
+
+  getAvailableCardsByType(cardType: string) {
+    return this.deck.filter((card) => card.variant === cardType && !card.owner)
+  }
 }
 
 export const PhaseSteps = {

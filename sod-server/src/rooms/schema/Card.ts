@@ -6,20 +6,26 @@ export const CardTypes = {
   Development: 'Development'
 }
 
-export const CardVariants = {
-  // resources
+export const ResourceCardVariants = {
   Lumber: 'Lumber',
   Wool: 'Wool',
   Grain: 'Grain',
   Ore: 'Ore',
-  Brick: 'Brick',
-  // development cards
+  Brick: 'Brick'
+}
+
+export const DevelopmentCardVariants = {
   Knight: 'Knight',
   VictoryPoint: 'VictoryPoint',
   RoadBuilding: 'RoadBuilding',
   Monopoly: 'Monopoly',
   YearOfPlenty: 'YearOfPlenty',
   Merchant: 'Merchant'
+}
+
+export const CardVariants = {
+  ...ResourceCardVariants,
+  ...DevelopmentCardVariants
 }
 
 export class Card extends Schema {
