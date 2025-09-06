@@ -6,7 +6,34 @@ interface Props {
   color: string
 }
 
-const points = [10, 10, -10, 10, -10, -10, -3, -10, -3, -3, 3, -3, 3, -10, 10, -10, 10, 10]
+// Castle-like city shape with multiple towers
+const points = [
+  // Left tower
+  -12, 12,
+  -12, -8,
+  -8, -12,
+  -8, -8,
+  // Left wall
+  -8, -8,
+  -4, -8,
+  // Center tower (tallest)
+  -4, -8,
+  -4, -16,
+  0, -20,
+  4, -16,
+  4, -8,
+  // Right wall
+  4, -8,
+  8, -8,
+  // Right tower
+  8, -8,
+  8, -12,
+  12, -8,
+  12, 12,
+  // Base
+  12, 12,
+  -12, 12
+]
 
 export function CityShape({ intersection, color = '#000000' }: Props) {
   return (
@@ -15,7 +42,12 @@ export function CityShape({ intersection, color = '#000000' }: Props) {
       x={intersection.position.x}
       y={intersection.position.y}
       closed={true}
-      strokeWidth={0.01}
+      shadowEnabled={true}
+      shadowColor="#000000"
+      shadowOffsetX={3}
+      shadowBlur={6}
+      shadowOpacity={0.7}
+      strokeWidth={1.2}
       stroke={'#000000'}
       fill={color}
     />
