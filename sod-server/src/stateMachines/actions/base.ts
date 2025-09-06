@@ -12,9 +12,10 @@ import { RollDiceCommand } from '../../commands/base/RollDiceCommand'
 import { SetAvailableEdgesCommand } from '../../commands/base/SetAvailableRoadEdgesCommand'
 import { SetAvailableSettlementIntersectionsCommand } from '../../commands/base/SetAvailableSettlementIntersectionsCommand'
 import { InputType } from '../BaseGameStateMachine'
-import { PlaceCityEvent, PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
+import { BankTradeEvent, PlaceCityEvent, PlaceRoadEvent, PlaceSettlementEvent } from '../events/base'
 import { SetAvailableCityIntersectionsCommand } from '../../commands/base/SetAvailableCityIntersectionsCommand'
 import { PlaceCityCommand } from '../../commands/base/PlaceCityCommand'
+import { BankTradeCommand } from '../../commands/base/BankTradeCommand'
 
 function placeSettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
@@ -82,8 +83,13 @@ function produceResources({ context }: InputType) {
   context.dispatcher.dispatch(new ProduceResourcesCommand())
 }
 
+function bankTrade({ event, context }: InputType) {
+  const e = event as BankTradeEvent
+  context.dispatcher.dispatch(new BankTradeCommand(), e.payload)
+}
+
 export {
     clearAvailableEdges, clearAvailableSettlementIntersections, clearAvailableCityIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, buyCity, produceInitialResources,
-    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections
+    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections, bankTrade
 }
 
