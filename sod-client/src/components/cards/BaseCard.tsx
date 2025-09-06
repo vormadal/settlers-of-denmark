@@ -11,25 +11,47 @@ export function BaseCard({ children, color, offset, width, height }: Props) {
   return (
     <Box
       sx={{
-        borderRadius: '0.5rem',
-        border: '1px solid rgba(0, 0, 0, 0.5)',
-        background: 'rgba(255, 255, 255)',
+        background: `linear-gradient(145deg, ${color || '#ffffff'} 0%, ${color || '#ffffff'}CC 100%)`,
+        borderRadius: '8px',
         width: width,
         height: height,
-        padding: '2px',
-        position: 'absolute',
         top: 0,
-        left: offset
+        left: offset,
+        boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
+        border: '2px solid rgba(255,255,255,0.8)',
+        transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        '&:hover': {
+          transform: 'translateY(-1px) scale(1.02)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        },
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '40%',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%)',
+          borderRadius: '8px 8px 0 0',
+        },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        position: 'absolute',
+        zIndex: 1
       }}
     >
       <Box
         sx={{
+          position: 'relative',
+          zIndex: 2,
           width: '100%',
           height: '100%',
-          backgroundColor: color,
-          borderRadius: '0.5rem',
-          margin: 'auto 0',
-          textAlign: 'center'
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
         {children}
@@ -37,27 +59,3 @@ export function BaseCard({ children, color, offset, width, height }: Props) {
     </Box>
   )
 }
-// css for stacking divs on top of each other
-// .card-group {
-//   display: flex;
-// }
-// .card {
-//   position: relative;
-//   flex: 1;
-// }
-// .card > div {
-//   border-radius: 0.5rem;
-//   border: 1px solid rgba(0, 0, 0, 0.5);
-//   background: rgba(255, 255, 255);
-//   width: 60px;
-//   height: 80px;
-//   padding: 2px;
-//   position: absolute;
-//   top: 0;
-// }
-// .card > div > div {
-//   width: 100%;
-//   height: 100%;
-//   border-radius: 0.5rem;
-// }
-// .card > div > div:nth-child(1) {
