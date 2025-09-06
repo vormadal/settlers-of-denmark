@@ -3,11 +3,10 @@ import { Box } from '@mui/material'
 interface Props {
   children?: React.ReactNode
   color?: string
-  offset?: number
   width: number
   height: number
 }
-export function BaseCard({ children, color, offset, width, height }: Props) {
+export function BaseCard({ children, color, width, height }: Props) {
   return (
     <Box
       sx={{
@@ -15,8 +14,6 @@ export function BaseCard({ children, color, offset, width, height }: Props) {
         borderRadius: '8px',
         width: width,
         height: height,
-        top: 0,
-        left: offset,
         boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
         border: '2px solid rgba(255,255,255,0.8)',
         transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -39,8 +36,7 @@ export function BaseCard({ children, color, offset, width, height }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        position: 'absolute',
-        zIndex: 1
+        position: 'relative', // Changed from absolute to relative
       }}
     >
       <Box
