@@ -17,7 +17,8 @@ import {
   rollDice,
   setAvailableEdges,
   setAvailableSettlementIntersections,
-  setAvailableCityIntersections
+  setAvailableCityIntersections,
+  bankTrade
 } from './actions/base'
 import { Events } from './events/base'
 import { guard, initialRoundIsComplete, isPlayerTurn } from './guards/base'
@@ -50,7 +51,8 @@ const machineConfig = setup({
     clearAvailableCityIntersections,
     rollDice,
     produceInitialResources,
-    produceResources
+    produceResources,
+    bankTrade
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -130,6 +132,13 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
             actions: 'buyCity',
+            guard: 'isPlayerTurn'
+          },
+          BANK_TRADE: {
+            target: 'turn',
+            // forces the exit and entry transitions on 'turn' state to be rerun
+            reenter: true,
+            actions: 'bankTrade',
             guard: 'isPlayerTurn'
           }
         }
