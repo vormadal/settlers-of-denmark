@@ -22,6 +22,21 @@ export function useAvailableSettlementIntersections() {
   return availableSettlementIntersections
 }
 
+export function useUpgradableSettlements() {
+  const gameRoom = useRoom()
+  const [upgradableSettlements, setUpgradableSettlements] = useState<string[]>(
+    gameRoom?.state.availableCityIntersections.toArray() || []
+  )
+  useEffect(() => {
+    if (!gameRoom) return
+
+    gameRoom.state.listen('availableCityIntersections', (intersections) => {
+      setUpgradableSettlements(intersections.toArray())
+    })
+  }, [gameRoom])
+  return upgradableSettlements
+}
+
 export function useAvailableEdges() {
   const gameRoom = useRoom()
   const [availableRoads, setAvailableRoads] = useState<string[]>(gameRoom.state.availableEdges.toArray())

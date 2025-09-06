@@ -197,7 +197,6 @@ export class MyRoom extends Room<GameState> {
     if (this.options.debug) {
       for (let i = 0; i < this.options.numPlayers; i++) {
         const player = this.addPlayer(`debug-${i}`);
-        player.cities[0].intersection = state.intersections[0].id;
         state.deck.push(
           ...cardGenerator(
             5,
