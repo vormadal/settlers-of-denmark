@@ -5,6 +5,7 @@ interface Props {
   color: string
   count: number
   maxSpacing?: number // Optional override for spacing
+  onClick?: () => void // Optional click handler
 }
 const cardWidth = 40 // Increased from 32 for better visibility
 const cardHeight = 60 // Increased from 48 for better visibility
@@ -15,7 +16,7 @@ const defaultMaxSpacing = 8 // Default maximum spacing between cards
 export const CARD_WIDTH = cardWidth
 export const MIN_SPACING = minSpacing
 export const DEFAULT_MAX_SPACING = defaultMaxSpacing
-export function CardGroup({ color, count, maxSpacing = defaultMaxSpacing }: Props) {
+export function CardGroup({ color, count, maxSpacing = defaultMaxSpacing, onClick }: Props) {
   if (count === 0) return null
   
   // Calculate spacing based on constraints
@@ -32,8 +33,10 @@ export function CardGroup({ color, count, maxSpacing = defaultMaxSpacing }: Prop
       sx={{ 
         display: 'flex', 
         flexShrink: 0,
-        marginRight: '0.5rem'
+        marginRight: '0.5rem',
+        cursor: onClick ? 'pointer' : 'default',
       }}
+      onClick={onClick}
     >
       <Box
         sx={{

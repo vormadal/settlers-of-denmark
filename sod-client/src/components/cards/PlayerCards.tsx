@@ -2,18 +2,23 @@ import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { Player } from '../../state/Player'
 import { CardGroup, CARD_WIDTH, MIN_SPACING, DEFAULT_MAX_SPACING } from './CardGroup'
 import { colors } from '../../utils/colors'
-import { useDeck } from '../../hooks/stateHooks'
+import { useDeck, useCurrentPlayer, usePhase } from '../../hooks/stateHooks'
 import { useEffect, useRef, useState } from 'react'
+import { BankTradeModal } from './BankTradeModal'
 
 interface Props {
   player: Player
 }
 export function PlayerCards({ player }: Props) {
   const deck = useDeck()
+  const currentPlayer = useCurrentPlayer()
+  const phase = usePhase()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const containerRef = useRef<HTMLDivElement>(null)
   const [optimalSpacing, setOptimalSpacing] = useState(DEFAULT_MAX_SPACING)
+  const [bankTradeOpen, setBankTradeOpen] = useState(false)
+  const [selectedResourceForTrade, setSelectedResourceForTrade] = useState<string | undefined>(undefined)
 
   const resourceCards = deck.filter((x) => x.owner === player.id && x.type === 'Resource')
   // Get all the unique variants of the resource cards
@@ -23,6 +28,16 @@ export function PlayerCards({ player }: Props) {
   const cardCounts = resourceVariants.map(variant => 
     resourceCards.filter((x) => x.variant === variant).length
   )
+
+  // Check if player can trade (is current player and in turn phase)
+  const canTrade = currentPlayer?.id === player.id && phase.key === 'turn'
+
+  const handleCardGroupClick = (variant: string) => {
+    if (canTrade) {
+      setSelectedResourceForTrade(variant)
+      setBankTradeOpen(true)
+    }
+  }
 
   // Calculate optimal spacing to fit all cards
   useEffect(() => {
@@ -50,25 +65,38 @@ export function PlayerCards({ player }: Props) {
   }, [resourceVariants.length, cardCounts, containerRef.current?.offsetWidth])
 
   return (
-    <Box 
-      ref={containerRef}
-      sx={{ 
-        display: 'flex', 
-        overflow: 'hidden', // Remove scrolling
-        minWidth: 0,
-        height: '70px',
-        alignItems: 'flex-end',
-        width: '100%', // Ensure it takes full width
-      }}
-    >
-      {resourceVariants.map((variant) => (
-        <CardGroup
-          key={variant}
-          color={colors[variant]}
-          count={resourceCards.filter((x) => x.variant === variant).length}
-          maxSpacing={optimalSpacing}
-        />
-      ))}
-    </Box>
+    <>
+      <Box 
+        ref={containerRef}
+        sx={{ 
+          display: 'flex', 
+          overflow: 'hidden', // Remove scrolling
+          minWidth: 0,
+          height: '70px',
+          alignItems: 'flex-end',
+          width: '100%', // Ensure it takes full width
+        }}
+      >
+        {resourceVariants.map((variant) => (
+          <CardGroup
+            key={variant}
+            color={colors[variant]}
+            count={resourceCards.filter((x) => x.variant === variant).length}
+            maxSpacing={optimalSpacing}
+            onClick={canTrade ? () => handleCardGroupClick(variant) : undefined}
+          />
+        ))}
+      </Box>
+      
+      <BankTradeModal
+        player={player}
+        open={bankTradeOpen}
+        onClose={() => {
+          setBankTradeOpen(false)
+          setSelectedResourceForTrade(undefined)
+        }}
+        initialResourceType={selectedResourceForTrade}
+      />
+    </>
   )
 }
