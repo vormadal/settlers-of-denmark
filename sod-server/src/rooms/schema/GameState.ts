@@ -23,7 +23,8 @@ export class GameState extends Schema {
   @type([HexProduction]) hexProductions = new ArraySchema<HexProduction>()
   @type('number') round = 1
 
-  @type(['string']) availableIntersections = new ArraySchema<string>()
+  @type(['string']) availableSettlementIntersections = new ArraySchema<string>()
+  @type(['string']) availableCityIntersections = new ArraySchema<string>()
   @type(['string']) availableEdges = new ArraySchema<string>()
 
   @type([Die]) dice = new ArraySchema<Die>()

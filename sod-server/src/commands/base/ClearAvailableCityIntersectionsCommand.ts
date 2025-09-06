@@ -2,8 +2,8 @@ import { Command } from '@colyseus/command'
 import { ArraySchema } from '@colyseus/schema'
 import { MyRoom } from '../../rooms/MyRoom'
 
-export class ClearAvailableIntersectionsCommand extends Command<MyRoom> {
+export class ClearAvailableCityIntersectionsCommand extends Command<MyRoom> {
   execute() {
-    this.state.availableIntersections = new ArraySchema<string>()
+    this.state.availableCityIntersections = new ArraySchema<string>()
   }
 }

@@ -3,6 +3,7 @@ import { PlaceInitialRoadCommand } from '../../commands/base/PlaceInitialRoadCom
 import { PlaceInitialSettlementCommand } from '../../commands/base/PlaceInitialSettlementCommand'
 
 type PlaceSettlementEvent = { type: 'PLACE_SETTLEMENT'; payload: PlaceInitialSettlementCommand['payload'] }
+type PlaceCityEvent = { type: 'PLACE_CITY'; payload: PlaceCityCommand['payload'] }
 type PlaceRoadEvent = { type: 'PLACE_ROAD'; payload: PlaceInitialRoadCommand['payload'] }
 type RollDiceEvent = { type: 'ROLL_DICE' }
 type EndTurn = { type: 'END_TURN' }

@@ -21,7 +21,7 @@ export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, 
 
     const occupiedIntersections = this.state.getOccupiedIntersections()
     const neighbours = occupiedIntersections.map((intersection) => intersection.getNeighbors(this.state)).flat()
-    const unavailableIntersections = [...new Set([...occupiedIntersections, ...neighbours])].map((x) => x.id)
+    const unavailableSettlementIntersections = [...new Set([...occupiedIntersections, ...neighbours])].map((x) => x.id)
 
     let intersections = this.state.intersections.toArray()
 
@@ -33,8 +33,8 @@ export class SetAvailableSettlementIntersectionsCommand extends Command<MyRoom, 
         .flat()
     }
 
-    this.state.availableIntersections = new ArraySchema<string>(
-      ...intersections.filter((intersection) => !unavailableIntersections.includes(intersection.id)).map((x) => x.id)
+    this.state.availableSettlementIntersections = new ArraySchema<string>(
+      ...intersections.filter((intersection) => !unavailableSettlementIntersections.includes(intersection.id)).map((x) => x.id)
     )
   }
 }

@@ -5,8 +5,10 @@ import { GameState } from '../rooms/schema/GameState'
 import {
   buyRoad,
   buySettlement,
+  buyCity,
   clearAvailableEdges,
-  clearAvailableIntersections,
+  clearAvailableSettlementIntersections,
+  clearAvailableCityIntersections,
   nextPlayer,
   placeRoad,
   placeSettlement,
@@ -14,7 +16,8 @@ import {
   produceResources,
   rollDice,
   setAvailableEdges,
-  setAvailableIntersections
+  setAvailableSettlementIntersections,
+  setAvailableCityIntersections
 } from './actions/base'
 import { Events } from './events/base'
 import { guard, initialRoundIsComplete, isPlayerTurn } from './guards/base'
@@ -35,13 +38,16 @@ const machineConfig = setup({
   actions: {
     placeSettlement,
     buySettlement,
+    buyCity,
     placeRoad,
     buyRoad,
     nextPlayer,
-    setAvailableIntersections,
+    setAvailableSettlementIntersections,
+    setAvailableCityIntersections,
     setAvailableEdges,
     clearAvailableEdges,
-    clearAvailableIntersections,
+    clearAvailableSettlementIntersections,
+    clearAvailableCityIntersections,
     rollDice,
     produceInitialResources,
     produceResources
@@ -59,8 +65,8 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
     initial: 'placingSettlement',
     states: {
       placingSettlement: {
-        entry: ['nextPlayer', 'setAvailableIntersections'],
-        exit: ['clearAvailableIntersections'],
+        entry: ['nextPlayer', 'setAvailableSettlementIntersections'],
+        exit: ['clearAvailableSettlementIntersections'],
         on: {
           PLACE_SETTLEMENT: {
             target: 'placingRoad',
@@ -97,8 +103,8 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         }
       },
       turn: {
-        entry: ['setAvailableIntersections', 'setAvailableEdges'],
-        exit: ['clearAvailableIntersections', 'clearAvailableEdges'],
+        entry: ['setAvailableSettlementIntersections', 'setAvailableCityIntersections', 'setAvailableEdges'],
+        exit: ['clearAvailableSettlementIntersections', 'clearAvailableCityIntersections', 'clearAvailableEdges'],
         on: {
           END_TURN: {
             target: 'rollingDice',
@@ -117,6 +123,13 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
             actions: 'buySettlement',
+            guard: 'isPlayerTurn'
+          },
+          PLACE_CITY: {
+            target: 'turn',
+            // forces the exit and entry transitions on 'turn' state to be rerun
+            reenter: true,
+            actions: 'buyCity',
             guard: 'isPlayerTurn'
           }
         }

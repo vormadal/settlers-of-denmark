@@ -15,14 +15,14 @@ export class SetAvailableCityIntersectionsCommand extends Command<MyRoom, Payloa
     }
 
     if(
-      player.cardsOfType(this.state, CardVariants.Grain).length > 1 && 
-      player.cardsOfType(this.state, CardVariants.Ore).length > 2
+      player.cardsOfType(this.state, CardVariants.Grain).length < 2 || 
+      player.cardsOfType(this.state, CardVariants.Ore).length < 3
     ){
       return
     }
 
-    this.state.availableIntersections = new ArraySchema<string>(
-      ...playerSettlements.map(x => x.id)
+    this.state.availableCityIntersections = new ArraySchema<string>(
+      ...playerSettlements.map(x => x.intersection)
     )
   }
 }

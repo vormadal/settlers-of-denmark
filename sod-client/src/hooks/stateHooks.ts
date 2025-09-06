@@ -7,19 +7,19 @@ import { Hex } from '../state/Hex'
 import { BorderEdge } from '../state/BorderEdge'
 import { Intersection } from '../state/Intersection'
 
-export function useAvailableIntersections() {
+export function useAvailableSettlementIntersections() {
   const gameRoom = useRoom()
-  const [availableIntersections, setAvailableIntersections] = useState<string[]>(
-    gameRoom?.state.availableIntersections.toArray() || []
+  const [availableSettlementIntersections, setAvailableSettlementIntersections] = useState<string[]>(
+    gameRoom?.state.availableSettlementIntersections.toArray() || []
   )
   useEffect(() => {
     if (!gameRoom) return
 
-    gameRoom.state.listen('availableIntersections', (intersections) => {
-      setAvailableIntersections(intersections.toArray())
+    gameRoom.state.listen('availableSettlementIntersections', (intersections) => {
+      setAvailableSettlementIntersections(intersections.toArray())
     })
   }, [gameRoom])
-  return availableIntersections
+  return availableSettlementIntersections
 }
 
 export function useAvailableEdges() {
