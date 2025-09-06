@@ -1,0 +1,5 @@
+export { SettlementIcon } from './SettlementIcon'
+export { CityIcon } from './CityIcon'
+export { RoadIcon } from './RoadIcon'
+export { DevelopmentIcon } from './DevelopmentIcon'
+export { ResourceIcon } from './ResourceIcon'

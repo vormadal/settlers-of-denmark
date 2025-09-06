@@ -39,7 +39,7 @@ export default function ActionMenu() {
         display: 'flex', 
         flexDirection: 'column',
         gap: isMobile ? 0.75 : 1,
-        alignItems: 'center',
+        alignItems: 'end',
         justifyContent: 'space-between',
         minWidth: 'fit-content'
       }}>
@@ -47,7 +47,7 @@ export default function ActionMenu() {
         <Box sx={{ 
           display: 'flex', 
           gap: 0.5, 
-          alignItems: 'center'
+          alignItems: 'right'
         }}>
           {dice.map((x, i) => (
             <DiceComponent
