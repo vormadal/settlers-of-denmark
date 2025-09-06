@@ -21,7 +21,7 @@ export function PlayerCards({ player }: Props) {
       overflowX: 'auto', 
       overflowY: 'hidden',
       minWidth: 0,
-      height: isMobile ? '56px' : '68px', // Increased height to prevent cutting off cards
+      height: '48px', // Increased height to prevent cutting off cards
       alignItems: 'flex-end', // Align cards to bottom to show full card
       scrollbarWidth: 'thin',
       '&::-webkit-scrollbar': {
