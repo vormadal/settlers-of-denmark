@@ -15,6 +15,7 @@ import { CardVariants } from "../../utils/CardVariants";
 import { useDeck } from "../../hooks/stateHooks";
 import { CardGroup } from "./CardGroup";
 import { BaseCard } from "./BaseCard";
+import { useRoom } from "../../context/RoomContext";
 
 interface Props {
   player: Player;
@@ -23,12 +24,7 @@ interface Props {
   initialResourceType?: string;
 }
 
-interface TradeGroup {
-  resourceType: string;
-  count: 4; // Always groups of 4
-}
-
-interface ReceivingCount {
+interface ResourceGroup {
   [resourceType: string]: number;
 }
 
@@ -38,6 +34,7 @@ export function BankTradeModal({
   onClose,
   initialResourceType,
 }: Props) {
+  const room = useRoom();
   const deck = useDeck();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -55,8 +52,8 @@ export function BankTradeModal({
   ];
 
   // Trading state
-  const [givingGroups, setGivingGroups] = useState<TradeGroup[]>([]);
-  const [receivingCounts, setReceivingCounts] = useState<ReceivingCount>({});
+  const [givingCounts, setGivingCounts] = useState<ResourceGroup>({});
+  const [receivingCounts, setReceivingCounts] = useState<ResourceGroup>({});
 
   // Initialize with initial resource type if provided
   const initializeWithResource = (resourceType: string) => {
@@ -64,7 +61,7 @@ export function BankTradeModal({
       (x) => x.variant === resourceType
     ).length;
     if (availableCount >= 4) {
-      setGivingGroups([{ resourceType, count: 4 as const }]);
+      setGivingCounts({ [resourceType]: 4 });
       setReceivingCounts({}); // Start with empty receiving counts
     }
   };
@@ -74,7 +71,7 @@ export function BankTradeModal({
     if (initialResourceType && open) {
       initializeWithResource(initialResourceType);
     } else if (open) {
-      setGivingGroups([]);
+      setGivingCounts({});
       setReceivingCounts({});
     }
   };
@@ -88,29 +85,31 @@ export function BankTradeModal({
     const availableCount = playerResourceCards.filter(
       (x) => x.variant === resourceType
     ).length;
-    const currentlyGiving =
-      givingGroups.filter((group) => group.resourceType === resourceType)
-        .length * 4;
+    const currentlyGiving = givingCounts[resourceType] || 0;
 
     if (currentlyGiving + 4 <= availableCount) {
-      const newGroups = [...givingGroups, { resourceType, count: 4 as const }];
-      setGivingGroups(newGroups);
+      const newGroups = {
+        ...givingCounts,
+        [resourceType]: (givingCounts[resourceType] || 0) + 4,
+      };
+      setGivingCounts(newGroups);
     }
   };
 
-  const handleRemoveGivingGroup = (index: number) => {
-    const newGroups = givingGroups.filter((_, i) => i !== index);
-    setGivingGroups(newGroups);
+  const handleRemoveGivingGroup = (resourceType: string) => {
+    const newGroups = { ...givingCounts };
+    delete newGroups[resourceType];
+    setGivingCounts(newGroups);
 
     // Adjust receiving counts if we now can't receive as much
-    const maxReceivable = newGroups.length;
+    const maxReceivable = Object.keys(newGroups).length;
     const currentReceiving = Object.values(receivingCounts).reduce(
       (sum, count) => sum + count,
       0
     );
     if (currentReceiving > maxReceivable) {
       // Proportionally reduce receiving amounts
-      const newReceivingCounts: ReceivingCount = {};
+      const newReceivingCounts: ResourceGroup = {};
       let remaining = maxReceivable;
       for (const [resourceType, count] of Object.entries(receivingCounts)) {
         if (remaining > 0 && count > 0) {
@@ -139,7 +138,7 @@ export function BankTradeModal({
     );
 
     // Only allow if we don't exceed available receiving capacity
-    if (totalReceiving <= givingGroups.length) {
+    if (totalReceiving <= canReceiveCount) {
       const newReceivingCounts = { ...receivingCounts };
       if (newCount === 0) {
         delete newReceivingCounts[resourceType];
@@ -150,23 +149,29 @@ export function BankTradeModal({
     }
   };
 
-  const totalGivingResources = givingGroups.length * 4;
+  const totalGivingResources = Object.values(givingCounts).reduce(
+    (sum, count) => sum + count,
+    0
+  );
   const totalReceivingResources = Object.values(receivingCounts).reduce(
     (sum, count) => sum + count,
     0
   );
-  const canReceiveCount = givingGroups.length;
+  const canReceiveCount = totalGivingResources / 4;
   const isTradeValid =
-    givingGroups.length > 0 && totalReceivingResources === givingGroups.length;
+    totalGivingResources > 0 && totalReceivingResources === canReceiveCount;
 
   const handleTrade = () => {
     if (isTradeValid) {
-      // TODO: Send trade message to server
-      console.log("Trading:", {
-        giving: givingGroups,
-        receiving: receivingCounts,
-        totalGiving: totalGivingResources,
-        totalReceiving: totalReceivingResources,
+      room.send("BANK_TRADE", {
+        give: Object.keys(givingCounts).map((key) => ({
+          resourceType: key,
+          amount: givingCounts[key],
+        })),
+        receive: Object.keys(receivingCounts).map((key) => ({
+          resourceType: key,
+          amount: receivingCounts[key],
+        })),
       });
       onClose();
     }
@@ -252,10 +257,7 @@ export function BankTradeModal({
                   const totalCount = playerResourceCards.filter(
                     (x) => x.variant === variant
                   ).length;
-                  const givingCount =
-                    givingGroups.filter(
-                      (group) => group.resourceType === variant
-                    ).length * 4;
+                  const givingCount = givingCounts[variant] || 0;
                   const availableCount = totalCount - givingCount;
 
                   return availableCount > 0 ? (
@@ -368,7 +370,7 @@ export function BankTradeModal({
                 backgroundColor: "rgba(244, 67, 54, 0.05)",
                 borderRadius: 2,
                 border:
-                  givingGroups.length > 0
+                  givingCounts.length > 0
                     ? "2px solid rgba(244, 67, 54, 0.6)"
                     : "2px dashed #ccc",
                 minHeight: 80,
@@ -384,7 +386,7 @@ export function BankTradeModal({
                   minHeight: 40,
                 }}
               >
-                {givingGroups.length === 0 ? (
+                {givingCounts.length === 0 ? (
                   <Typography
                     variant="body2"
                     sx={{ color: "text.secondary", fontStyle: "italic" }}
@@ -392,10 +394,10 @@ export function BankTradeModal({
                     Click your resources above
                   </Typography>
                 ) : (
-                  givingGroups.map((group, index) => (
-                    <Box key={index} sx={{ textAlign: "center" }}>
+                  Object.entries(givingCounts).map(([resourceType, count]) => (
+                    <Box key={resourceType} sx={{ textAlign: "center" }}>
                       <Box
-                        onClick={() => handleRemoveGivingGroup(index)}
+                        onClick={() => handleRemoveGivingGroup(resourceType)}
                         sx={{
                           cursor: "pointer",
                           "&:hover": { transform: "scale(1.1)" },
@@ -403,8 +405,8 @@ export function BankTradeModal({
                         }}
                       >
                         <CardGroup
-                          color={colors[group.resourceType]}
-                          count={4}
+                          color={colors[resourceType]}
+                          count={count}
                           maxSpacing={1}
                         />
                       </Box>
