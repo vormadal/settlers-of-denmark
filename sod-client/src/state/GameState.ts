@@ -10,6 +10,7 @@ import { BorderEdge } from './BorderEdge'
 import { Intersection } from './Intersection'
 import { Hex } from './Hex'
 import { Player } from './Player'
+import { Port } from './Port'
 import { Card } from './Card'
 import { HexProduction } from './HexProduction'
 import { Die } from './Die'
@@ -19,6 +20,7 @@ export class GameState extends Schema {
     @type([ Intersection ]) public intersections: ArraySchema<Intersection> = new ArraySchema<Intersection>();
     @type([ Hex ]) public hexes: ArraySchema<Hex> = new ArraySchema<Hex>();
     @type({ map: Player }) public players: MapSchema<Player> = new MapSchema<Player>();
+    @type([ Port ]) public ports: ArraySchema<Port> = new ArraySchema<Port>();
     @type([ Card ]) public deck: ArraySchema<Card> = new ArraySchema<Card>();
     @type("string") public phase!: string;
     @type("string") public currentPlayer!: string;
