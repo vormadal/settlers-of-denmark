@@ -25,8 +25,8 @@ export class BankTradeCommand extends Command<MyRoom, Payload> {
 
 		let buyingPower = 0
 		for (const give of payload.give) {
-			const bankRate = player.exchangeRate.get(give.type).ratio
-			const playerCardsOfType = player.cardsOfType(state, give.type)
+			const bankRate = player.exchangeRate.get(give.resourceType).ratio
+			const playerCardsOfType = player.cardsOfType(state, give.resourceType)
 
 			if (give.amount % bankRate !== 0 || playerCardsOfType.length < give.amount) {
 				console.warn('Invalid give count or not enough cards to give', payload)
