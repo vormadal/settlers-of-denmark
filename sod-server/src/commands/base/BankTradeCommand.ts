@@ -25,7 +25,7 @@ export class BankTradeCommand extends Command<MyRoom, Payload> {
 
 		let buyingPower = 0
 		for (const give of payload.give) {
-			const bankRate = 4 // TODO: support ports/special rates later
+			const bankRate = player.exchangeRate.get(give.resourceType).ratio
 			const playerCardsOfType = player.cardsOfType(state, give.resourceType)
 
 			if (give.amount % bankRate !== 0 || playerCardsOfType.length < give.amount) {

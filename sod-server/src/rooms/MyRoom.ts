@@ -12,10 +12,11 @@ import { HexLayoutAlgorithm } from "../algorithms/layout/HexLayoutAlgorithm";
 import { DefaultNumberTokenProvider } from "../algorithms/NumberTokenProvider";
 import { createBaseGameStateMachine } from "../stateMachines/BaseGameStateMachine";
 import { generate } from "../utils/arrayHelpers";
-import { Card, CardTypes, CardVariants } from "./schema/Card";
+import { Card, CardTypes, CardVariants, ResourceCardVariants } from "./schema/Card";
 import { City } from "./schema/City";
 import { HexTypes } from "./schema/Hex";
 import { HexProduction } from "./schema/HexProduction";
+import { ExchangeRate } from "./schema/ExchangeRate";
 
 function cardGenerator(
   count: number,
@@ -39,6 +40,7 @@ export interface RoomOptions {
   numSettlements?: number;
   numCities?: number;
   numRoads?: number;
+  defaultExchangeRate?: number;
 
   name?: string; // player name
 }
@@ -57,6 +59,7 @@ export class MyRoom extends Room<GameState> {
       numSettlements: 4,
       numPlayers: 2,
       numRoads: 9,
+      defaultExchangeRate: 4,
       ...options,
     };
 
@@ -311,6 +314,9 @@ export class MyRoom extends Room<GameState> {
     );
     player.roads.push(
       ...generate(this.options.numRoads, (i) => Road.create(`${id}-${i}`, id))
+    );
+    Object.values(ResourceCardVariants).forEach((resource) =>
+      player.exchangeRate.set(resource, ExchangeRate.create(resource, this.options.defaultExchangeRate))
     );
 
     this.state.players.set(player.id, player);
