@@ -8,14 +8,14 @@ import { Intersection } from './Intersection'
 import { Player } from './Player'
 import { Road } from './Road'
 import { Structure } from './Structure'
-import { Port } from './Port'
+import { Harbor } from './Harbor'
 
 export class GameState extends Schema {
   @type([BorderEdge]) edges = new ArraySchema<BorderEdge>()
   @type([Intersection]) intersections = new ArraySchema<Intersection>()
   @type([Hex]) hexes = new ArraySchema<Hex>()
   @type({ map: Player }) players = new MapSchema<Player>()
-  @type([Port]) ports = new ArraySchema<Port>()
+  @type([Harbor]) harbors = new ArraySchema<Harbor>()
 
   @type([Card]) deck = new ArraySchema<Card>()
 

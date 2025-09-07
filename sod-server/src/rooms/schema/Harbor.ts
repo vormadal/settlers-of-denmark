@@ -2,7 +2,7 @@ import { ArraySchema, Schema, type } from '@colyseus/schema'
 import { GameState } from './GameState'
 import { BorderEdge } from './BorderEdge'
 
-export class Port extends Schema {
+export class Harbor extends Schema {
   @type(BorderEdge) edge: BorderEdge
   @type('string') id: string
   @type(['string']) cardTypes = new ArraySchema<string>()

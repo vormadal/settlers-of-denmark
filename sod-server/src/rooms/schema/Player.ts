@@ -4,7 +4,8 @@ import { Road } from './Road'
 import { Settlement } from './Settlement'
 import { Structure } from './Structure'
 import { GameState } from './GameState'
-import { TradeRatio } from './TradeRatio'
+import { ExchangeRate } from './ExchangeRate'
+import { Harbor } from './Harbor'
 
 export class Player extends Schema {
   @type('string') id: string
@@ -13,7 +14,7 @@ export class Player extends Schema {
   @type([Settlement]) settlements = new ArraySchema<Settlement>()
   @type([City]) cities = new ArraySchema<City>()
   @type([Road]) roads = new ArraySchema<Road>()
-  @type({ map: TradeRatio }) initialResources = new MapSchema<TradeRatio>()
+  @type({ map: ExchangeRate }) exchangeRate = new MapSchema<ExchangeRate>()
 
   get structures(): Structure[] {
     return [...this.settlements, ...this.cities]
@@ -52,22 +53,10 @@ export class Player extends Schema {
     return cards.filter((card) => card.variant === cardType)
   }
 
-  getPorts(state: GameState) {
+  getHarbors(state: GameState) {
     const structureIntersections = this.getPlacedStructures().map((structure) => structure.intersection)
-    return state.ports.filter((port) =>
-      port.getIntersections(state).some((intersection) => structureIntersections.includes(intersection.id))
+    return state.harbors.filter((harbor) =>
+      harbor.getIntersections(state).some((intersection) => structureIntersections.includes(intersection.id))
     )
-  }
-
-  getBankTradeRate(state: GameState, cardType: string) {
-    const ports = this.getPorts(state)
-    let ratio = 4 // default bank rate
-    for(const port of ports){
-      if(port.cardTypes.includes(cardType) && port.ratio < ratio){
-        ratio = port.ratio
-      }
-    }
-
-    return ratio
   }
 }

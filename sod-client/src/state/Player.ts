@@ -9,6 +9,7 @@ import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@co
 import { Settlement } from './Settlement'
 import { City } from './City'
 import { Road } from './Road'
+import { ExchangeRate } from './ExchangeRate'
 
 export class Player extends Schema {
     @type("string") public id!: string;
@@ -17,4 +18,5 @@ export class Player extends Schema {
     @type([ Settlement ]) public settlements: ArraySchema<Settlement> = new ArraySchema<Settlement>();
     @type([ City ]) public cities: ArraySchema<City> = new ArraySchema<City>();
     @type([ Road ]) public roads: ArraySchema<Road> = new ArraySchema<Road>();
+    @type({ map: ExchangeRate }) public exchangeRate: MapSchema<ExchangeRate> = new MapSchema<ExchangeRate>();
 }
