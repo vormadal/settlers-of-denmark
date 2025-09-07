@@ -8,7 +8,7 @@
 import { Schema, type, ArraySchema, MapSchema, SetSchema, DataChange } from '@colyseus/schema';
 import { BorderEdge } from './BorderEdge'
 
-export class Port extends Schema {
+export class Harbor extends Schema {
     @type(BorderEdge) public edge: BorderEdge = new BorderEdge();
     @type("string") public id!: string;
     @type([ "string" ]) public cardTypes: ArraySchema<string> = new ArraySchema<string>();
