@@ -3,12 +3,12 @@ import { MyRoom } from '../../rooms/MyRoom'
 
 export interface Payload {
 	give: [{
-		type: string
-		count: number
+		resourceType: string
+		amount: number
 	}]
 	receive: [{
-		type: string
-		count: number
+		resourceType: string
+		amount: number
 	}]
 	playerId: string
 }
@@ -19,6 +19,7 @@ export class BankTradeCommand extends Command<MyRoom, Payload> {
 		const state = this.room.state
 
 		if (!player || !payload.give || !payload.receive) {
+			console.warn('Invalid bank trade command payload or player not found', payload)
 			return
 		}
 
@@ -27,35 +28,38 @@ export class BankTradeCommand extends Command<MyRoom, Payload> {
 			const bankRate = player.exchangeRate.get(give.type).ratio
 			const playerCardsOfType = player.cardsOfType(state, give.type)
 
-			if (give.count % bankRate !== 0 || playerCardsOfType.length < give.count) {
+			if (give.amount % bankRate !== 0 || playerCardsOfType.length < give.amount) {
+				console.warn('Invalid give count or not enough cards to give', payload)
 				return
 			}
 
-			buyingPower += give.count / bankRate
+			buyingPower += give.amount / bankRate
 		}
 
 		let amountToReceive = 0
 		for (const receive of payload.receive) {
-            const availableCards = state.getAvailableCardsByType(receive.type)
-			if (availableCards.length < receive.count) {
+            const availableCards = state.getAvailableCardsByType(receive.resourceType)
+			if (availableCards.length < receive.amount) {
+				console.warn('Not enough available cards to receive', payload)
 				return
 			}
-			amountToReceive += receive.count
+			amountToReceive += receive.amount
 		}
         
 		if (amountToReceive !== buyingPower) {
+			console.warn('Buying power does not match amount to receive', { buyingPower, amountToReceive })
 			return
 		}
-        
+		
 		for (const give of payload.give) {
-			let cardsToReturn = player.cardsOfType(state, give.type)
-			cardsToReturn = cardsToReturn.slice(0, give.count)
+			let cardsToReturn = player.cardsOfType(state, give.resourceType)
+			cardsToReturn = cardsToReturn.slice(0, give.amount)
 			cardsToReturn.forEach(card => card.owner = undefined)
 		}
 
 		for (const receive of payload.receive) {
-			let cardsToGive = state.getAvailableCardsByType(receive.type)
-			cardsToGive = cardsToGive.slice(0, receive.count)
+			let cardsToGive = state.getAvailableCardsByType(receive.resourceType)
+			cardsToGive = cardsToGive.slice(0, receive.amount)
 			cardsToGive.forEach(card => card.owner = player.id)
 		}
 	}
