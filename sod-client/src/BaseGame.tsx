@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Board } from './Board'
 import ActionMenu from './components/ActionMenu'
 import { PlayerInfo } from './components/PlayerInfo'
+import { WaitingSplashScreen } from './components/WaitingSplashScreen'
 import { usePlayers } from './hooks/stateHooks'
 import { getUniqueColor } from './utils/colors'
 
@@ -20,6 +21,13 @@ export function BaseGame() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  // Show splash screen only while waiting for players to join
+  const shouldShowSplashScreen = players.length < 2
+
+  if (shouldShowSplashScreen) {
+    return <WaitingSplashScreen maxPlayers={2} />
+  }
 
   // Calculate dynamic heights based on mobile vs desktop
   const playerInfoHeight = isMobile ? Math.min(100, height * 0.12) : Math.min(140, height * 0.15)
