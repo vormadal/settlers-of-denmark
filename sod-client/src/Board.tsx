@@ -5,13 +5,9 @@ import { IntersectionShape } from "./shapes/IntersectionShape";
 import { Land } from "./shapes/LandShape";
 import { RoadShape } from "./shapes/RoadShape";
 import { getUniqueColor } from "./utils/colors";
-import {
-  useEdges,
-  useHexes,
-  useIntersections,
-  usePlayers,
-} from "./hooks/stateHooks";
+import { useEdges, useHarbors, useHexes, useIntersections, usePlayers } from "./hooks/stateHooks";
 import { CityShape } from "./shapes/CityShape";
+import { HarborShape } from "./shapes/HarborShape";
 
 interface Props {
   width: number;
@@ -24,6 +20,7 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const hexes = useHexes();
   const edges = useEdges();
   const intersections = useIntersections();
+  const harbors = useHarbors();
 
   if (hexes.length === 0) return null;
 
@@ -84,6 +81,10 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
 
         {edges.map((x) => (
           <EdgeShape key={x.id} edge={x} />
+        ))}
+
+        {harbors.map((h) => (
+          <HarborShape key={h.id} harbor={h} />
         ))}
 
         {intersections.map((x) => (

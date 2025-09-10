@@ -74,7 +74,7 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         on: {
           PLACE_SETTLEMENT: {
             target: 'placingRoad',
-            actions: ['placeSettlement', 'produceInitialResources'],
+            actions: ['placeSettlement', 'produceInitialResources', 'updatePlayerExchangeRateCommand'],
             guard: 'isPlayerTurn'
           }
         }

@@ -10,6 +10,10 @@ export class SetAvailableEdgesCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const player = this.state.players.get(this.state.currentPlayer)
 
+    if(player.roads.filter((x) => !x.edge).length === 0){
+      return
+    }
+
     if (payload.initialPlacement) {
       const structures = player.structures.filter((x) => x.intersection) ?? []
       const settlement = structures.find((x) => x.getRoads(this.state).length === 0)

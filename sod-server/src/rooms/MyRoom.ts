@@ -17,6 +17,7 @@ import { City } from "./schema/City";
 import { HexTypes } from "./schema/Hex";
 import { HexProduction } from "./schema/HexProduction";
 import { ExchangeRate } from "./schema/ExchangeRate";
+import { HarborFactory } from "../algorithms/HarborFactory";
 
 function cardGenerator(
   count: number,
@@ -128,6 +129,7 @@ export class MyRoom extends Room<GameState> {
     PercentageHexTypeProvider.default().assign(state);
     // new DebugNumberTokenProvider().assign(state)
     new DefaultNumberTokenProvider().assign(state);
+    new HarborFactory().createHarbors(state);
 
     this.diceCup = new BaseGameDiceCup();
 
