@@ -19,4 +19,7 @@ export class Player extends Schema {
     @type([ City ]) public cities: ArraySchema<City> = new ArraySchema<City>();
     @type([ Road ]) public roads: ArraySchema<Road> = new ArraySchema<Road>();
     @type({ map: ExchangeRate }) public exchangeRate: MapSchema<ExchangeRate> = new MapSchema<ExchangeRate>();
+    @type("number") public victoryPoints!: number;
+    @type("boolean") public hasLongestRoad!: boolean;
+    @type("boolean") public hasLargestArmy!: boolean;
 }

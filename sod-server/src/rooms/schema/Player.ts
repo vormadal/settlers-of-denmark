@@ -5,7 +5,6 @@ import { Settlement } from './Settlement'
 import { Structure } from './Structure'
 import { GameState } from './GameState'
 import { ExchangeRate } from './ExchangeRate'
-import { Harbor } from './Harbor'
 
 export class Player extends Schema {
   @type('string') id: string
@@ -15,6 +14,9 @@ export class Player extends Schema {
   @type([City]) cities = new ArraySchema<City>()
   @type([Road]) roads = new ArraySchema<Road>()
   @type({ map: ExchangeRate }) exchangeRate = new MapSchema<ExchangeRate>()
+  @type('number') victoryPoints: number = 0
+  @type('boolean') hasLongestRoad: boolean = false
+  @type('boolean') hasLargestArmy: boolean = false
 
   get structures(): Structure[] {
     return [...this.settlements, ...this.cities]

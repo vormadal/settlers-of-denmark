@@ -1,6 +1,6 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Chip } from '@mui/material'
 import { Player } from '../state/Player'
-import { useCurrentPlayer, useDeck } from '../hooks/stateHooks'
+import { useCurrentPlayer, useDeck, usePlayers } from '../hooks/stateHooks'
 import { CartoonStatCard } from './CartoonStatCard'
 import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
 
@@ -13,8 +13,11 @@ interface Props {
 export function PlayerInfo({ width, player, color }: Props) {
   const cards = useDeck()
   const currentPlayer = useCurrentPlayer()
+  const players = usePlayers()
   const isActivePlayer = currentPlayer?.id === player.id
   const isMobile = width < 250 // Compact mode for smaller widths
+  const maxVP = players.length ? Math.max(...players.map(p => p.victoryPoints ?? 0)) : 0
+  const isVpLeader = (player.victoryPoints ?? 0) === maxVP && maxVP > 0
 
   const developmentCardsCount = cards.filter((x) => x.type === 'Development' && x.owner === player.id).length
   const resourceCardsCount = cards.filter((x) => x.type === 'Resource' && x.owner === player.id).length
@@ -122,21 +125,40 @@ export function PlayerInfo({ width, player, color }: Props) {
           zIndex: 1,
         }}
       >
-        <Typography
-          variant={isMobile ? "body2" : "h6"}
+        <Box
           sx={{
-            color: 'rgba(0,0,0,0.85)',
-            textShadow: '0 2px 4px rgba(255,255,255,0.8)',
-            fontWeight: 700,
-            fontSize: isActivePlayer 
-              ? (isMobile ? '0.875rem' : '1.1rem') 
-              : (isMobile ? '0.75rem' : '1rem'),
-            transition: 'font-size 0.3s ease',
-            lineHeight: 1.2,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: isMobile ? '6px' : '8px',
           }}
         >
-          {isActivePlayer ? '👑 ' : ''}{player.name}{isActivePlayer ? ' 👑' : ''}
-        </Typography>
+          <Typography
+            variant={isMobile ? "body2" : "h6"}
+            sx={{
+              color: 'rgba(0,0,0,0.85)',
+              textShadow: '0 2px 4px rgba(255,255,255,0.8)',
+              fontWeight: 700,
+              fontSize: isActivePlayer 
+                ? (isMobile ? '0.875rem' : '1.1rem') 
+                : (isMobile ? '0.75rem' : '1rem'),
+              transition: 'font-size 0.3s ease',
+              lineHeight: 1.2,
+            }}
+          >
+            {isVpLeader ? '👑 ' : ''}{player.name}{isVpLeader ? ' 👑' : ''}
+          </Typography>
+          <Chip
+            size={isMobile ? 'small' : 'medium'}
+            label={`${player.victoryPoints ?? 0} VP`}
+            color={isVpLeader ? 'warning' : 'default'}
+            sx={{
+              fontWeight: 700,
+              bgcolor: isVpLeader ? 'warning.light' : 'rgba(255,255,255,0.8)',
+              color: 'rgba(0,0,0,0.8)',
+              border: '1px solid rgba(0,0,0,0.1)'
+            }}
+          />
+        </Box>
       </Box>
     </Box>
   )
