@@ -176,3 +176,24 @@ export function useHarbors() {
   }, [gameRoom])
   return harbors
 }
+
+export function useIsGameEnded() {
+  const gameRoom = useRoom()
+  const [ended, setEnded] = useState<boolean>(gameRoom?.state.isGameEnded || false)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('isGameEnded', (value) => setEnded(value))
+  }, [gameRoom])
+  console.log('Game ended state:', ended)
+  return ended
+}
+
+export function useVictoryPointsToWin() {
+  const gameRoom = useRoom()
+  const [vp, setVp] = useState<number>(gameRoom?.state.victoryPointsToWin || 0)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('victoryPointsToWin', (value) => setVp(value))
+  }, [gameRoom])
+  return vp
+}

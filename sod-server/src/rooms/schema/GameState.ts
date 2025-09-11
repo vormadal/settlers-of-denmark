@@ -16,7 +16,6 @@ export class GameState extends Schema {
   @type([Hex]) hexes = new ArraySchema<Hex>()
   @type({ map: Player }) players = new MapSchema<Player>()
   @type([Harbor]) harbors = new ArraySchema<Harbor>()
-
   @type([Card]) deck = new ArraySchema<Card>()
 
   @type('string') phase: string = GamePhases.WaitingForPlayers
@@ -24,6 +23,8 @@ export class GameState extends Schema {
 
   @type([HexProduction]) hexProductions = new ArraySchema<HexProduction>()
   @type('number') round = 1
+  @type('number') victoryPointsToWin: number = 10
+  @type('boolean') isGameEnded: boolean = false
 
   @type(['string']) availableSettlementIntersections = new ArraySchema<string>()
   @type(['string']) availableCityIntersections = new ArraySchema<string>()
