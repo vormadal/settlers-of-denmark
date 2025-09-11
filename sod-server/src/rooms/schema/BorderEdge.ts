@@ -14,9 +14,13 @@ export class BorderEdge extends Schema {
   }
 
   getConnectedEdges(state: GameState) {
+    const myPoints = [this.pointA.id, this.pointB.id]
     return state.edges.filter((edge) => {
-      const myPoints = [this.pointA.id, this.pointB.id]
       return (myPoints.includes(edge.pointA.id) || myPoints.includes(edge.pointB.id)) && edge.id !== this.id
     })
+  }
+
+  getAdjacentHexes(state: GameState) {
+    return state.hexes.filter((hex) => hex.edges.includes(this.id))
   }
 }

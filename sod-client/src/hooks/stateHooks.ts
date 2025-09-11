@@ -6,6 +6,7 @@ import { Card } from '../state/Card'
 import { Hex } from '../state/Hex'
 import { BorderEdge } from '../state/BorderEdge'
 import { Intersection } from '../state/Intersection'
+import { Harbor } from '../state/Harbor'
 
 export function useAvailableSettlementIntersections() {
   const gameRoom = useRoom()
@@ -162,4 +163,16 @@ export function useIntersections() {
     })
   }, [gameRoom])
   return intersections
+}
+
+export function useHarbors() {
+  const gameRoom = useRoom()
+  const [harbors, setHarbors] = useState<Harbor[]>([...gameRoom.state.harbors.values()])
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('harbors', (value) => {
+      setHarbors([...value.values()])
+    })
+  }, [gameRoom])
+  return harbors
 }

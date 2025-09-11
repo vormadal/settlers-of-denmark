@@ -51,6 +51,16 @@ export function BankTradeModal({
     CardVariants.Brick,
   ];
 
+  // Helper to get dynamic exchange ratio for a resource (harbor aware)
+  const getResourceRatio = (resourceType: string) => {
+    const ratio = player.exchangeRate.get(resourceType);
+    if (!ratio) {
+      return 4;
+    }
+
+    return ratio.ratio;
+  };
+
   // Trading state
   const [givingCounts, setGivingCounts] = useState<ResourceGroup>({});
   const [receivingCounts, setReceivingCounts] = useState<ResourceGroup>({});
@@ -60,8 +70,9 @@ export function BankTradeModal({
     const availableCount = playerResourceCards.filter(
       (x) => x.variant === resourceType
     ).length;
-    if (availableCount >= 4) {
-      setGivingCounts({ [resourceType]: 4 });
+    const ratio = getResourceRatio(resourceType);
+    if (availableCount >= ratio) {
+      setGivingCounts({ [resourceType]: ratio });
       setReceivingCounts({}); // Start with empty receiving counts
     }
   };
@@ -87,10 +98,11 @@ export function BankTradeModal({
     ).length;
     const currentlyGiving = givingCounts[resourceType] || 0;
 
-    if (currentlyGiving + 4 <= availableCount) {
+    const ratio = getResourceRatio(resourceType);
+    if (currentlyGiving + ratio <= availableCount) {
       const newGroups = {
         ...givingCounts,
-        [resourceType]: (givingCounts[resourceType] || 0) + 4,
+        [resourceType]: (givingCounts[resourceType] || 0) + ratio,
       };
       setGivingCounts(newGroups);
     }
@@ -157,9 +169,15 @@ export function BankTradeModal({
     (sum, count) => sum + count,
     0
   );
-  const canReceiveCount = totalGivingResources / 4;
+  // Capacity is sum of (cards committed / ratio for that resource)
+  const canReceiveCount = Object.entries(givingCounts).reduce(
+    (sum, [res, count]) => sum + count / getResourceRatio(res),
+    0
+  );
   const isTradeValid =
-    totalGivingResources > 0 && totalReceivingResources === canReceiveCount;
+    totalGivingResources > 0 &&
+    Number.isInteger(canReceiveCount) &&
+    totalReceivingResources === canReceiveCount;
 
   const handleTrade = () => {
     if (isTradeValid) {
@@ -259,23 +277,26 @@ export function BankTradeModal({
                   ).length;
                   const givingCount = givingCounts[variant] || 0;
                   const availableCount = totalCount - givingCount;
+                  const ratio = getResourceRatio(variant);
+                  const canClick = availableCount >= ratio;
 
                   return availableCount > 0 ? (
-                    <Box key={variant} sx={{ textAlign: "center" }}>
+                    <Box
+                      key={variant}
+                      sx={{ textAlign: "center", position: "relative" }}
+                    >
                       <Box
                         onClick={() => {
-                          if (availableCount >= 4) {
+                          if (canClick) {
                             handleAddGivingResource(variant);
                           }
                         }}
                         sx={{
-                          cursor:
-                            availableCount >= 4 ? "pointer" : "not-allowed",
-                          opacity: availableCount >= 4 ? 1 : 0.5,
-                          "&:hover":
-                            availableCount >= 4
-                              ? { transform: "scale(1.1)" }
-                              : {},
+                          cursor: canClick ? "pointer" : "not-allowed",
+                          opacity: canClick ? 1 : 0.5,
+                          "&:hover": canClick
+                            ? { transform: "scale(1.1)" }
+                            : {},
                           transition: "all 0.2s",
                         }}
                       >
@@ -284,6 +305,24 @@ export function BankTradeModal({
                           count={availableCount}
                           maxSpacing={1.5}
                         />
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: -4,
+                            right: -4,
+                            background: "rgba(0,0,0,0.6)",
+                            color: "#fff",
+                            px: 0.5,
+                            py: 0.1,
+                            fontSize: 10,
+                            borderRadius: 1,
+                            zIndex: 999,
+                            pointerEvents: "none",
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+                          }}
+                        >
+                          {ratio}:1
+                        </Box>
                       </Box>
                       <Typography
                         variant="caption"
@@ -326,7 +365,6 @@ export function BankTradeModal({
                     canReceiveCount -
                     totalReceivingResources +
                     currentReceiving;
-
                   return (
                     <Box key={variant} sx={{ textAlign: "center" }}>
                       <Box
@@ -370,7 +408,7 @@ export function BankTradeModal({
                 backgroundColor: "rgba(244, 67, 54, 0.05)",
                 borderRadius: 2,
                 border:
-                  givingCounts.length > 0
+                  Object.keys(givingCounts).length > 0
                     ? "2px solid rgba(244, 67, 54, 0.6)"
                     : "2px dashed #ccc",
                 minHeight: 80,
@@ -386,7 +424,7 @@ export function BankTradeModal({
                   minHeight: 40,
                 }}
               >
-                {givingCounts.length === 0 ? (
+                {Object.keys(givingCounts).length === 0 ? (
                   <Typography
                     variant="body2"
                     sx={{ color: "text.secondary", fontStyle: "italic" }}
@@ -477,6 +515,10 @@ export function BankTradeModal({
 
           {/* Trade Status and Button */}
           <Box sx={{ mt: 2, textAlign: "center" }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              {canReceiveCount > 0 &&
+                `Offering ${totalGivingResources} card(s) = ${canReceiveCount} to receive`}
+            </Typography>
             <Button
               variant="contained"
               disabled={!isTradeValid}
