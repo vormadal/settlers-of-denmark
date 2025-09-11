@@ -19,7 +19,8 @@ import {
   setAvailableSettlementIntersections,
   setAvailableCityIntersections,
   bankTrade,
-  updatePlayerExchangeRateCommand
+  updatePlayerExchangeRateCommand,
+  updatePlayerVictoryPointsCommand
 } from './actions/base'
 import { Events } from './events/base'
 import { guard, initialRoundIsComplete, isPlayerTurn } from './guards/base'
@@ -54,7 +55,8 @@ const machineConfig = setup({
     produceInitialResources,
     produceResources,
     bankTrade,
-    updatePlayerExchangeRateCommand
+    updatePlayerExchangeRateCommand,
+    updatePlayerVictoryPointsCommand
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -64,7 +66,7 @@ const machineConfig = setup({
 
 export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dispatcher<MyRoom>) {
   const machine = machineConfig.createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNx2oCcARkd2A7Fc8eAKwANCAAnogALGo+JIE+LlaRvmo2Lh5WAL6ZoWhYeISklNT4UABKuugQPAIiomUA8vwAIupaSCB6BkYmZpYIjm5qJB7RkW4JrkmOPqERCFaDTmmDkT5uNoFqvnbZuRg4BMTkVJg0FVU1QmKNLSoe7Tr6hsamHf1WPo4jnz6RHm4knYNrNwogbJFIiQ7MCbF4YkEJjY9iA8odCiQAE66CgUGjNXCYMCcRq8XiiZoASREbTMXRevXeiAyPliELcMzsNm2gRsEzm1gmJCGdg8Pl5HhcPjUjhRaIKxwYAFdMfhOEpmqJJABVMqKWkdek9N6gfostwkZIzQIS9aRWwChZqDzC3luDm-QKODx2QJyg4K0jK1VXOq3VqaOnPY19cFqXlxdzeAFbNx2Kx2R2fOJJSK8wJc5xc3Y5VEBo5BlVqvjXcRSGTyJSqSOG6OvWMIbk2KwkdYeDI+ryRRyRR2S4YTXxwvwrfzI0vyiskYPV2piQSUyQATQNT267Y680+UKsgUBaS5-Zmf1C-W5wJGYpZyXjfx8-vyS5XnAAQvxFAA0lqZQtMIu6dG2jKmnGvqWnYMxrBkjiBFYoyOjY6xOOMc5ijakowtkpb4LoEBwGYi6FFG+5QRYiAALSZmCCB0eMwq+ihvhprY7qygu5YYsUZylPQTAsGwHBUQyJq0QgkQ2FmD5uHJdivqhPgZB+6LHIJ5yVBAkkxkyCC+i6gzxtEtisqyo5MYsFqsip3ZrOmqGRJpgZYjieKlASRIGQe0EIJK0TCp8Vj+Haji2CETHKSQGEqc6I4jmop7uV+Vb+TRZp2P8wp8umfwqfEMVHn8JCnue9hwl41mEZkQA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IAzACYAbCQAcNx2oCcARkd2A7Fc8eAKwANCAAnogALGo+JIE+LlaRvmo2Lh5WAL6ZoWhYeISklNT4UABKuugQPAIiomUA8vwAIupaSCB6BkYmZpYIjm5qJB7RkW4JrkmOPqERCFaDTmmDkT5uNoFqvnbZuRg4BMTkVJg0FVU1QmKNLSoe7Tr6hsamHf1WPo4jnz6RHm4knYNrNwogbJFIiQ7MCbF4YkEJjY9iA8odCiQAE66CgUGjNXCYMCcRq8XiiZoASREbTMXRevXeiAyPmGbnZMzsNm2gRsEzmUXsJCGXL5HhhvjckRRaIKxwYAFdMfhOEpmqJJABVMqKWkdek9N6gfoZVwkHxeHyBXkedaRWwChCbb7cvluRy-QKOcWBGUHOWkRXKq51W6tTR056GvrgtS8uLubwArZuOxWOyOz5xJKRXmBLnOLm7HKo-1HQNKlV8a7iKQyeRKVQR-VR14xp2pKzmgJWcVeSKOSKOjzc4U+XxwvwrfzIkuy8skINV2piQSUyQATT1T26bY680+UKsgUBaS5Hktf1C-W5wJGtpZyTjfx8fvyC6XnAAQvxFABpDUyhaYRt06VtGWNWM7ECEhkhmNZTUCXshzBJ11iccYZ1ta0RxhbIS3wXQIDgMx50KSNdwgixEAAWkBOJHRo8ZhWgwI1k8aIPHcN90WOYozlKegmBYNgOAohkjWohAmJgkJUPTb5YTsZ9ewtLI5zLDF+POSoIHE6MmQQaCPCcIY2LUWwfCsq95KWKzlJsJJxysZCeIDLEcTxUoCSJfS90ghAR2iYVPhciYpQ9TZHUiIUbHHNQ1H7QcLN9DT3wxJc-Kok07H+YU+TTP5lPiOSDz+Ehj1Pew4UvaV8KAA */
     context: { gameState: gameState, dispatcher: dispatcher },
     initial: 'placingSettlement',
     states: {
@@ -74,7 +76,7 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
         on: {
           PLACE_SETTLEMENT: {
             target: 'placingRoad',
-            actions: ['placeSettlement', 'produceInitialResources', 'updatePlayerExchangeRateCommand'],
+            actions: ['placeSettlement', 'produceInitialResources', 'updatePlayerExchangeRateCommand', 'updatePlayerVictoryPointsCommand'],
             guard: 'isPlayerTurn'
           }
         }
@@ -126,14 +128,14 @@ export function createBaseGameStateMachine(gameState: GameState, dispatcher: Dis
             target: 'turn',
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
-            actions: ['buySettlement', 'updatePlayerExchangeRateCommand'],
+            actions: ['buySettlement', 'updatePlayerExchangeRateCommand', 'updatePlayerVictoryPointsCommand'],
             guard: 'isPlayerTurn'
           },
           PLACE_CITY: {
             target: 'turn',
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
-            actions: 'buyCity',
+            actions: ['buyCity', 'updatePlayerVictoryPointsCommand'],
             guard: 'isPlayerTurn'
           },
           BANK_TRADE: {

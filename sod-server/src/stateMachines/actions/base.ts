@@ -17,6 +17,7 @@ import { SetAvailableCityIntersectionsCommand } from '../../commands/base/SetAva
 import { PlaceCityCommand } from '../../commands/base/PlaceCityCommand'
 import { BankTradeCommand } from '../../commands/base/BankTradeCommand'
 import { UpdatePlayerExchangeRateCommand } from '../../commands/base/UpdatePlayerExchangeRateCommand'
+import { UpdatePlayerVictoryPointsCommand } from '../../commands/base/UpdatePlayerVictoryPointsCommand'
 
 function placeSettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
@@ -94,8 +95,13 @@ function updatePlayerExchangeRateCommand({ event, context }: InputType) {
     context.dispatcher.dispatch(new UpdatePlayerExchangeRateCommand(), { playerId: e.payload.playerId })
 }
 
+function updatePlayerVictoryPointsCommand({ event, context }: InputType) {
+    const e = event as BaseEvent;
+    context.dispatcher.dispatch(new UpdatePlayerVictoryPointsCommand(), { playerId: e.payload.playerId })
+}
+
 export {
     clearAvailableEdges, clearAvailableSettlementIntersections, clearAvailableCityIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, buyCity, produceInitialResources,
-    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections, bankTrade, updatePlayerExchangeRateCommand
+    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections, bankTrade, updatePlayerExchangeRateCommand, updatePlayerVictoryPointsCommand
 }
 
