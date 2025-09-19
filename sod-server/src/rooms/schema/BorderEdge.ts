@@ -23,4 +23,8 @@ export class BorderEdge extends Schema {
   getAdjacentHexes(state: GameState) {
     return state.hexes.filter((hex) => hex.edges.includes(this.id))
   }
+
+  getAllPoints(state: GameState) {
+    return [this.pointA, this.pointB];
+  }
 }

@@ -22,6 +22,8 @@ import {
   updatePlayerExchangeRate,
   updatePlayerVictoryPoints,
   gameEnded,
+  updatePlayerLongestRoad,
+  UpdateLongestRoadAfterSettlmentPlacement
 } from "./actions/base";
 import { Events } from "./events/base";
 import {
@@ -64,6 +66,8 @@ const machineConfig = setup({
     updatePlayerExchangeRate,
     updatePlayerVictoryPoints,
     gameEnded,
+    updatePlayerLongestRoad,
+    UpdateLongestRoadAfterSettlmentPlacement
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -104,12 +108,12 @@ export function createBaseGameStateMachine(
           PLACE_ROAD: [
             {
               target: "rollingDice",
-              actions: ["placeRoad", "nextPlayer"],
+              actions: ["placeRoad", "nextPlayer", 'updatePlayerLongestRoad'],
               guard: "initialRoundIsComplete",
             },
             {
               target: "placingSettlement",
-              actions: "placeRoad",
+              actions: ["placeRoad", 'updatePlayerLongestRoad'],
               guard: "isPlayerTurn",
             },
           ],
@@ -145,7 +149,7 @@ export function createBaseGameStateMachine(
             target: "turn",
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
-            actions: "buyRoad",
+            actions: ["buyRoad", 'updatePlayerLongestRoad'],
             guard: "isPlayerTurn",
           },
           // Settlement / City purchases now always go through 'checkingEnd'
@@ -156,7 +160,7 @@ export function createBaseGameStateMachine(
               "buySettlement",
               "updatePlayerExchangeRate",
               "updatePlayerVictoryPoints",
-            ],
+            , 'UpdateLongestRoadAfterSettlmentPlacement'],
             guard: "isPlayerTurn",
           },
           PLACE_CITY: {

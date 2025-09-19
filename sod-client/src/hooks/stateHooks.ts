@@ -79,6 +79,18 @@ export function usePlayers() {
   return players
 }
 
+export function useHasLongestRoad() {
+  const gameRoom = useRoom()
+  const [playerId, setPlayerId] = useState<string | null>(gameRoom?.state.hasLongestRoad || null)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('hasLongestRoad', (value) => {
+      setPlayerId(value || null)
+    })
+  }, [gameRoom])
+  return playerId
+}
+
 export function usePhase() {
   const gameRoom = useRoom()
   const [phase, setPhase] = useState<{ key: string; label: string }>({ key: '', label: '' })
