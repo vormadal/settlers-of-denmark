@@ -6,7 +6,7 @@ interface Payload {
   intersectionId: string;
   playerId: string;
 }
-export class UpdateLongestRoadAfterSettlmentPlacementCommand extends Command<
+export class UpdateLongestRoadAfterSettlementPlacementCommand extends Command<
   MyRoom,
   Payload
 > {

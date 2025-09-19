@@ -20,7 +20,7 @@ import { UpdatePlayerExchangeRateCommand } from '../../commands/base/UpdatePlaye
 import { UpdatePlayerVictoryPointsCommand } from '../../commands/base/UpdatePlayerVictoryPointsCommand'
 import { GameEndedCommand } from '../../commands/base/GameEndedCommand'
 import { UpdatePlayerLongestRoadCommand } from '../../commands/base/UpdatePlayerLongestRoadCommand'
-import { UpdateLongestRoadAfterSettlmentPlacementCommand } from '../../commands/base/UpdateLongestRoadAfterSettlmentPlacementCommand'
+import { UpdateLongestRoadAfterSettlementPlacementCommand } from '../../commands/base/UpdateLongestRoadAfterSettlementPlacementCommand'
 
 function placeSettlement({ event, context }: InputType) {
   const e = event as PlaceSettlementEvent
@@ -108,9 +108,9 @@ function updatePlayerLongestRoad({ event, context }: InputType) {
     context.dispatcher.dispatch(new UpdatePlayerLongestRoadCommand(), { playerId: e.payload.playerId })
 }
 
-function UpdateLongestRoadAfterSettlmentPlacement({ event, context }: InputType) {
+function updateLongestRoadAfterSettlementPlacement({ event, context }: InputType) {
     const e = event as PlaceSettlementEvent;
-    context.dispatcher.dispatch(new UpdateLongestRoadAfterSettlmentPlacementCommand(), { playerId: e.payload.playerId, intersectionId: e.payload.intersectionId })
+    context.dispatcher.dispatch(new UpdateLongestRoadAfterSettlementPlacementCommand(), { playerId: e.payload.playerId, intersectionId: e.payload.intersectionId })
 }
 
 function gameEnded({ context }: InputType) {
@@ -120,6 +120,6 @@ function gameEnded({ context }: InputType) {
 export {
     clearAvailableEdges, clearAvailableSettlementIntersections, clearAvailableCityIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, buyCity, produceInitialResources,
     produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections, bankTrade, updatePlayerExchangeRate, updatePlayerVictoryPoints, gameEnded,
-    updatePlayerLongestRoad, UpdateLongestRoadAfterSettlmentPlacement
+    updatePlayerLongestRoad, updateLongestRoadAfterSettlementPlacement
 }
 

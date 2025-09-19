@@ -23,7 +23,7 @@ import {
   updatePlayerVictoryPoints,
   gameEnded,
   updatePlayerLongestRoad,
-  UpdateLongestRoadAfterSettlmentPlacement
+  updateLongestRoadAfterSettlementPlacement
 } from "./actions/base";
 import { Events } from "./events/base";
 import {
@@ -67,7 +67,7 @@ const machineConfig = setup({
     updatePlayerVictoryPoints,
     gameEnded,
     updatePlayerLongestRoad,
-    UpdateLongestRoadAfterSettlmentPlacement
+    updateLongestRoadAfterSettlementPlacement,
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -108,12 +108,12 @@ export function createBaseGameStateMachine(
           PLACE_ROAD: [
             {
               target: "rollingDice",
-              actions: ["placeRoad", "nextPlayer", 'updatePlayerLongestRoad'],
+              actions: ["placeRoad", "nextPlayer", "updatePlayerLongestRoad"],
               guard: "initialRoundIsComplete",
             },
             {
               target: "placingSettlement",
-              actions: ["placeRoad", 'updatePlayerLongestRoad'],
+              actions: ["placeRoad", "updatePlayerLongestRoad"],
               guard: "isPlayerTurn",
             },
           ],
@@ -146,10 +146,14 @@ export function createBaseGameStateMachine(
             guard: "isPlayerTurn",
           },
           PLACE_ROAD: {
-            target: "turn",
+            target: "checkingEnd",
             // forces the exit and entry transitions on 'turn' state to be rerun
             reenter: true,
-            actions: ["buyRoad", 'updatePlayerLongestRoad'],
+            actions: [
+              "buyRoad",
+              "updatePlayerLongestRoad",
+              "updatePlayerVictoryPoints",
+            ],
             guard: "isPlayerTurn",
           },
           // Settlement / City purchases now always go through 'checkingEnd'
@@ -159,8 +163,9 @@ export function createBaseGameStateMachine(
             actions: [
               "buySettlement",
               "updatePlayerExchangeRate",
+              "updateLongestRoadAfterSettlementPlacement",
               "updatePlayerVictoryPoints",
-            , 'UpdateLongestRoadAfterSettlmentPlacement'],
+            ],
             guard: "isPlayerTurn",
           },
           PLACE_CITY: {
