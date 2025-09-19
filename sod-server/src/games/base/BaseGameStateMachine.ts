@@ -31,7 +31,7 @@ import {
   initialRoundIsComplete,
   isGameEnded,
   isPlayerTurn,
-} from "./guards/base";
+} from "./guards";
 
 export type InputType = {
   event: Events;
