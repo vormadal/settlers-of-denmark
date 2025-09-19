@@ -15,7 +15,7 @@ export class Player extends Schema {
   @type([Road]) roads = new ArraySchema<Road>()
   @type({ map: ExchangeRate }) exchangeRate = new MapSchema<ExchangeRate>()
   @type('number') victoryPoints: number = 0
-  @type('boolean') hasLongestRoad: boolean = false
+  @type('number') longestRoadLength: number = 0
   @type('boolean') hasLargestArmy: boolean = false
 
   get structures(): Structure[] {
@@ -40,6 +40,10 @@ export class Player extends Schema {
 
   getPlacedStructures() {
     return this.structures.filter((structure) => !!structure.intersection)
+  }
+
+  getPlacedRoads() {
+    return this.roads.filter((road) => !!road.edge)
   }
 
   getAvailableRoads() {

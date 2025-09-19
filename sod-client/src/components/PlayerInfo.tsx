@@ -1,6 +1,6 @@
 import { Box, Typography, Chip } from '@mui/material'
 import { Player } from '../state/Player'
-import { useCurrentPlayer, useDeck, usePlayers } from '../hooks/stateHooks'
+import { useCurrentPlayer, useDeck, usePlayers, useHasLongestRoad } from '../hooks/stateHooks'
 import { CartoonStatCard } from './CartoonStatCard'
 import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
 
@@ -15,6 +15,8 @@ export function PlayerInfo({ width, player, color }: Props) {
   const currentPlayer = useCurrentPlayer()
   const players = usePlayers()
   const isActivePlayer = currentPlayer?.id === player.id
+  const longestRoadOwner = useHasLongestRoad()
+  const hasLongestRoad = longestRoadOwner === player.id && player.longestRoadLength > 0
   const isMobile = width < 250 // Compact mode for smaller widths
   const maxVP = players.length ? Math.max(...players.map(p => p.victoryPoints ?? 0)) : 0
   const isVpLeader = (player.victoryPoints ?? 0) === maxVP && maxVP > 0
@@ -99,7 +101,14 @@ export function PlayerInfo({ width, player, color }: Props) {
           label="Available Roads"
           compact={isMobile}
         >
-          <RoadIcon size={isMobile ? 12 : 16} color="#8B4513" />
+          <RoadIcon size={isMobile ? 12 : 16} color={hasLongestRoad ? '#FF9800' : '#8B4513'} />
+        </CartoonStatCard>
+        <CartoonStatCard
+          count={player.longestRoadLength || 0}
+          label={hasLongestRoad ? 'Longest Road' : 'Road Length'}
+          compact={isMobile}
+        >
+          <RoadIcon size={isMobile ? 12 : 16} color={hasLongestRoad ? '#FF5722' : '#A0522D'} />
         </CartoonStatCard>
         <CartoonStatCard
           count={availableSettlements}
@@ -158,6 +167,20 @@ export function PlayerInfo({ width, player, color }: Props) {
               border: '1px solid rgba(0,0,0,0.1)'
             }}
           />
+          {hasLongestRoad && (
+            <Chip
+              size={isMobile ? 'small' : 'medium'}
+              label={`🚗 ${player.longestRoadLength}`}
+              color="warning"
+              sx={{
+                fontWeight: 700,
+                bgcolor: '#FF9800',
+                color: '#212121',
+                border: '1px solid rgba(0,0,0,0.15)',
+                boxShadow: '0 0 8px rgba(255,152,0,0.6)'
+              }}
+            />
+          )}
         </Box>
       </Box>
     </Box>

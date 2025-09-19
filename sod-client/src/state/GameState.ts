@@ -29,5 +29,6 @@ export class GameState extends Schema {
     @type([ "string" ]) public availableSettlementIntersections: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availableCityIntersections: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availableEdges: ArraySchema<string> = new ArraySchema<string>();
+    @type("string") public hasLongestRoad!: string;
     @type([ Die ]) public dice: ArraySchema<Die> = new ArraySchema<Die>();
 }

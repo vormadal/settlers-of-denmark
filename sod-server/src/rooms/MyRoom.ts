@@ -59,7 +59,7 @@ export class MyRoom extends Room<GameState> {
       numCities: 4,
       numSettlements: 4,
       numPlayers: 2,
-      numRoads: 9,
+      numRoads: 19,
       defaultExchangeRate: 4,
       ...options,
     };
