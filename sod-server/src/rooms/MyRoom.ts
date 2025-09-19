@@ -10,7 +10,7 @@ import { BaseGameDiceCup, DiceCup } from "../algorithms/DiceCup";
 import { HexFactory } from "../algorithms/HexFactory";
 import { HexLayoutAlgorithm } from "../algorithms/layout/HexLayoutAlgorithm";
 import { DefaultNumberTokenProvider } from "../algorithms/NumberTokenProvider";
-import { createBaseGameStateMachine } from "../stateMachines/BaseGameStateMachine";
+import { createBaseGameStateMachine } from "../games/base/BaseGameStateMachine";
 import { generate } from "../utils/arrayHelpers";
 import { Card, CardTypes, CardVariants, ResourceCardVariants } from "./schema/Card";
 import { City } from "./schema/City";
