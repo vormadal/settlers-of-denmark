@@ -1,14 +1,14 @@
 import { InputType } from "../BaseGameStateMachine";
-import { UpdateLongestRoadAfterSettlmentPlacementCommand } from "../commands/UpdateLongestRoadAfterSettlmentPlacementCommand";
+import { UpdateLongestRoadAfterSettlementPlacementCommand } from "../commands/UpdateLongestRoadAfterSettlementPlacementCommand";
 import { PlaceSettlementEvent } from "../events";
 
-export function updateLongestRoadAfterSettlmentPlacement({
+export function updateLongestRoadAfterSettlementPlacement({
   event,
   context,
 }: InputType) {
   const e = event as PlaceSettlementEvent;
   context.dispatcher.dispatch(
-    new UpdateLongestRoadAfterSettlmentPlacementCommand(),
+    new UpdateLongestRoadAfterSettlementPlacementCommand(),
     { playerId: e.payload.playerId, intersectionId: e.payload.intersectionId }
   );
 }
