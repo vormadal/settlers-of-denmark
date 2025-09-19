@@ -18,6 +18,7 @@ import { PlaceCityCommand } from '../../commands/base/PlaceCityCommand'
 import { BankTradeCommand } from '../../commands/base/BankTradeCommand'
 import { UpdatePlayerExchangeRateCommand } from '../../commands/base/UpdatePlayerExchangeRateCommand'
 import { UpdatePlayerVictoryPointsCommand } from '../../commands/base/UpdatePlayerVictoryPointsCommand'
+import { GameEndedCommand } from '../../commands/base/GameEndedCommand'
 import { UpdatePlayerLongestRoadCommand } from '../../commands/base/UpdatePlayerLongestRoadCommand'
 import { UpdateLongestRoadAfterSettlmentPlacementCommand } from '../../commands/base/UpdateLongestRoadAfterSettlmentPlacementCommand'
 
@@ -92,12 +93,12 @@ function bankTrade({ event, context }: InputType) {
   context.dispatcher.dispatch(new BankTradeCommand(), e.payload)
 }
 
-function updatePlayerExchangeRateCommand({ event, context }: InputType) {
+function updatePlayerExchangeRate({ event, context }: InputType) {
     const e = event as BaseEvent;
     context.dispatcher.dispatch(new UpdatePlayerExchangeRateCommand(), { playerId: e.payload.playerId })
 }
 
-function updatePlayerVictoryPointsCommand({ event, context }: InputType) {
+function updatePlayerVictoryPoints({ event, context }: InputType) {
     const e = event as BaseEvent;
     context.dispatcher.dispatch(new UpdatePlayerVictoryPointsCommand(), { playerId: e.payload.playerId })
 }
@@ -112,9 +113,13 @@ function UpdateLongestRoadAfterSettlmentPlacement({ event, context }: InputType)
     context.dispatcher.dispatch(new UpdateLongestRoadAfterSettlmentPlacementCommand(), { playerId: e.payload.playerId, intersectionId: e.payload.intersectionId })
 }
 
+function gameEnded({ context }: InputType) {
+    context.dispatcher.dispatch(new GameEndedCommand());
+}
+
 export {
     clearAvailableEdges, clearAvailableSettlementIntersections, clearAvailableCityIntersections, nextPlayer, placeRoad, buyRoad, placeSettlement, buySettlement, buyCity, produceInitialResources,
-    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections, bankTrade, updatePlayerExchangeRateCommand, updatePlayerVictoryPointsCommand,
+    produceResources, rollDice, setAvailableEdges, setAvailableSettlementIntersections, setAvailableCityIntersections, bankTrade, updatePlayerExchangeRate, updatePlayerVictoryPoints, gameEnded,
     updatePlayerLongestRoad, UpdateLongestRoadAfterSettlmentPlacement
 }
 

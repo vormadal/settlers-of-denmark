@@ -2,9 +2,10 @@ import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Board } from './Board'
 import ActionMenu from './components/ActionMenu'
+import { EndGameScreen } from './components/EndGameScreen'
 import { PlayerInfo } from './components/PlayerInfo'
 import { WaitingSplashScreen } from './components/WaitingSplashScreen'
-import { usePlayers } from './hooks/stateHooks'
+import { useIsGameEnded, usePlayers } from './hooks/stateHooks'
 import { getUniqueColor } from './utils/colors'
 
 export function BaseGame() {
@@ -12,6 +13,8 @@ export function BaseGame() {
   const [width, setWidth] = useState(window.innerWidth)
   const [height, setHeight] = useState(window.innerHeight)
   const isMobile = width < 768
+  const gameEnded = useIsGameEnded()
+  const [examiningBoard, setExaminingBoard] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,7 +45,8 @@ export function BaseGame() {
         background: '#7CB3FF',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        position: 'relative'
       }}
     >
       {/* Player Info - Responsive layout */}
@@ -84,7 +88,9 @@ export function BaseGame() {
         padding: '0.25rem',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+  pointerEvents: gameEnded && !examiningBoard ? 'none' : 'auto',
+  filter: gameEnded && !examiningBoard ? 'grayscale(0.2) brightness(0.9)' : 'none'
       }}>
         <Board
           width={width - 8}
@@ -93,13 +99,36 @@ export function BaseGame() {
       </Box>
 
       {/* Action Menu - Fixed at bottom */}
-      <Box sx={{ 
-        height: actionMenuHeight,
-        flexShrink: 0,
-        borderTop: '1px solid rgba(255,255,255,0.2)'
-      }}>
-        <ActionMenu />
-      </Box>
+      {!gameEnded && (
+        <Box sx={{ 
+          height: actionMenuHeight,
+          flexShrink: 0,
+          borderTop: '1px solid rgba(255,255,255,0.2)'
+        }}>
+          <ActionMenu />
+        </Box>
+      )}
+
+      {gameEnded && !examiningBoard && (
+        <EndGameScreen onExamineBoard={() => setExaminingBoard(true)} />
+      )}
+      {gameEnded && examiningBoard && (
+        <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 60, display: 'flex', gap: 1 }}>
+          <button
+            style={{
+              background: 'rgba(255,255,255,0.9)',
+              border: '1px solid rgba(0,0,0,0.2)',
+              borderRadius: 8,
+              padding: '0.5rem 1rem',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            onClick={() => setExaminingBoard(false)}
+          >
+            Back to Results
+          </button>
+        </Box>
+      )}
     </Box>
   )
 }
