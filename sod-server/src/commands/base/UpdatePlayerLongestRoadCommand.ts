@@ -159,9 +159,7 @@ function findLongestPath(
   } else {
     pointsToContinue = pointsOnCurrent[0];
   }
-
-  state.structures.filter(structure => structure.owner !== current.owner && state.intersections.find(intersection => intersection.position.id === pointsToContinue.id))
-
+  
   for(const structure of state.structures) {
     const intersection = state.intersections.find(intersection => intersection.position.id === pointsToContinue.id);
 
