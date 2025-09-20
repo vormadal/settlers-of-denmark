@@ -16,7 +16,7 @@ export class Player extends Schema {
   @type({ map: ExchangeRate }) exchangeRate = new MapSchema<ExchangeRate>()
   @type('number') victoryPoints: number = 0
   @type('number') longestRoadLength: number = 0
-  @type('boolean') hasLargestArmy: boolean = false
+  @type('number') knightsPlayed: number = 0
 
   get structures(): Structure[] {
     return [...this.settlements, ...this.cities]

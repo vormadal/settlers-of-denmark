@@ -7,6 +7,7 @@ import { Hex } from '../state/Hex'
 import { BorderEdge } from '../state/BorderEdge'
 import { Intersection } from '../state/Intersection'
 import { Harbor } from '../state/Harbor'
+import { CardTypes } from '../utils/CardTypes'
 
 export function useAvailableSettlementIntersections() {
   const gameRoom = useRoom()
@@ -208,4 +209,20 @@ export function useVictoryPointsToWin() {
     gameRoom.state.listen('victoryPointsToWin', (value) => setVp(value))
   }, [gameRoom])
   return vp
+}
+
+export function useCanBuyDevelopmentCards() {
+  const gameRoom = useRoom()
+  const [canBuy, setCanBuy] = useState<boolean>(gameRoom?.state.canBuyDevelopmentCards || false)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('canBuyDevelopmentCards', (value) => setCanBuy(value))
+  }, [gameRoom])
+  return canBuy
+}
+
+export function useDevelopmentDeckCount() {
+  const deck = useDeck()
+  
+  return deck.filter(card => card.type === CardTypes.Development && !card.owner).length
 }

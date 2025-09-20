@@ -1,8 +1,10 @@
 import { BankTradeEvent } from './BankTradeEvent';
+import { BuyDevelopmentCardEvent } from './BuyDevelopmentCardEvent';
 import { EndTurn } from './EndTurn';
 import { PlaceCityEvent } from './PlaceCityEvent';
 import { PlaceRoadEvent } from './PlaceRoadEvent';
 import { PlaceSettlementEvent } from './PlaceSettlementEvent';
+import { PlayDevelopmentCardEvent } from './PlayDevelopmentCardEvent';
 import { RollDiceEvent } from './RollDiceEvent';
 
 export type Events = 
@@ -11,4 +13,6 @@ export type Events =
   | PlaceRoadEvent 
   | BankTradeEvent 
   | RollDiceEvent 
+  | BuyDevelopmentCardEvent
+  | PlayDevelopmentCardEvent
   | EndTurn;

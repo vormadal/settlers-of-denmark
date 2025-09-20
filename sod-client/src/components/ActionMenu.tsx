@@ -2,9 +2,13 @@ import { FastForward as FastForwardIcon } from '@mui/icons-material'
 import { Box, useMediaQuery, useTheme, IconButton } from '@mui/material'
 import { usePlayer } from '../context/PlayerContext'
 import { useRoom } from '../context/RoomContext'
-import { useCurrentPlayer, useDice, usePhase } from '../hooks/stateHooks'
+import { useCurrentPlayer, useDice, usePhase, useCanBuyDevelopmentCards, useDevelopmentDeckCount } from '../hooks/stateHooks'
 import { PlayerCards } from './cards/PlayerCards'
+import { DevelopmentCardDeck } from './cards/DevelopmentCardDeck'
 import DiceComponent from './DiceComponent'
+
+const cardWidth = 40
+const cardHeight = 60
 
 export default function ActionMenu() {
   const room = useRoom()
@@ -14,6 +18,12 @@ export default function ActionMenu() {
   const phase = usePhase()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const canBuyDevelopmentCards = useCanBuyDevelopmentCards()
+  const developmentDeckCount = useDevelopmentDeckCount()
+
+  const handleBuyDevelopmentCard = () => {
+    room?.send('BUY_DEVELOPMENT_CARD')
+  }
 
   return (
     <Box sx={{ 
@@ -32,6 +42,23 @@ export default function ActionMenu() {
         alignItems: 'flex-start'
       }}>
         {player && <PlayerCards player={player} />}
+      </Box>
+
+      {/* Development Card Deck */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        minWidth: 'fit-content'
+      }}>
+        <DevelopmentCardDeck
+          remainingCards={developmentDeckCount}
+          onClick={handleBuyDevelopmentCard}
+          disabled={player?.id !== currentPlayer?.id || phase.key !== 'turn' || !canBuyDevelopmentCards}
+          canAfford={canBuyDevelopmentCards}
+          width={isMobile ? cardWidth * 0.8 : cardWidth}
+          height={isMobile ? cardHeight * 0.8 : cardHeight}
+        />
       </Box>
 
       {/* Right column - dice and button stacked */}
