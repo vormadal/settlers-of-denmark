@@ -4,10 +4,21 @@ import { SettlementShape } from "./shapes/SettlementShape";
 import { IntersectionShape } from "./shapes/IntersectionShape";
 import { Land } from "./shapes/LandShape";
 import { RoadShape } from "./shapes/RoadShape";
+import { RobberShape } from "./shapes/RobberShape";
 import { getUniqueColor } from "./utils/colors";
-import { useEdges, useHarbors, useHexes, useIntersections, usePlayers } from "./hooks/stateHooks";
+import { 
+  useEdges, 
+  useHarbors, 
+  useHexes, 
+  useIntersections, 
+  usePlayers, 
+  useRobberHex, 
+  useAvailableHexes, 
+  usePhase 
+} from "./hooks/stateHooks";
 import { CityShape } from "./shapes/CityShape";
 import { HarborShape } from "./shapes/HarborShape";
+import { useRoom } from "./context/RoomContext";
 
 interface Props {
   width: number;
@@ -21,6 +32,10 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const edges = useEdges();
   const intersections = useIntersections();
   const harbors = useHarbors();
+  const robberHex = useRobberHex();
+  const availableHexes = useAvailableHexes();
+  const phase = usePhase();
+  const room = useRoom();
 
   if (hexes.length === 0) return null;
 
@@ -67,6 +82,16 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
     )
     .flat();
 
+  // Handle robber movement
+  const handleMoveRobber = (hexId: string) => {
+    if (phase.key === 'moveRobber' && availableHexes.includes(hexId)) {
+      room?.send('MOVE_ROBBER', { hexId });
+    }
+  };
+
+  // Check if we're in robber movement phase
+  const isRobberMoveable = phase.key === 'moveRobber';
+
   return (
     <Stage
       width={windowWidth}
@@ -76,7 +101,12 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
     >
       <Layer scale={{ x: scale, y: scale }}>
         {hexes.map((x) => (
-          <Land key={x.id} tile={x} />
+          <Land 
+            key={x.id} 
+            tile={x}
+            isHighlighted={isRobberMoveable && availableHexes.includes(x.id)}
+            onClick={isRobberMoveable ? () => handleMoveRobber(x.id) : undefined}
+          />
         ))}
 
         {edges.map((x) => (
@@ -118,6 +148,15 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
             edge={edges.find((x) => x.id === road.edge)!}
           />
         ))}
+
+        {/* Render the robber */}
+        {robberHex && (
+          <RobberShape
+            hex={hexes.find(h => h.id === robberHex)!}
+            isMoveable={isRobberMoveable}
+            onMove={handleMoveRobber}
+          />
+        )}
       </Layer>
     </Stage>
   );

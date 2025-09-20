@@ -10,3 +10,4 @@ export { RollDiceEvent } from './RollDiceEvent';
 export { BuyDevelopmentCardEvent } from './BuyDevelopmentCardEvent';
 export { PlayDevelopmentCardEvent } from './PlayDevelopmentCardEvent';
 export { MoveRobberEvent } from './MoveRobberEvent';
+export { StealResourceEvent } from './StealResource';

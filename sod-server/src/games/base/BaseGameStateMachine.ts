@@ -29,6 +29,12 @@ import {
   clearCanBuyDevelopmentCards,
   playKnightDevelopmentCard,
   updateLargestArmy,
+  setAvailableHexesForRobber,
+  clearAvailableHexes,
+  moveRobber,
+  stealResource,
+  setAvailablePlayersToStealFrom,
+  clearAvailablePlayersToStealFrom
 } from "./actions";
 import { Events } from "./events";
 import {
@@ -79,6 +85,12 @@ const machineConfig = setup({
     clearCanBuyDevelopmentCards,
     playKnightDevelopmentCard,
     updateLargestArmy,
+    setAvailableHexesForRobber,
+    clearAvailableHexes,
+    moveRobber,
+    stealResource,
+    setAvailablePlayersToStealFrom,
+    clearAvailablePlayersToStealFrom
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -191,7 +203,7 @@ export function createBaseGameStateMachine(
             guard: "isPlayerTurn",
           },
           PLAY_DEVELOPMENT_CARD: {
-            target: "playDevelopmentCard",
+            target: "playingDevelopmentCard",
             guard: "isPlayerTurn",
           },
           BANK_TRADE: {
@@ -203,27 +215,38 @@ export function createBaseGameStateMachine(
           },
         },
       },
-      playDevelopmentCard: {
+      playingDevelopmentCard: {
         always: [
-          { guard: "isKnightPlayed", target: "playKnight" },
+          { guard: "isKnightPlayed", target: "playingKnight" },
           { target: "turn" },
         ],
       },
-      playKnight: {
+      playingKnight: {
         entry: ["playKnightDevelopmentCard"],
         exit: ["updateLargestArmy", "updatePlayerVictoryPoints"],
-        always: [{ guard: "isGameEnded", target: "ended" }, { target: "turn" }],
+        always: [{ guard: "isGameEnded", target: "ended" }, { target: "moveRobber" }],
       },
       playRoadBuilding: {},
       playMonopoly: {},
       playYearOfPlenty: {},
       moveRobber: {
-        entry: [],
-        exit: [],
+        entry: ["setAvailableHexesForRobber"],
+        exit: ["clearAvailableHexes"],
         on: {
           MOVE_ROBBER: {
+            target: "stealingResource",
+            actions: ["moveRobber"],
+            guard: "isPlayerTurn",
+          },
+        },
+      },
+      stealingResource: {
+        entry: ["setAvailablePlayersToStealFrom"],
+        exit: ["clearAvailablePlayersToStealFrom"],
+        on: {
+          STEAL_RESOURCE: {
             target: "turn",
-            actions: [],
+            actions: ["stealResource"],
             guard: "isPlayerTurn",
           },
         },

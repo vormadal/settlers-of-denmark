@@ -104,7 +104,10 @@ export function usePhase() {
           placingSettlement: `${state.currentPlayer} is placing settlement`,
           placingRoad: `${state.currentPlayer} is placing road`,
           rollingDice: `${state.currentPlayer} is Rolling Dice`,
-          turn: `${state.currentPlayer}'s Turn`
+          turn: `${state.currentPlayer}'s Turn`,
+          playingKnight: `${state.currentPlayer} played a Knight card`,
+          moveRobber: `${state.currentPlayer} is moving the robber`,
+          stealingResource: `${state.currentPlayer} is stealing a resource`
         }[value] || value
 
       setPhase({ key: value, label })
@@ -225,4 +228,60 @@ export function useDevelopmentDeckCount() {
   const deck = useDeck()
   
   return deck.filter(card => card.type === CardTypes.Development && !card.owner).length
+}
+
+export function useAvailableHexes() {
+  const gameRoom = useRoom()
+  const [availableHexes, setAvailableHexes] = useState<string[]>(
+    gameRoom?.state.availableHexes.toArray() || []
+  )
+  useEffect(() => {
+    if (!gameRoom) return
+
+    gameRoom.state.listen('availableHexes', (hexes) => {
+      setAvailableHexes(hexes.toArray())
+    })
+  }, [gameRoom])
+  return availableHexes
+}
+
+export function useRobberHex() {
+  const gameRoom = useRoom()
+  const [robberHex, setRobberHex] = useState<string | null>(gameRoom?.state.robberHex || null)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('robberHex', (value) => {
+      setRobberHex(value || null)
+    })
+  }, [gameRoom])
+  return robberHex
+}
+
+export function useAvailablePlayersToStealFrom() {
+  const gameRoom = useRoom()
+  const [availablePlayerIds, setAvailablePlayerIds] = useState<string[]>(
+    gameRoom?.state.availablePlayersToStealFrom.toArray() || []
+  )
+  const [availablePlayers, setAvailablePlayers] = useState<Player[]>([])
+
+  useEffect(() => {
+    if (!gameRoom) return
+
+    gameRoom.state.listen('availablePlayersToStealFrom', (playerIds) => {
+      setAvailablePlayerIds(playerIds.toArray())
+    })
+  }, [gameRoom])
+
+  useEffect(() => {
+    if (!gameRoom) return
+    
+    // Convert player IDs to Player objects
+    const players = availablePlayerIds
+      .map(playerId => gameRoom.state.players.get(playerId))
+      .filter((player): player is Player => player !== undefined)
+    
+    setAvailablePlayers(players)
+  }, [availablePlayerIds, gameRoom])
+
+  return availablePlayers
 }

@@ -25,4 +25,10 @@ export * from "./clearCanBuyDevelopmentCards";
 export * from "./buyDevelopmentCard";
 export * from "./playKnightDevelopmentCard";
 export * from "./updateLargestArmy";
+export * from "./setAvailableHexesForRobber";
+export * from "./clearAvailableHexes";
+export * from "./moveRobber";
+export * from "./stealResource";
+export * from "./setAvailablePlayersToStealFrom";
+export * from "./clearAvailablePlayersToStealFrom";
 
