@@ -12,37 +12,30 @@ import { HexLayoutAlgorithm } from "../algorithms/layout/HexLayoutAlgorithm";
 import { DefaultNumberTokenProvider } from "../algorithms/NumberTokenProvider";
 import { createBaseGameStateMachine } from "../games/base/BaseGameStateMachine";
 import { generate } from "../utils/arrayHelpers";
-import { Card, CardTypes, CardVariants, ResourceCardVariants } from "./schema/Card";
+import { CardTypes, CardVariants, ResourceCardVariants } from "./schema/Card";
 import { City } from "./schema/City";
 import { HexTypes } from "./schema/Hex";
 import { HexProduction } from "./schema/HexProduction";
 import { ExchangeRate } from "./schema/ExchangeRate";
 import { HarborFactory } from "../algorithms/HarborFactory";
-
-function cardGenerator(
-  count: number,
-  type: string,
-  variant: string,
-  create: (card: Card) => void
-): Card[] {
-  return Array.from({ length: count }, (_, i) => i).map((i) => {
-    const card = new Card();
-    card.id = `${type}-${variant}-${i}`;
-    card.type = type;
-    card.variant = variant;
-    create(card);
-    return card;
-  });
-}
+import { cardGenerator } from "../utils/cardGenerator";
 
 export interface RoomOptions {
+  sessionId?: string; // for debug, allow setting the sessionId of the players
   debug?: boolean;
   numPlayers?: number;
   numSettlements?: number;
   numCities?: number;
   numRoads?: number;
   defaultExchangeRate?: number;
-
+  // bank resource cards
+  resourceCards?: {
+    [key: string]: number;
+  };
+  // initial player resource cards (affects all players)
+  initialPlayerResourceCards?: {
+    [key: string]: number;
+  };
   name?: string; // player name
 }
 
@@ -61,6 +54,14 @@ export class MyRoom extends Room<GameState> {
       numPlayers: 2,
       numRoads: 19,
       defaultExchangeRate: 4,
+      // Default initial player resource cards for debug mode
+      initialPlayerResourceCards: options.debug ? {
+        [CardVariants.Brick]: 5,
+        [CardVariants.Grain]: 5,
+        [CardVariants.Lumber]: 5,
+        [CardVariants.Ore]: 5,
+        [CardVariants.Wool]: 5,
+      } : undefined,
       ...options,
     };
 
@@ -136,31 +137,31 @@ export class MyRoom extends Room<GameState> {
     this.diceCup.init(state);
     state.deck.push(
       ...cardGenerator(
-        19,
+        this.options.resourceCards[CardVariants.Brick] || 19,
         CardTypes.Resource,
         CardVariants.Brick,
         (card) => card
       ),
       ...cardGenerator(
-        19,
+        this.options.resourceCards[CardVariants.Grain] || 19,
         CardTypes.Resource,
         CardVariants.Grain,
         (card) => card
       ),
       ...cardGenerator(
-        19,
+        this.options.resourceCards[CardVariants.Lumber] || 19,
         CardTypes.Resource,
         CardVariants.Lumber,
         (card) => card
       ),
       ...cardGenerator(
-        19,
+        this.options.resourceCards[CardVariants.Ore] || 19,
         CardTypes.Resource,
         CardVariants.Ore,
         (card) => card
       ),
       ...cardGenerator(
-        19,
+        this.options.resourceCards[CardVariants.Wool] || 19,
         CardTypes.Resource,
         CardVariants.Wool,
         (card) => card
@@ -201,46 +202,10 @@ export class MyRoom extends Room<GameState> {
 
     if (this.options.debug) {
       for (let i = 0; i < this.options.numPlayers; i++) {
-        const player = this.addPlayer(`debug-${i}`);
-        state.deck.push(
-          ...cardGenerator(
-            5,
-            CardTypes.Resource,
-            CardVariants.Brick,
-            (card) => (card.owner = player.id)
-          )
-        ); // give each player some cards
-        state.deck.push(
-          ...cardGenerator(
-            5,
-            CardTypes.Resource,
-            CardVariants.Grain,
-            (card) => (card.owner = player.id)
-          )
-        );
-        state.deck.push(
-          ...cardGenerator(
-            5,
-            CardTypes.Resource,
-            CardVariants.Lumber,
-            (card) => (card.owner = player.id)
-          )
-        );
-        state.deck.push(
-          ...cardGenerator(
-            5,
-            CardTypes.Resource,
-            CardVariants.Ore,
-            (card) => (card.owner = player.id)
-          )
-        );
-        state.deck.push(
-          ...cardGenerator(
-            5,
-            CardTypes.Resource,
-            CardVariants.Wool,
-            (card) => (card.owner = player.id)
-          )
+        this.addPlayer(
+          this.options.sessionId,
+          `Player ${i}`,
+          `debug-${i}`
         );
       }
 
@@ -250,14 +215,17 @@ export class MyRoom extends Room<GameState> {
           for (let i = 0; i < this.state.players.size * 2; i++) {
             const intersectionIndex =
               Math.floor(
-                Math.random() * this.state.availableSettlementIntersections.length
+                Math.random() *
+                  this.state.availableSettlementIntersections.length
               ) - 1;
             this.stateMachine.send({
               type: "PLACE_SETTLEMENT",
               payload: {
                 playerId: this.state.currentPlayer,
                 intersectionId:
-                  this.state.availableSettlementIntersections[intersectionIndex],
+                  this.state.availableSettlementIntersections[
+                    intersectionIndex
+                  ],
               },
             });
             const edgeIndex =
@@ -302,24 +270,48 @@ export class MyRoom extends Room<GameState> {
     }
   }
 
-  addPlayer(id: string, name?: string) {
+  addPlayer(sessionId: string, name?: string, id?: string) {
     const player = new Player();
-    player.id = id;
+    player.id = id || sessionId;
+    player.sessionId = sessionId;
     player.name = name || id;
     player.settlements.push(
       ...generate(this.options.numSettlements, (i) =>
-        Settlement.create(`${id}-${i}`, id)
+        Settlement.create(`${player.id}-${i}`, player.id)
       )
     );
     player.cities.push(
-      ...generate(this.options.numCities, (i) => City.create(`${id}-${i}`, id))
+      ...generate(this.options.numCities, (i) =>
+        City.create(`${player.id}-${i}`, player.id)
+      )
     );
     player.roads.push(
-      ...generate(this.options.numRoads, (i) => Road.create(`${id}-${i}`, id))
+      ...generate(this.options.numRoads, (i) =>
+        Road.create(`${player.id}-${i}`, player.id)
+      )
     );
     Object.values(ResourceCardVariants).forEach((resource) =>
-      player.exchangeRate.set(resource, ExchangeRate.create(resource, this.options.defaultExchangeRate))
+      player.exchangeRate.set(
+        resource,
+        ExchangeRate.create(resource, this.options.defaultExchangeRate)
+      )
     );
+
+    // Add initial player resource cards if specified
+    if (this.options.initialPlayerResourceCards) {
+      Object.entries(this.options.initialPlayerResourceCards).forEach(([variant, count]) => {
+        if (Object.values(ResourceCardVariants).includes(variant) && count > 0) {
+          this.state.deck.push(
+            ...cardGenerator(
+              count,
+              CardTypes.Resource,
+              variant,
+              (card) => (card.owner = player.id)
+            )
+          );
+        }
+      });
+    }
 
     this.state.players.set(player.id, player);
     return player;
