@@ -25,9 +25,19 @@ export class Hex extends Schema {
     return this.intersections.map((id) => state.intersections.find((x) => x.id === id))
   }
 
-  // getStructures(state: GameState) {
-  //   const intersections = this.getIntersections(state)
+  getStructures(state: GameState) {
+    const intersections = this.getIntersections(state)
     
-  //   return this.intersections.map((id) => state.players.get(state.intersections.find((x) => x.id === id)?.owner))
-  // } 
+    const structures = []
+    for (const intersection of intersections) {
+      if (intersection) {
+        const structure = state.structures.find((s) => s.intersection === intersection.id)
+        if (structure) {
+          structures.push(structure)
+        }
+      }
+    }
+    
+    return structures
+  } 
 }

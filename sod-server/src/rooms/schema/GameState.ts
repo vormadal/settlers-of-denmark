@@ -30,6 +30,7 @@ export class GameState extends Schema {
   @type(['string']) availableCityIntersections = new ArraySchema<string>()
   @type(['string']) availableEdges = new ArraySchema<string>()
   @type(['string']) availableHexes = new ArraySchema<string>()
+  @type(['string']) availablePlayersToStealFrom = new ArraySchema<string>()
   @type('string') robberHex: string = ''
   @type('boolean') canBuyDevelopmentCards: boolean = false
   @type('string') hasLongestRoad: string = ''

@@ -5,7 +5,8 @@ import ActionMenu from './components/ActionMenu'
 import { EndGameScreen } from './components/EndGameScreen'
 import { PlayerInfo } from './components/PlayerInfo'
 import { WaitingSplashScreen } from './components/WaitingSplashScreen'
-import { useIsGameEnded, usePlayers } from './hooks/stateHooks'
+import { StealResourceModal } from './components/StealResourceModal'
+import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToStealFrom } from './hooks/stateHooks'
 import { getUniqueColor } from './utils/colors'
 
 export function BaseGame() {
@@ -15,6 +16,9 @@ export function BaseGame() {
   const isMobile = width < 768
   const gameEnded = useIsGameEnded()
   const [examiningBoard, setExaminingBoard] = useState(false)
+  const phase = usePhase()
+  const availablePlayersToStealFrom = useAvailablePlayersToStealFrom()
+  const showStealModal = phase.key === 'stealingResource'
 
   useEffect(() => {
     const handleResize = () => {
@@ -129,6 +133,13 @@ export function BaseGame() {
           </button>
         </Box>
       )}
+
+      {/* Steal Resource Modal */}
+      <StealResourceModal
+        open={showStealModal}
+        onClose={() => {}} // Modal should only close when a player is selected
+        eligiblePlayers={availablePlayersToStealFrom}
+      />
     </Box>
   )
 }

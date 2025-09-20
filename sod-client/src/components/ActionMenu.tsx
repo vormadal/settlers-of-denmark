@@ -89,6 +89,26 @@ export default function ActionMenu() {
         </Box>
 
   
+        {/* Phase indicator */}
+        {(phase.key === 'moveRobber' || phase.key === 'stealingResource' || phase.key === 'playingKnight') && (
+          <Box sx={{
+            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+            border: '2px solid rgba(244, 67, 54, 0.3)',
+            borderRadius: 2,
+            padding: '4px 8px',
+            fontSize: isMobile ? '0.7rem' : '0.8rem',
+            fontWeight: 'bold',
+            color: '#d32f2f',
+            textAlign: 'center',
+            maxWidth: 100,
+            lineHeight: 1.2
+          }}>
+            {phase.key === 'moveRobber' && '🏴‍☠️ Move Robber'}
+            {phase.key === 'stealingResource' && '💰 Steal Resource'}
+            {phase.key === 'playingKnight' && '⚔️ Knight Active'}
+          </Box>
+        )}
+      
         {/* End Turn button at the bottom */}
         <IconButton
           disabled={player?.id !== currentPlayer?.id || phase.key !== 'turn'}

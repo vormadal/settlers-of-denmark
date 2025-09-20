@@ -7,6 +7,7 @@ import { PlaceRoadEvent } from './PlaceRoadEvent';
 import { PlaceSettlementEvent } from './PlaceSettlementEvent';
 import { PlayDevelopmentCardEvent } from './PlayDevelopmentCardEvent';
 import { RollDiceEvent } from './RollDiceEvent';
+import { StealResourceEvent } from './StealResource';
 
 export type Events = 
   | PlaceSettlementEvent 
@@ -17,4 +18,5 @@ export type Events =
   | BuyDevelopmentCardEvent
   | PlayDevelopmentCardEvent
   | MoveRobberEvent
+  | StealResourceEvent
   | EndTurn;
