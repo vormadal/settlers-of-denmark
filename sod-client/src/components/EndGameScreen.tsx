@@ -1,4 +1,3 @@
-import { Box, Button, Typography, Stack, Paper } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { usePlayers, useVictoryPointsToWin } from '../hooks/stateHooks'
 import { useRoom } from '../context/RoomContext'
@@ -26,128 +25,102 @@ export function EndGameScreen({ onExamineBoard }: EndGameScreenProps) {
   }
 
   return (
-    <Box sx={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backdropFilter: 'blur(6px)',
-      background: 'rgba(10,10,30,0.55)',
-      zIndex: 50,
-      p: 2
-    }}>
-      <Paper elevation={6} sx={{
-        maxWidth: 600,
-        width: '100%',
-        borderRadius: 4,
-        p: { xs: 3, md: 5 },
-        textAlign: 'center',
-        background: 'linear-gradient(145deg,#ffffff,#f1f3f8)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <Box sx={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(circle at 30% 20%, rgba(255,107,53,0.15), transparent 60%), radial-gradient(circle at 80% 70%, rgba(78,205,196,0.18), transparent 65%)',
-          pointerEvents: 'none'
-        }} />
-        <Typography variant="h3" sx={{ fontWeight: 800, mb: 2, position: 'relative' }}>
+    <div 
+      className="absolute top-0 left-0 w-full h-full flex items-center justify-center backdrop-blur-md z-50 p-2"
+      style={{ background: 'rgba(10,10,30,0.55)' }}
+    >
+      <div 
+        className="max-w-[600px] w-full rounded-2xl p-3 md:p-5 text-center relative overflow-hidden shadow-2xl"
+        style={{ background: 'linear-gradient(145deg,#ffffff,#f1f3f8)' }}
+      >
+        {/* Background gradient overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at 30% 20%, rgba(255,107,53,0.15), transparent 60%), radial-gradient(circle at 80% 70%, rgba(78,205,196,0.18), transparent 65%)'
+          }}
+        />
+        
+        <h1 className="text-3xl font-extrabold mb-2 relative">
           🏆 Game Over
-        </Typography>
+        </h1>
+        
         {winners.length > 0 ? (
           <>
-            <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, position: 'relative' }}>
+            <h2 className="text-xl font-semibold mb-2 relative">
               {winners.length === 1 ? 'Winner' : 'Winners'}
-            </Typography>
-            <Stack spacing={1} sx={{ mb: 3, position: 'relative' }}>
+            </h2>
+            <div className="flex flex-col gap-1 mb-3 relative">
               {winners.map(w => (
-                <Box key={w.id} sx={{
-                  p: 1.5,
-                  borderRadius: 2,
-                  background: 'linear-gradient(90deg, rgba(255,107,53,0.15), rgba(255,255,255,0.7))',
-                  fontWeight: 700,
-                  fontSize: '1.2rem'
-                }}>
+                <div 
+                  key={w.id} 
+                  className="p-1.5 rounded-lg font-bold text-lg"
+                  style={{ 
+                    background: 'linear-gradient(90deg, rgba(255,107,53,0.15), rgba(255,255,255,0.7))' 
+                  }}
+                >
                   {w.name} — {w.victoryPoints} VP
-                </Box>
+                </div>
               ))}
-            </Stack>
+            </div>
           </>
         ) : (
-          <Typography variant="body1" sx={{ mb: 3, fontWeight: 500 }}>
+          <p className="mb-3 font-medium">
             No winner detected.
-          </Typography>
+          </p>
         )}
 
-        <Typography variant="body2" sx={{ mb: 3, opacity: 0.8 }}>
+        <p className="text-sm mb-3 opacity-80">
           Final Scores
-        </Typography>
-        <Stack spacing={0.75} sx={{ mb: 4 }}>
+        </p>
+        <div className="flex flex-col gap-0.5 mb-4">
           {players
             .sort((a, b) => b.victoryPoints - a.victoryPoints)
             .map(p => (
-              <Box key={p.id} sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                background: 'rgba(0,0,0,0.05)',
-                borderRadius: 1.5,
-                px: 1.5,
-                py: 0.75,
-                fontWeight: winners.some(w => w.id === p.id) ? 700 : 400,
-                boxShadow: winners.some(w => w.id === p.id) ? '0 0 0 2px #FF6B35' : 'none'
-              }}>
+              <div 
+                key={p.id} 
+                className={`
+                  flex justify-between bg-black/5 rounded-xl px-1.5 py-0.5
+                  ${winners.some(w => w.id === p.id) 
+                    ? 'font-bold shadow-[0_0_0_2px_#FF6B35]' 
+                    : 'font-normal'
+                  }
+                `}
+              >
                 <span>{p.name}</span>
                 <span>{p.victoryPoints} VP</span>
-              </Box>
+              </div>
             ))}
-        </Stack>
+        </div>
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-          <Button
-            variant="contained"
-            size="large"
+        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+          <button
             onClick={returnToLobby}
-            sx={{
-              fontWeight: 700,
-              textTransform: 'none',
-              px: 4,
-              py: 1.5,
-              borderRadius: 3,
+            className="font-bold px-4 py-1.5 rounded-3xl shadow-[0_6px_18px_rgba(78,205,196,0.4)] transition-all hover:scale-105"
+            style={{
               background: 'linear-gradient(45deg,#4ECDC4,#45B7AA)',
-              boxShadow: '0 6px 18px rgba(78,205,196,0.4)',
-              '&:hover': { background: 'linear-gradient(45deg,#45B7AA,#3DA58A)' }
+              color: 'white'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(45deg,#45B7AA,#3DA58A)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(45deg,#4ECDC4,#45B7AA)'
             }}
           >
             Return to Lobby
-          </Button>
+          </button>
           {onExamineBoard && (
-            <Button
-              variant="outlined"
-              size="large"
+            <button
               onClick={onExamineBoard}
-              sx={{
-                fontWeight: 700,
-                textTransform: 'none',
-                px: 4,
-                py: 1.5,
-                borderRadius: 3,
-                borderWidth: 2,
-                backdropFilter: 'blur(2px)',
-                background: 'rgba(255,255,255,0.4)',
-                '&:hover': { background: 'rgba(255,255,255,0.6)' }
-              }}
+              className="font-bold px-4 py-1.5 rounded-3xl border-2 border-secondary-main backdrop-blur-sm bg-white/40 hover:bg-white/60 transition-all"
             >
               Examine Board
-            </Button>
+            </button>
           )}
-        </Stack>
-      </Paper>
-    </Box>
+        </div>
+      </div>
+    </div>
   )
 }
 

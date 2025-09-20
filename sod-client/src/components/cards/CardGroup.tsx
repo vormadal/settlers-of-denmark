@@ -1,4 +1,3 @@
-import { Box, Typography } from '@mui/material'
 import { BaseCard } from './BaseCard'
 
 interface Props {
@@ -29,34 +28,21 @@ export function CardGroup({ color, count, maxSpacing = defaultMaxSpacing, onClic
   const groupWidth = cardWidth + (count - 1) * spacing
   
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        flexShrink: 0,
-        marginRight: '0.5rem',
-        cursor: onClick ? 'pointer' : 'default',
-      }}
+    <div 
+      className={`flex flex-shrink-0 mr-2 ${onClick ? 'cursor-pointer' : 'cursor-default'} hover:[&_.card]:-translate-y-0.5`}
       onClick={onClick}
     >
-      <Box
-        sx={{
-          position: 'relative',
-          width: groupWidth,
-          height: cardHeight,
-          '&:hover .card': {
-            transform: 'translateY(-2px)',
-          }
-        }}
+      <div
+        className="relative"
+        style={{ width: groupWidth, height: cardHeight }}
       >
         {Array.from({ length: count }).map((_, index) => (
-          <Box
+          <div
             key={`${color}-${index}`}
-            className="card"
-            sx={{
-              position: 'absolute',
+            className="card absolute top-0 transition-transform duration-200"
+            style={{
               left: index * spacing,
-              top: 0,
-              zIndex: index + 1, // Stack cards with increasing z-index
+              zIndex: index + 1,
             }}
           >
             <BaseCard
@@ -64,38 +50,22 @@ export function CardGroup({ color, count, maxSpacing = defaultMaxSpacing, onClic
               width={cardWidth}
               height={cardHeight}
             />
-          </Box>
+          </div>
         ))}
         
         {/* Card count indicator - positioned on the last (top) card */}
         {count > 1 && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: (count - 1) * spacing + cardWidth / 2, // Center of the last card
-              transform: 'translate(-50%, -50%)',
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
-              borderRadius: '50%',
-              minWidth: 24,
-              height: 24,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.75rem',
-              fontWeight: 'bold',
-              zIndex: count + 10, // Ensure it's above all cards
-              border: '2px solid rgba(255, 255, 255, 0.9)',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+          <div
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white rounded-full min-w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-white/90 shadow-md"
+            style={{
+              left: (count - 1) * spacing + cardWidth / 2,
+              zIndex: count + 10,
             }}
           >
-            <Typography variant="caption" sx={{ fontSize: '0.75rem', lineHeight: 1 }}>
-              {count}
-            </Typography>
-          </Box>
+            {count}
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

@@ -1,31 +1,6 @@
-import {
-  Add as AddIcon,
-  Groups as GroupsIcon,
-  PlayArrow as PlayArrowIcon,
-  Refresh as RefreshIcon
-} from '@mui/icons-material'
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Container,
-  Fade,
-  Grid2 as Grid,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-  Zoom
-} from '@mui/material'
 import { RoomAvailable } from 'colyseus.js'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CityIcon } from './components/icons/CityIcon'
-import { RoadIcon } from './components/icons/RoadIcon'
-import { SettlementIcon } from './components/icons/SettlementIcon'
 import { useColyseus } from './context/ColyseusContext'
 import { GameState } from './state/GameState'
 import { RoomNames } from './utils/RoomNames'
@@ -36,6 +11,7 @@ export function Lobby() {
   const client = useColyseus()
   const [rooms, setRooms] = useState<RoomAvailable<GameState>[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
 
   // Load name from session storage on component mount
   useEffect(() => {
@@ -49,382 +25,174 @@ export function Lobby() {
   useEffect(() => {
     if (name) {
       sessionStorage.setItem('player-name', name)
+    } else {
+      sessionStorage.removeItem('player-name')
     }
   }, [name])
 
-  useEffect(() => {
-    refreshRooms()
-  }, [client])
-
-  async function refreshRooms() {
+  const refreshRooms = async () => {
     setIsRefreshing(true)
     try {
-      const rooms = await client.getRooms()
-      setRooms(rooms)
+      const availableRooms = await client.getRooms()
+      setRooms(availableRooms)
     } catch (error) {
-      console.error('Failed to fetch rooms:', error)
-    } finally {
-      setIsRefreshing(false)
+      console.error('Error fetching rooms:', error)
     }
+    setIsRefreshing(false)
   }
 
-  async function createRoom() {
-    if (!name.trim()) return
+  useEffect(() => {
+    refreshRooms()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const createRoom = async () => {
+    if (!name.trim()) {
+      alert('Please enter your name first!')
+      return
+    }
+
+    setIsCreating(true)
     try {
-      const room = await client.createRoom(RoomNames.OneVsOne, { name: name.trim() })
-      if (!room) return
-      joinRoom(room.id)
+      const room = await client.createRoom(RoomNames.OneVsOne, {
+        name,
+      })
+      if (room) {
+        navigate(`/game/${room.id}?name=${encodeURIComponent(name)}`)  
+      }
     } catch (error) {
-      console.error('Failed to create room:', error)
+      console.error('Error creating room:', error)
+      alert('Failed to create room. Please try again.')
+    }
+    setIsCreating(false)
+  }
+
+  const joinRoom = async (roomId: string) => {
+    if (!name.trim()) {
+      alert('Please enter your name first!')
+      return
+    }
+
+    try {
+      navigate(`/game/${roomId}?name=${encodeURIComponent(name)}`)
+    } catch (error) {
+      console.error('Error joining room:', error)
+      alert('Failed to join room. Please try again.')
     }
   }
-
-  async function joinRoom(id: string) {
-    if (!name.trim()) return
-    navigate(`/game/${id}?name=${name.trim()}`, {
-      viewTransition: true
-    })
-  }
-
-  const isNameValid = name.trim().length > 0
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        py: 4,
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `
-            radial-gradient(circle at 20% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.05) 0%, transparent 30%)
-          `,
-        }
-      }}
-    >
-      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-700 p-4">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <Fade in timeout={800}>
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography
-              variant="h2"
-              component="h1"
-              sx={{
-                fontWeight: 800,
-                color: 'white',
-                textShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                mb: 2,
-                fontSize: { xs: '2.5rem', md: '3.5rem' }
-              }}
+        <div className="text-center mb-8 pt-8">
+          <h1 className="text-5xl font-bold text-white mb-4">
+            Settlers of Denmark
+          </h1>
+          <p className="text-xl text-white/80">
+            Welcome to the board game lobby
+          </p>
+        </div>
+
+        {/* Main content */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
+          {/* Player name input */}
+          <div className="mb-8">
+            <label className="block text-lg font-semibold text-gray-700 mb-2">
+              Your Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your player name"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+              maxLength={20}
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <button
+              onClick={createRoom}
+              disabled={isCreating || !name.trim()}
+              className={`flex-1 py-3 px-6 text-white font-semibold rounded-lg transition-colors ${
+                isCreating || !name.trim()
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600'
+              }`}
             >
-              🏰 Settlers of Denmark
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'rgba(255,255,255,0.9)',
-                textShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                fontWeight: 400
-              }}
+              {isCreating ? 'Creating...' : 'Create New Game'}
+            </button>
+            <button
+              onClick={refreshRooms}
+              disabled={isRefreshing}
+              className={`px-6 py-3 font-semibold rounded-lg transition-colors ${
+                isRefreshing
+                  ? 'bg-gray-400 text-white cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
             >
-              Build, trade, and conquer the Danish lands!
-            </Typography>
+              {isRefreshing ? 'Refreshing...' : 'Refresh Rooms'}
+            </button>
+          </div>
+
+          {/* Rooms list */}
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Available Games ({rooms.length})
+            </h2>
             
-            {/* Decorative icons */}
-            <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', mt: 2 }}>
-              <Box sx={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
-                <SettlementIcon size={32} color="#FFE066" />
-              </Box>
-              <Box sx={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
-                <CityIcon size={32} color="#FF6B6B" />
-              </Box>
-              <Box sx={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>
-                <RoadIcon size={32} color="#4ECDC4" />
-              </Box>
-            </Stack>
-          </Box>
-        </Fade>
-
-        <Grid container spacing={4}>
-          {/* Player Setup Card */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Zoom in timeout={600}>
-              <Card 
-                sx={{
-                  background: 'linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%)',
-                  borderRadius: '20px',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8)',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  overflow: 'visible'
-                }}
-              >
-                <CardContent sx={{ p: 4 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 700,
-                      mb: 3,
-                      textAlign: 'center',
-                      color: '#333',
-                      textShadow: '0 1px 2px rgba(255,255,255,0.8)'
-                    }}
+            {rooms.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <p className="text-lg">No games available</p>
+                <p>Create a new game to get started!</p>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {rooms.map((room) => (
+                  <div
+                    key={room.roomId}
+                    className="bg-white rounded-lg p-6 shadow-md border border-gray-200"
                   >
-                    👤 Enter Your Name
-                  </Typography>
-                  
-                  <TextField
-                    name="name"
-                    label="Player Name"
-                    fullWidth
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    sx={{
-                      mb: 3,
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: '12px',
-                        background: 'rgba(255,255,255,0.8)',
-                        '&:hover': {
-                          background: 'rgba(255,255,255,0.9)',
-                        }
-                      }
-                    }}
-                    placeholder="Enter your Viking name..."
-                  />
-
-                  <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={createRoom}
-                    disabled={!isNameValid}
-                    startIcon={<AddIcon />}
-                    sx={{
-                      borderRadius: '12px',
-                      py: 1.5,
-                      fontSize: '1.1rem',
-                      fontWeight: 700,
-                      textTransform: 'none',
-                      background: 'linear-gradient(45deg, #FF6B6B 0%, #FF8E53 100%)',
-                      boxShadow: '0 4px 12px rgba(255, 107, 107, 0.4)',
-                      '&:hover': {
-                        background: 'linear-gradient(45deg, #FF5252 0%, #FF7043 100%)',
-                        boxShadow: '0 6px 16px rgba(255, 107, 107, 0.6)',
-                        transform: 'translateY(-1px)'
-                      },
-                      '&:disabled': {
-                        background: 'rgba(0,0,0,0.1)',
-                        color: 'rgba(0,0,0,0.4)'
-                      }
-                    }}
-                  >
-                    🎮 Create New Game
-                  </Button>
-                </CardContent>
-              </Card>
-            </Zoom>
-          </Grid>
-
-          {/* Available Games Card */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Zoom in timeout={800}>
-              <Card 
-                sx={{
-                  background: 'linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%)',
-                  borderRadius: '20px',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.8)',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  minHeight: '400px'
-                }}
-              >
-                <CardContent sx={{ p: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 700,
-                        color: '#333',
-                        textShadow: '0 1px 2px rgba(255,255,255,0.8)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1
-                      }}
-                    >
-                      🏛️ Available Games
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={refreshRooms}
-                      disabled={isRefreshing}
-                      startIcon={<RefreshIcon />}
-                      sx={{
-                        borderRadius: '8px',
-                        textTransform: 'none',
-                        borderColor: '#4ECDC4',
-                        color: '#4ECDC4',
-                        '&:hover': {
-                          borderColor: '#45B7AA',
-                          color: '#45B7AA',
-                          background: 'rgba(78, 205, 196, 0.05)'
-                        }
-                      }}
-                    >
-                      Refresh
-                    </Button>
-                  </Box>
-
-                  {!rooms.length && !isRefreshing && (
-                    <Paper 
-                      sx={{
-                        p: 4,
-                        textAlign: 'center',
-                        background: 'linear-gradient(145deg, #f8f8f8 0%, #e8e8e8 100%)',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(0,0,0,0.05)'
-                      }}
-                    >
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          color: 'rgba(0,0,0,0.6)',
-                          mb: 1,
-                          fontWeight: 600
-                        }}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          Game {room.roomId}
+                        </h3>
+                        <p className="text-gray-600">
+                          {room.clients || 0} / {room.maxClients || 2} players
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => joinRoom(room.roomId)}
+                        disabled={!name.trim() || room.clients >= room.maxClients}
+                        className={`px-6 py-2 font-semibold rounded-lg transition-colors ${
+                          !name.trim() || room.clients >= room.maxClients
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-blue-500 text-white hover:bg-blue-600'
+                        }`}
                       >
-                        🌅 No games available
-                      </Typography>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ color: 'rgba(0,0,0,0.5)' }}
-                      >
-                        Be the first to start a new settlement!
-                      </Typography>
-                    </Paper>
-                  )}
+                        {room.clients >= room.maxClients ? 'Full' : 'Join Game'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-                  {isRefreshing && (
-                    <Paper 
-                      sx={{
-                        p: 4,
-                        textAlign: 'center',
-                        background: 'linear-gradient(145deg, #f8f8f8 0%, #e8e8e8 100%)',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(0,0,0,0.05)'
-                      }}
-                    >
-                      <Typography variant="body1" sx={{ color: 'rgba(0,0,0,0.6)' }}>
-                        🔄 Loading games...
-                      </Typography>
-                    </Paper>
-                  )}
-
-                  <Stack spacing={2}>
-                    {rooms.map((room, index) => (
-                      <Fade in timeout={300 + index * 100} key={room.roomId}>
-                        <Paper
-                          elevation={2}
-                          sx={{
-                            p: 3,
-                            borderRadius: '12px',
-                            background: 'linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%)',
-                            border: '1px solid rgba(0,0,0,0.08)',
-                            transition: 'all 0.2s ease-out',
-                            '&:hover': {
-                              transform: 'translateY(-2px)',
-                              boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
-                              borderColor: '#4ECDC4'
-                            }
-                          }}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Box sx={{ flex: 1 }}>
-                              <Typography 
-                                variant="h6" 
-                                sx={{ 
-                                  fontWeight: 700,
-                                  color: '#333',
-                                  mb: 1,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 1
-                                }}
-                              >
-                                <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4)' }}>
-                                  🏰
-                                </Avatar>
-                                {room.name || 'Unnamed Game'}
-                              </Typography>
-                              <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                <Chip 
-                                  icon={<GroupsIcon />}
-                                  label={`${room.clients} / ${room.maxClients} players`}
-                                  size="small"
-                                  sx={{
-                                    background: 'linear-gradient(45deg, #4ECDC4, #45B7AA)',
-                                    color: 'white',
-                                    fontWeight: 600,
-                                    '& .MuiChip-icon': { color: 'white' }
-                                  }}
-                                />
-                                <Chip 
-                                  label={room.roomId.substring(0, 8)}
-                                  size="small"
-                                  variant="outlined"
-                                  sx={{ 
-                                    borderColor: 'rgba(0,0,0,0.2)',
-                                    color: 'rgba(0,0,0,0.6)',
-                                    fontFamily: 'monospace'
-                                  }}
-                                />
-                              </Stack>
-                            </Box>
-                            
-                            <Button
-                              variant="contained"
-                              onClick={() => joinRoom(room.roomId)}
-                              disabled={!isNameValid || room.clients >= room.maxClients}
-                              startIcon={<PlayArrowIcon />}
-                              sx={{
-                                borderRadius: '8px',
-                                px: 3,
-                                py: 1,
-                                textTransform: 'none',
-                                fontWeight: 600,
-                                background: 'linear-gradient(45deg, #4ECDC4 0%, #45B7AA 100%)',
-                                boxShadow: '0 3px 8px rgba(78, 205, 196, 0.3)',
-                                '&:hover': {
-                                  background: 'linear-gradient(45deg, #45B7AA 0%, #3DA58A 100%)',
-                                  boxShadow: '0 4px 12px rgba(78, 205, 196, 0.4)',
-                                  transform: 'translateY(-1px)'
-                                },
-                                '&:disabled': {
-                                  background: 'rgba(0,0,0,0.1)',
-                                  color: 'rgba(0,0,0,0.4)'
-                                }
-                              }}
-                            >
-                              {room.clients >= room.maxClients ? 'Full' : 'Join Game'}
-                            </Button>
-                          </Box>
-                        </Paper>
-                      </Fade>
-                    ))}
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Zoom>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+          {/* Debug link */}
+          <div className="text-center mt-8 pt-8 border-t border-gray-200">
+            <button
+              onClick={() => navigate('/debug')}
+              className="text-blue-500 hover:text-blue-600 underline"
+            >
+              Debug Tools
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

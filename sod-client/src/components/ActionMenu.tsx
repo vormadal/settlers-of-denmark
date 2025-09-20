@@ -1,8 +1,8 @@
-import { FastForward as FastForwardIcon } from '@mui/icons-material'
-import { Box, useMediaQuery, useTheme, IconButton } from '@mui/material'
+import React from 'react'
 import { usePlayer } from '../context/PlayerContext'
 import { useRoom } from '../context/RoomContext'
 import { useCurrentPlayer, useDice, usePhase } from '../hooks/stateHooks'
+import { useIsMobile } from '../hooks/mediaHooks'
 import { PlayerCards } from './cards/PlayerCards'
 import DiceComponent from './DiceComponent'
 
@@ -12,43 +12,19 @@ export default function ActionMenu() {
   const currentPlayer = useCurrentPlayer()
   const dice = useDice()
   const phase = usePhase()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const isMobile = useIsMobile()
 
   return (
-    <Box sx={{ 
-      padding: isMobile ? '0.5rem 0.25rem' : '0.75rem 0.5rem', 
-      display: 'flex', 
-      gap: isMobile ? 0.75 : 1, 
-      minWidth: 0,
-      height: '100%'
-    }}>
+    <div className={`flex min-w-0 h-full ${isMobile ? 'px-1 py-2 gap-3' : 'px-2 py-3 gap-4'}`}>
       {/* Cards - takes full height and most width */}
-      <Box sx={{ 
-        flex: 1, 
-        minWidth: 0, 
-        height: '100%',
-        display: 'flex',
-        alignItems: 'flex-start'
-      }}>
+      <div className="flex-1 min-w-0 h-full flex items-start">
         {player && <PlayerCards player={player} />}
-      </Box>
+      </div>
 
       {/* Right column - dice and button stacked */}
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        gap: isMobile ? 0.75 : 1,
-        alignItems: 'end',
-        justifyContent: 'space-between',
-        minWidth: 'fit-content'
-      }}>
+      <div className={`flex flex-col items-end justify-between min-w-fit ${isMobile ? 'gap-3' : 'gap-4'}`}>
         {/* Dice at the top */}
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 0.5, 
-          alignItems: 'right'
-        }}>
+        <div className="flex gap-2 items-right">
           {dice.map((x, i) => (
             <DiceComponent
               key={x.color}
@@ -59,59 +35,44 @@ export default function ActionMenu() {
               size={isMobile ? 'small' : 'medium'}
             />
           ))}
-        </Box>
+        </div>
 
-  
         {/* End Turn button at the bottom */}
-        <IconButton
+        <button
           disabled={player?.id !== currentPlayer?.id || phase.key !== 'turn'}
           onClick={() => room?.send('END_TURN')}
-          sx={{ 
-            flexShrink: 0,
-            width: isMobile ? 44 : 52,
-            height: isMobile ? 44 : 52,
-            backgroundColor: '#FF6B35',
-            borderRadius: '50%',
-            border: '3px solid #FFF',
-            boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3), inset 0 2px 4px rgba(255,255,255,0.3)',
-            transition: 'all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            position: 'relative',
-            '&:hover:not(:disabled)': {
-              backgroundColor: '#FF8A65',
-              transform: 'scale(1.1) rotate(5deg)',
-              boxShadow: '0 6px 12px rgba(255, 107, 53, 0.4), inset 0 2px 4px rgba(255,255,255,0.4)',
-            },
-            '&:active:not(:disabled)': {
-              transform: 'scale(0.95)',
-              transition: 'all 0.1s ease',
-            },
-            '&:disabled': {
-              backgroundColor: '#CCCCCC',
-              opacity: 0.6,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
+          className={`
+            flex-shrink-0 rounded-full border-3 border-white relative transition-all duration-200 ease-out
+            ${isMobile ? 'w-11 h-11' : 'w-13 h-13'}
+            ${player?.id !== currentPlayer?.id || phase.key !== 'turn' 
+              ? 'bg-gray-300 opacity-60 cursor-not-allowed' 
+              : 'bg-orange-500 hover:bg-orange-400 hover:scale-110 hover:rotate-[5deg] active:scale-95 cursor-pointer'
+            }
+          `}
+          style={{
+            boxShadow: player?.id !== currentPlayer?.id || phase.key !== 'turn' 
+              ? '0 2px 4px rgba(0,0,0,0.2)'
+              : '0 4px 8px rgba(255, 107, 53, 0.3), inset 0 2px 4px rgba(255,255,255,0.3)',
+          }}
+        >
+          {/* Gloss effect */}
+          <div 
+            className="absolute rounded-full bg-white/60 blur-sm"
+            style={{
               top: '15%',
               left: '20%',
               width: '25%',
               height: '25%',
-              backgroundColor: 'rgba(255,255,255,0.6)',
-              borderRadius: '50%',
-              filter: 'blur(1px)',
-            },
-          }}
-        >
-          <FastForwardIcon 
-            sx={{ 
-              fontSize: isMobile ? '1.2rem' : '1.5rem',
-              color: 'white',
-              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
-            }} 
+            }}
           />
-        </IconButton>
-      </Box>
-    </Box>
+          <span 
+            className={`text-white ${isMobile ? 'text-lg' : 'text-2xl'}`}
+            style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}
+          >
+            ⏩
+          </span>
+        </button>
+      </div>
+    </div>
   )
 }

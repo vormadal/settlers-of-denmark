@@ -1,6 +1,6 @@
-import { Box, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useCurrentPlayer, useDeck, usePhase } from "../../hooks/stateHooks";
+// import { useIsMobile } from "../../hooks/mediaHooks";
 import { Player } from "../../state/Player";
 import { colors } from "../../utils/colors";
 import { BankTradeModal } from "./BankTradeModal";
@@ -82,16 +82,9 @@ export function PlayerCards({ player }: Props) {
 
   return (
     <>
-      <Box
+      <div
         ref={containerRef}
-        sx={{
-          display: "flex",
-          overflow: "hidden", // Remove scrolling
-          minWidth: 0,
-          height: "70px",
-          alignItems: "flex-end",
-          width: "100%", // Ensure it takes full width
-        }}
+        className="flex overflow-hidden min-w-0 h-[70px] items-end w-full"
       >
         {resourceVariants.map((variant) => (
           <CardGroup
@@ -102,7 +95,7 @@ export function PlayerCards({ player }: Props) {
             onClick={canTrade ? () => handleCardGroupClick(variant) : undefined}
           />
         ))}
-      </Box>
+      </div>
 
       <BankTradeModal
         player={player}

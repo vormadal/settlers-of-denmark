@@ -1,4 +1,3 @@
-import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Board } from './Board'
 import ActionMenu from './components/ActionMenu'
@@ -38,38 +37,16 @@ export function BaseGame() {
   const boardHeight = height - playerInfoHeight - actionMenuHeight
 
   return (
-    <Box
-      width="100%"
-      height="100vh"
-      sx={{ 
-        background: '#7CB3FF',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
+    <div
+      className="w-full h-screen flex flex-col overflow-hidden relative"
+      style={{ background: '#7CB3FF' }}
     >
       {/* Player Info - Responsive layout */}
-      <Box 
-        sx={{ 
-          height: playerInfoHeight,
-          padding: isMobile ? '0.25rem' : '0.5rem',
-          display: 'flex',
-          gap: isMobile ? 0.5 : 1,
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          flexShrink: 0,
-          '&::-webkit-scrollbar': {
-            height: 4,
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'rgba(0,0,0,0.1)',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(0,0,0,0.3)',
-            borderRadius: 2,
-          },
-        }}
+      <div 
+        className={`flex-shrink-0 flex overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-track-black/10 scrollbar-thumb-black/30 ${
+          isMobile ? 'p-1 gap-2' : 'p-2 gap-4'
+        }`}
+        style={{ height: playerInfoHeight }}
       >
         {players.map((player, i) => (
           <PlayerInfo
@@ -79,56 +56,45 @@ export function BaseGame() {
             width={isMobile ? Math.min(200, width / players.length - 8) : 280}
           />
         ))}
-      </Box>
+      </div>
 
       {/* Board - Takes remaining space */}
-      <Box sx={{ 
-        flex: 1,
-        minHeight: 0,
-        padding: '0.25rem',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-  pointerEvents: gameEnded && !examiningBoard ? 'none' : 'auto',
-  filter: gameEnded && !examiningBoard ? 'grayscale(0.2) brightness(0.9)' : 'none'
-      }}>
+      <div 
+        className="flex-1 min-h-0 p-1 flex justify-center items-center"
+        style={{
+          pointerEvents: gameEnded && !examiningBoard ? 'none' : 'auto',
+          filter: gameEnded && !examiningBoard ? 'grayscale(0.2) brightness(0.9)' : 'none'
+        }}
+      >
         <Board
           width={width - 8}
           height={boardHeight - 8}
         />
-      </Box>
+      </div>
 
       {/* Action Menu - Fixed at bottom */}
       {!gameEnded && (
-        <Box sx={{ 
-          height: actionMenuHeight,
-          flexShrink: 0,
-          borderTop: '1px solid rgba(255,255,255,0.2)'
-        }}>
+        <div 
+          className="flex-shrink-0 border-t border-white/20"
+          style={{ height: actionMenuHeight }}
+        >
           <ActionMenu />
-        </Box>
+        </div>
       )}
 
       {gameEnded && !examiningBoard && (
         <EndGameScreen onExamineBoard={() => setExaminingBoard(true)} />
       )}
       {gameEnded && examiningBoard && (
-        <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 60, display: 'flex', gap: 1 }}>
+        <div className="absolute top-2 right-2 z-60 flex gap-1">
           <button
-            style={{
-              background: 'rgba(255,255,255,0.9)',
-              border: '1px solid rgba(0,0,0,0.2)',
-              borderRadius: 8,
-              padding: '0.5rem 1rem',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
+            className="bg-white/90 border border-black/20 rounded-lg px-4 py-2 font-semibold cursor-pointer hover:bg-white"
             onClick={() => setExaminingBoard(false)}
           >
             Back to Results
           </button>
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }

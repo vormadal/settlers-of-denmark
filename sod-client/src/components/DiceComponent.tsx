@@ -1,4 +1,3 @@
-import { Box } from '@mui/material'
 import React from 'react'
 
 interface DiceProps {
@@ -22,95 +21,96 @@ const DiceComponent: React.FC<DiceProps> = ({ value, color, disabled = false, on
   // Create dots pattern based on dice value
   const getDots = (value: number) => {
     const dots = []
-    const dotStyle = {
-      width: config.dotSize,
-      height: config.dotSize,
-      borderRadius: '50%',
-      backgroundColor: '#fff',
-      position: 'absolute' as const
-    }
+    const dotClasses = `w-[${config.dotSize}px] h-[${config.dotSize}px] rounded-full bg-white absolute`
 
     switch (value) {
       case 1:
-        dots.push(<Box key="center" sx={{ ...dotStyle, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />)
+        dots.push(<div key="center" className={`${dotClasses} top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`} />)
         break
       case 2:
-        dots.push(<Box key="top-left" sx={{ ...dotStyle, top: '20%', left: '20%' }} />)
-        dots.push(<Box key="bottom-right" sx={{ ...dotStyle, bottom: '20%', right: '20%' }} />)
+        dots.push(<div key="top-left" className={`${dotClasses} top-[20%] left-[20%]`} />)
+        dots.push(<div key="bottom-right" className={`${dotClasses} bottom-[20%] right-[20%]`} />)
         break
       case 3:
-        dots.push(<Box key="top-left" sx={{ ...dotStyle, top: '20%', left: '20%' }} />)
-        dots.push(<Box key="center" sx={{ ...dotStyle, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />)
-        dots.push(<Box key="bottom-right" sx={{ ...dotStyle, bottom: '20%', right: '20%' }} />)
+        dots.push(<div key="top-left" className={`${dotClasses} top-[20%] left-[20%]`} />)
+        dots.push(<div key="center" className={`${dotClasses} top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`} />)
+        dots.push(<div key="bottom-right" className={`${dotClasses} bottom-[20%] right-[20%]`} />)
         break
       case 4:
-        dots.push(<Box key="top-left" sx={{ ...dotStyle, top: '20%', left: '20%' }} />)
-        dots.push(<Box key="top-right" sx={{ ...dotStyle, top: '20%', right: '20%' }} />)
-        dots.push(<Box key="bottom-left" sx={{ ...dotStyle, bottom: '20%', left: '20%' }} />)
-        dots.push(<Box key="bottom-right" sx={{ ...dotStyle, bottom: '20%', right: '20%' }} />)
+        dots.push(<div key="top-left" className={`${dotClasses} top-[20%] left-[20%]`} />)
+        dots.push(<div key="top-right" className={`${dotClasses} top-[20%] right-[20%]`} />)
+        dots.push(<div key="bottom-left" className={`${dotClasses} bottom-[20%] left-[20%]`} />)
+        dots.push(<div key="bottom-right" className={`${dotClasses} bottom-[20%] right-[20%]`} />)
         break
       case 5:
-        dots.push(<Box key="top-left" sx={{ ...dotStyle, top: '20%', left: '20%' }} />)
-        dots.push(<Box key="top-right" sx={{ ...dotStyle, top: '20%', right: '20%' }} />)
-        dots.push(<Box key="center" sx={{ ...dotStyle, top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />)
-        dots.push(<Box key="bottom-left" sx={{ ...dotStyle, bottom: '20%', left: '20%' }} />)
-        dots.push(<Box key="bottom-right" sx={{ ...dotStyle, bottom: '20%', right: '20%' }} />)
+        dots.push(<div key="top-left" className={`${dotClasses} top-[20%] left-[20%]`} />)
+        dots.push(<div key="top-right" className={`${dotClasses} top-[20%] right-[20%]`} />)
+        dots.push(<div key="center" className={`${dotClasses} top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`} />)
+        dots.push(<div key="bottom-left" className={`${dotClasses} bottom-[20%] left-[20%]`} />)
+        dots.push(<div key="bottom-right" className={`${dotClasses} bottom-[20%] right-[20%]`} />)
         break
       case 6:
-        dots.push(<Box key="top-left" sx={{ ...dotStyle, top: '20%', left: '20%' }} />)
-        dots.push(<Box key="top-right" sx={{ ...dotStyle, top: '20%', right: '20%' }} />)
-        dots.push(<Box key="middle-left" sx={{ ...dotStyle, top: '50%', left: '20%', transform: 'translateY(-50%)' }} />)
-        dots.push(<Box key="middle-right" sx={{ ...dotStyle, top: '50%', right: '20%', transform: 'translateY(-50%)' }} />)
-        dots.push(<Box key="bottom-left" sx={{ ...dotStyle, bottom: '20%', left: '20%' }} />)
-        dots.push(<Box key="bottom-right" sx={{ ...dotStyle, bottom: '20%', right: '20%' }} />)
+        dots.push(<div key="top-left" className={`${dotClasses} top-[20%] left-[20%]`} />)
+        dots.push(<div key="top-right" className={`${dotClasses} top-[20%] right-[20%]`} />)
+        dots.push(<div key="middle-left" className={`${dotClasses} top-1/2 left-[20%] -translate-y-1/2`} />)
+        dots.push(<div key="middle-right" className={`${dotClasses} top-1/2 right-[20%] -translate-y-1/2`} />)
+        dots.push(<div key="bottom-left" className={`${dotClasses} bottom-[20%] left-[20%]`} />)
+        dots.push(<div key="bottom-right" className={`${dotClasses} bottom-[20%] right-[20%]`} />)
         break
       default:
         // Fallback to number display for values outside 1-6
         return (
-          <Box sx={{ 
-            color: '#fff', 
-            fontSize: config.fontSize, 
-            fontWeight: 'bold',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)'
-          }}>
+          <div 
+            className="text-white font-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ fontSize: config.fontSize }}
+          >
             {value}
-          </Box>
+          </div>
         )
     }
 
     return dots
   }
 
+  const sizeClasses = {
+    small: 'w-10 h-10 rounded-lg border border-gray-800',
+    medium: 'w-15 h-15 rounded-xl border-2 border-gray-800', 
+    large: 'w-20 h-20 rounded-xl border-2 border-gray-800'
+  }
+
+  const shadowClasses = {
+    small: disabled ? '' : 'shadow-[2px_2px_4px_rgba(0,0,0,0.3)] hover:shadow-[3px_3px_6px_rgba(0,0,0,0.4)]',
+    medium: disabled ? '' : 'shadow-[4px_4px_8px_rgba(0,0,0,0.3)] hover:shadow-[6px_6px_12px_rgba(0,0,0,0.4)]',
+    large: disabled ? '' : 'shadow-[4px_4px_8px_rgba(0,0,0,0.3)] hover:shadow-[6px_6px_12px_rgba(0,0,0,0.4)]'
+  }
+
+  const scaleClasses = {
+    small: disabled ? '' : 'hover:scale-[1.02]',
+    medium: disabled ? '' : 'hover:scale-105',  
+    large: disabled ? '' : 'hover:scale-105'
+  }
+
   return (
-    <Box
+    <div
       onClick={!disabled ? onClick : undefined}
-      sx={{
-        width: config.width,
-        height: config.height,
-        borderRadius: size === 'small' ? '8px' : '12px',
+      className={`
+        relative flex-shrink-0 transition-all duration-200 ease-linear
+        ${sizeClasses[size]}
+        ${shadowClasses[size]}
+        ${scaleClasses[size]}
+        ${disabled 
+          ? 'opacity-50 cursor-default' 
+          : 'cursor-pointer'
+        }
+      `}
+      style={{ 
         backgroundColor: color,
-        border: size === 'small' ? '1px solid #333' : '2px solid #333',
-        position: 'relative',
-        cursor: !disabled ? 'pointer' : 'default',
-        opacity: disabled ? 0.5 : 1,
-        transition: 'all 0.2s ease',
-        boxShadow: size === 'small' 
-          ? '2px 2px 4px rgba(0,0,0,0.3)' 
-          : '4px 4px 8px rgba(0,0,0,0.3)',
-        '&:hover': !disabled ? {
-          transform: size === 'small' ? 'scale(1.02)' : 'scale(1.05)',
-          boxShadow: size === 'small' 
-            ? '3px 3px 6px rgba(0,0,0,0.4)' 
-            : '6px 6px 12px rgba(0,0,0,0.4)'
-        } : {},
-        flexShrink: 0
+        width: config.width,
+        height: config.height
       }}
     >
       {getDots(value)}
-    </Box>
+    </div>
   )
 }
 

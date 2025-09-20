@@ -1,11 +1,9 @@
-import { CssBaseline, ThemeProvider } from '@mui/material'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
 import { ColyseusProvider } from './context/ColyseusContext'
 import DebugPage from './pages/DebugPage'
 import GamePage from './pages/GamePage'
 import LobbyPage from './pages/LobbyPage'
-import theme from './theme'
 
 const router = createHashRouter(
   [
@@ -36,9 +34,7 @@ const router = createHashRouter(
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-      <CssBaseline />
+    <div className="min-h-screen bg-gray-50 font-sans">
       <ColyseusProvider>
         <RouterProvider
           router={router}
@@ -47,7 +43,7 @@ function App() {
           }}
         />
       </ColyseusProvider>
-    </ThemeProvider>
+    </div>
   )
 }
 
