@@ -20,3 +20,8 @@ export * from "./updatePlayerExchangeRate";
 export * from "./updatePlayerVictoryPoints";
 export * from "./updatePlayerLongestRoad";
 export * from "./updateLongestRoadAfterSettlmentPlacement";
+export * from "./setCanBuyDevelopmentCards";
+export * from "./clearCanBuyDevelopmentCards";
+export * from "./buyDevelopmentCard";
+export * from "./playKnightDevelopmentCard";
+export * from "./updateLargestArmy";

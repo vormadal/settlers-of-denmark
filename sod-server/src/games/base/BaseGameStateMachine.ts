@@ -6,6 +6,7 @@ import {
   buyRoad,
   buySettlement,
   buyCity,
+  buyDevelopmentCard,
   clearAvailableEdges,
   clearAvailableSettlementIntersections,
   clearAvailableCityIntersections,
@@ -24,6 +25,10 @@ import {
   gameEnded,
   updatePlayerLongestRoad,
   updateLongestRoadAfterSettlementPlacement,
+  setCanBuyDevelopmentCards,
+  clearCanBuyDevelopmentCards,
+  playKnightDevelopmentCard,
+  updateLargestArmy,
 } from "./actions";
 import { Events } from "./events";
 import {
@@ -31,6 +36,7 @@ import {
   initialRoundIsComplete,
   isGameEnded,
   isPlayerTurn,
+  isKnightPlayed,
 } from "./guards";
 
 export type InputType = {
@@ -50,6 +56,7 @@ const machineConfig = setup({
     placeSettlement,
     buySettlement,
     buyCity,
+    buyDevelopmentCard,
     placeRoad,
     buyRoad,
     nextPlayer,
@@ -68,11 +75,16 @@ const machineConfig = setup({
     gameEnded,
     updatePlayerLongestRoad,
     updateLongestRoadAfterSettlementPlacement,
+    setCanBuyDevelopmentCards,
+    clearCanBuyDevelopmentCards,
+    playKnightDevelopmentCard,
+    updateLargestArmy,
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
     isPlayerTurn,
     isGameEnded,
+    isKnightPlayed,
   },
 });
 
@@ -81,7 +93,7 @@ export function createBaseGameStateMachine(
   dispatcher: Dispatcher<MyRoom>
 ) {
   const machine = machineConfig.createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IATAFYAHCTtW7agJwBGOwDYA7AGYPdxsAGhAAT0QAFjUHVzUvdy8XNT8bBJsAXwzQtCw8QlJKanwoACVddAgeARFRUoB5fgARdS0kED0DIxMzSwQ7OJJ3aMjXH2cUyLsfUIiEPwHHK2dXSJ9XW3ifLyycjBwCYnIqTBpyyuqhMQbmlXc2nX1DY1N2vr8fB3cPn0j3Vz8kS8Gxm4WskUiJC8wKsnjUPiCYysuxAuQOBRIACddBQKDQmrhMGBOA1eLxRE0AJIiVpmTrPHpvRDfHxqEiuDnTLxWeI2KxjWZRKxednxZYeaG+VYotH5I4MACumPwnCUTVEkgAqqVFLT2vTuq9QH1vi4SAjpjY+e51pE-FZBQhbA4efzXHYfvZEplsqj9nLSIrlZdajcWpo6U9Db1rLySJF+V4PkC1DZfqC5sMbCQbIDIny0s5hcKZf7DoGlSq+FdxFIZPIlKoI-qoy8Y06UiKETFpim0yEwQgALSJSF8+2fYU+BFeVOlvLlkhBqs1MSCSmSACaeseXTbTI7wKGNpZffTjuGJFSAOW3PcnmnEPn6Pllc4ACF+IoANIa0rNYQdw6VtGWNWMvGzIFewRBZc2GR0rHWRxRgCWEfCtdxhR2X1ZUXHAwEwABrGhhHwKogINfcwKdIF3BIWFZ2WFJ3W5OxHSHKw-DZSUeN4pNnwDEh8KIkiyM4O4HmAvdQIsZl1m4vjeIzRA+RzbkIW2WEH1+SIsl9fBdAgOAzFwgpI2ko1ZOHb4vHY1Cr3hZM0i4tMBMXIpThKegmBYNgOHMhlLL6IdpnZDlwoiiKEPteME1nNM-BPPw3IxDyzgqCAAujA8ILogZU2iCdp1+R0Flcc1tjUTi1iTRLdJwssMWxXF8UJMAsqoqzMOidkPj8AJbQ9WxHTi+jKrUTwpkKn09gXDFlw6mSTS8P52UTZN4vQ0rfivGwb2Le9pl+FKjmE4iSlIzKWws9sGLUOy1EhFx-F+ZzUx8E7SHYIyrt3QLbqSHx6IHTN+vohM9qBVD3R9LIgA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgAcAbLAqAZTABcGKxUx8GBiABQBkBBAMIBRAPq1hAFUm9hAWWEA5SQG0ADAF1EoMgHtYuBrl35tIAB6IATAFYAHCTtW7agJwBGOwDYA7AGYPdxsAGhAAT0QAFjUHVzUvdy8XNT8bBJsAXwzQtCw8QlJKanwoACVddAgeARFRUoB5fgARdS0kED0DIxMzSwQ7OJJ3aMjXH2cUyLsfUIiEPwHHK2dXSJ9XW3ifLyycjBwCYnIqTBpyyuqhMQbmlXc2nX1DY1N2vr8fB3cPn0j3Vz8kS8Gxm4WskUiJC8wKsnjUPiCYysuxAuQOBRIACddBQKDQmrhMGBOA1eLxRE0AJIiVpmTrPHpvRDfHxqEiuDnTLxWeI2KxjWZRKxednxZYeaG+VYotH5I4MACumPwnCUTVEkgAqqVFLT2vTuq9QH1vi4SAjpjY+e51pE-FZBQhbA4efzXHYfvZEplsqj9nLSIrlZdajcWpo6U9Db1rLySJF+V4PkC1DZfqC5sMbCQbIDIny0s5hcKZf7DoGlSq+FdxFIZPIlKoI-qoy8Y06UiKETFpim0yEwQgALSJSF8+2fYU+BFeVOlvLlkhBqs1MSCSmSACaeseXTbTI7wKGNpZffTjuGJFSAOW3PcnmnEPn6Pllc4ACFNZuKcIAGrCXh6m4BRlFEQR+FKcMHg6VtGWNWNUnNGwOVzfxAW8LxHTtbNr2LKZkI9SJnwDJc32rb8mj-ACgJAyQwIgqDIz3OCLHBYUcwnVZ4TcWEM0QNIxz8Px4XtMY83cYjF2XD9+EUABpDVSmaYQdxg5ijVYw9syBXsEQWXNhkdKx1kcUYAl4q13GFHZfVlRcijCJowAANzAChdDINgOEEdBMSqVSDX3eCnQ2SEOXCiLwoHOZohFKxRkiyLJIxBynNc9zPPYBgfL8zg7mgwKWL6YVkPZRLIuiqJ4hIeLyoi5KjgcuT8FwKBsC4ALYI04rXD5HMxgRAFXC8bDIiwyFplTBNkJ8NIgnihrCioMJmta9q8vuJiGW66xoTZNQDrUf4RKmTDB0BKwoVEuwbvdBMghsvYFwxHAwEwABrGhhHwfzm13bb23ihIasSNRlhSd1uTsR0hysYSoUlRGkb8RaSFej6vp+jaCq69sbUGJHCd8R0+sLCFtlhB9fiIlF8F0CA4DMOyCi26MDxHPwzrmIdzKvET1hcYFhOM1GilOEp6CYFgvIYVmgs0odpjKuqIqM+14wTWc0z8E8UdsssUpOM4KggOWisQLwbHcRw4hsaIJ2nX5HQWVxzW2MHAW2IThlR7FcXxQkwDNnaECs6J2Q+ISxlWD1bCw9jjNnI67Cme2fSel8K2VYO8ZG62NmG5Mtdm53fivZD7WLe9pl+UXlrStyPJlnLTZbdTAYBSFhV67xtlZP4Se2IY3Eru8qbr9AVpatrZbbgGD35BMr0+O7Lb5eLKvmYzRSOjxnF+Ky7AnsJzggd8FVwCgIBoHP2Zux1pku69R8prlj7kEwPJxOZ-rZ4LFehoOdwB0RR2ArreV+2xj6bjAL5eoAAzbgLAOA-zUvPf+98gHDGts-CB1coH62ekcdGn0SjfVbr-eWxVQYw2EhNfm+Ykyph8KjdgDMKFoL-ppSurtWRphTlaHkAQxqDlht8Egbh3Rgw5FNb4PoshAA */
     context: { gameState: gameState, dispatcher: dispatcher },
     initial: "placingSettlement",
     states: {
@@ -133,11 +145,13 @@ export function createBaseGameStateMachine(
           "setAvailableSettlementIntersections",
           "setAvailableCityIntersections",
           "setAvailableEdges",
+          "setCanBuyDevelopmentCards",
         ],
         exit: [
           "clearAvailableSettlementIntersections",
           "clearAvailableCityIntersections",
           "clearAvailableEdges",
+          "clearCanBuyDevelopmentCards",
         ],
         on: {
           END_TURN: {
@@ -171,6 +185,15 @@ export function createBaseGameStateMachine(
             actions: ["buyCity", "updatePlayerVictoryPoints"],
             guard: "isPlayerTurn",
           },
+          BUY_DEVELOPMENT_CARD: {
+            target: "checkingEnd",
+            actions: ["buyDevelopmentCard", "updatePlayerVictoryPoints"],
+            guard: "isPlayerTurn",
+          },
+          PLAY_DEVELOPMENT_CARD: {
+            target: "playDevelopmentCard",
+            guard: "isPlayerTurn",
+          },
           BANK_TRADE: {
             target: "turn",
             // forces the exit and entry transitions on 'turn' state to be rerun
@@ -180,6 +203,20 @@ export function createBaseGameStateMachine(
           },
         },
       },
+      playDevelopmentCard: {
+        always: [
+          { guard: "isKnightPlayed", target: "playKnight" },
+          { target: "turn" },
+        ],
+      },
+      playKnight: {
+        entry: ["playKnightDevelopmentCard"],
+        exit: ["updateLargestArmy", "updatePlayerVictoryPoints"],
+        always: [{ guard: "isGameEnded", target: "ended" }, { target: "turn" }],
+      },
+      playRoadBuilding: {},
+      playMonopoly: {},
+      playYearOfPlenty: {},
       checkingEnd: {
         always: [{ guard: "isGameEnded", target: "ended" }, { target: "turn" }],
       },

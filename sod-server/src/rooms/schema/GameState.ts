@@ -29,7 +29,9 @@ export class GameState extends Schema {
   @type(['string']) availableSettlementIntersections = new ArraySchema<string>()
   @type(['string']) availableCityIntersections = new ArraySchema<string>()
   @type(['string']) availableEdges = new ArraySchema<string>()
+  @type('boolean') canBuyDevelopmentCards: boolean = false
   @type('string') hasLongestRoad: string = ''
+  @type('string') hasLargestArmy: string = ''
 
   @type([Die]) dice = new ArraySchema<Die>()
 

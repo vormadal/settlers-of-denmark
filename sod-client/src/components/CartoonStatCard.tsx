@@ -6,11 +6,14 @@ interface Props {
   count: number
   label: string
   compact?: boolean
+  onClick?: () => void
+  sx?: object
 }
 
-export function CartoonStatCard({ children, count, label, compact = false }: Props) {
+export function CartoonStatCard({ children, count, label, compact = false, onClick, sx }: Props) {
   return (
     <Box
+      onClick={onClick}
       sx={{
         background: 'linear-gradient(145deg, #f8f8f8 0%, #e8e8e8 100%)',
         borderRadius: compact ? '4px' : '6px',
@@ -27,6 +30,7 @@ export function CartoonStatCard({ children, count, label, compact = false }: Pro
         },
         position: 'relative',
         overflow: 'hidden',
+        ...sx
       }}
       title={label}
     >

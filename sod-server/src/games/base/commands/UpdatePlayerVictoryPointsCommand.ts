@@ -15,7 +15,7 @@ export class UpdatePlayerVictoryPointsCommand extends Command<MyRoom, Payload> {
     const cityVP = player.getPlacedCities().length * 2;
 
     const longestRoadVP = state.hasLongestRoad === player.id ? 2 : 0;
-    const largestArmyVP = player.hasLargestArmy ? 2 : 0;
+    const largestArmyVP = state.hasLargestArmy === player.id ? 2 : 0;
 
     const devCardVP = player.cardsOfType(
       state,

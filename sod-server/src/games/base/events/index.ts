@@ -7,3 +7,5 @@ export { PlaceCityEvent } from './PlaceCityEvent';
 export { PlaceRoadEvent } from './PlaceRoadEvent';
 export { PlaceSettlementEvent } from './PlaceSettlementEvent';
 export { RollDiceEvent } from './RollDiceEvent';
+export { BuyDevelopmentCardEvent } from './BuyDevelopmentCardEvent';
+export { PlayDevelopmentCardEvent } from './PlayDevelopmentCardEvent';

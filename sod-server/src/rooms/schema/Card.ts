@@ -37,6 +37,6 @@ export class Card extends Schema {
   // only applicable for development cards
   @type({ map: CardCost }) cost = new MapSchema<CardCost>()
   @type('string') owner?: string
-
+  @type('number') boughtInTurn?: number
   @type('string') playedBy?: string
 }
