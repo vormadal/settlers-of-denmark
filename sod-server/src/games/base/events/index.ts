@@ -9,3 +9,4 @@ export { PlaceSettlementEvent } from './PlaceSettlementEvent';
 export { RollDiceEvent } from './RollDiceEvent';
 export { BuyDevelopmentCardEvent } from './BuyDevelopmentCardEvent';
 export { PlayDevelopmentCardEvent } from './PlayDevelopmentCardEvent';
+export { MoveRobberEvent } from './MoveRobberEvent';

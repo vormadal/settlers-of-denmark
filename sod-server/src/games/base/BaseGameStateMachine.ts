@@ -217,6 +217,17 @@ export function createBaseGameStateMachine(
       playRoadBuilding: {},
       playMonopoly: {},
       playYearOfPlenty: {},
+      moveRobber: {
+        entry: [],
+        exit: [],
+        on: {
+          MOVE_ROBBER: {
+            target: "turn",
+            actions: [],
+            guard: "isPlayerTurn",
+          },
+        },
+      },
       checkingEnd: {
         always: [{ guard: "isGameEnded", target: "ended" }, { target: "turn" }],
       },

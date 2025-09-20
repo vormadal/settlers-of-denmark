@@ -31,6 +31,8 @@ export class GameState extends Schema {
     @type([ "string" ]) public availableSettlementIntersections: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availableCityIntersections: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availableEdges: ArraySchema<string> = new ArraySchema<string>();
+    @type([ "string" ]) public availableHexes: ArraySchema<string> = new ArraySchema<string>();
+    @type("string") public robberHex!: string;
     @type("boolean") public canBuyDevelopmentCards!: boolean;
     @type("string") public hasLongestRoad!: string;
     @type("string") public hasLargestArmy!: string;
