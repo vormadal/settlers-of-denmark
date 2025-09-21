@@ -224,6 +224,26 @@ export function useCanBuyDevelopmentCards() {
   return canBuy
 }
 
+export function useCanPlayDevelopmentCards() {
+  const gameRoom = useRoom()
+  const [canPlay, setCanPlay] = useState<boolean>(gameRoom?.state.canPlayDevelopmentCards || false)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('canPlayDevelopmentCards', (value) => setCanPlay(value))
+  }, [gameRoom])
+  return canPlay
+}
+
+export function useCurrentRound() {
+  const gameRoom = useRoom()
+  const [round, setRound] = useState<number>(gameRoom?.state.round || 0)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('round', (value) => setRound(value))
+  }, [gameRoom])
+  return round
+}
+
 export function useDevelopmentDeckCount() {
   const deck = useDeck()
   

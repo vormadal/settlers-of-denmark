@@ -2,7 +2,7 @@ import { Box, Paper, Typography } from '@mui/material'
 import { DevelopmentCardDeck } from './DevelopmentCardDeck'
 import { DevelopmentCards } from './DevelopmentCards'
 import { DevelopmentCard } from './development/DevelopmentCard'
-import { useCanBuyDevelopmentCards, useDevelopmentDeckCount } from '../../hooks/stateHooks'
+import { useCanBuyDevelopmentCards, useCanPlayDevelopmentCards, useCurrentRound, useDevelopmentDeckCount } from '../../hooks/stateHooks'
 import { useRoom } from '../../context/RoomContext'
 import { usePlayer } from '../../context/PlayerContext'
 import { Card } from '../../state/Card'
@@ -18,6 +18,8 @@ export function DevelopmentCardArea({ onBuyDevelopmentCard, onPlayDevelopmentCar
   const gameRoom = useRoom()
   const player = usePlayer()
   const canBuyDevelopmentCards = useCanBuyDevelopmentCards()
+  const canPlayDevelopmentCards = useCanPlayDevelopmentCards()
+  const currentRound = useCurrentRound()
   const developmentDeckCount = useDevelopmentDeckCount()
 
   // Get player's cards (you may need to adjust this based on your actual card system)
@@ -36,7 +38,7 @@ export function DevelopmentCardArea({ onBuyDevelopmentCard, onPlayDevelopmentCar
   }
 
   const handlePlayDevelopmentCard = (card: Card) => {
-    if (onPlayDevelopmentCard) {
+    if (onPlayDevelopmentCard && canPlayDevelopmentCards && card.boughtInTurn !== currentRound) {
       onPlayDevelopmentCard(card.id)
     }
   }
@@ -64,6 +66,8 @@ export function DevelopmentCardArea({ onBuyDevelopmentCard, onPlayDevelopmentCar
           cards={playerCards}
           onCardClick={handlePlayDevelopmentCard}
           title="My Development Cards"
+          disabled={!canPlayDevelopmentCards}
+          currentRound={currentRound}
         />
       </Paper>
 

@@ -1,11 +1,8 @@
 import { Box, Typography, Chip } from '@mui/material'
-import { useState } from 'react'
 import { Player } from '../state/Player'
 import { useCurrentPlayer, useDeck, usePlayers, useHasLongestRoad } from '../hooks/stateHooks'
 import { CartoonStatCard } from './CartoonStatCard'
 import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
-import { PlayerDevelopmentCardsModal } from './cards/PlayerDevelopmentCardsModal'
-import { usePlayer } from '../context/PlayerContext'
 
 interface Props {
   width: number
@@ -17,15 +14,12 @@ export function PlayerInfo({ width, player, color }: Props) {
   const cards = useDeck()
   const currentPlayer = useCurrentPlayer()
   const players = usePlayers()
-  const currentUserPlayer = usePlayer()
   const isActivePlayer = currentPlayer?.id === player.id
   const longestRoadOwner = useHasLongestRoad()
   const hasLongestRoad = longestRoadOwner === player.id && player.longestRoadLength > 0
   const isMobile = width < 250 // Compact mode for smaller widths
   const maxVP = players.length ? Math.max(...players.map(p => p.victoryPoints ?? 0)) : 0
   const isVpLeader = (player.victoryPoints ?? 0) === maxVP && maxVP > 0
-  const [showDevelopmentCards, setShowDevelopmentCards] = useState(false)
-  const isCurrentUserPlayer = currentUserPlayer?.id === player.id
 
   const developmentCardsCount = cards.filter((x) => x.type === 'Development' && x.owner === player.id).length
   const resourceCardsCount = cards.filter((x) => x.type === 'Resource' && x.owner === player.id).length
@@ -92,14 +86,6 @@ export function PlayerInfo({ width, player, color }: Props) {
           count={developmentCardsCount}
           label="Development Cards"
           compact={isMobile}
-          onClick={isCurrentUserPlayer && developmentCardsCount > 0 ? () => setShowDevelopmentCards(true) : undefined}
-          sx={isCurrentUserPlayer && developmentCardsCount > 0 ? { 
-            cursor: 'pointer',
-            '&:hover': { 
-              transform: 'translateY(-1px)',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-            }
-          } : undefined}
         >
           <DevelopmentIcon size={isMobile ? 12 : 16} color="#8B4513" />
         </CartoonStatCard>
@@ -197,14 +183,6 @@ export function PlayerInfo({ width, player, color }: Props) {
           )}
         </Box>
       </Box>
-      
-      {/* Development Cards Modal */}
-      {isCurrentUserPlayer && (
-        <PlayerDevelopmentCardsModal
-          open={showDevelopmentCards}
-          onClose={() => setShowDevelopmentCards(false)}
-        />
-      )}
     </Box>
   )
 }

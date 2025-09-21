@@ -21,5 +21,6 @@ export class Player extends Schema {
     @type({ map: ExchangeRate }) public exchangeRate: MapSchema<ExchangeRate> = new MapSchema<ExchangeRate>();
     @type("number") public victoryPoints!: number;
     @type("number") public longestRoadLength!: number;
+    @type("number") public numberOfDevelopmentCardsPlayed!: number;
     @type("number") public knightsPlayed!: number;
 }

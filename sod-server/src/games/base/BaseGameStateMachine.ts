@@ -34,7 +34,11 @@ import {
   moveRobber,
   stealResource,
   setAvailablePlayersToStealFrom,
-  clearAvailablePlayersToStealFrom
+  clearAvailablePlayersToStealFrom,
+  setCanPlayDevelopmentCards,
+  clearCanPlayDevelopmentCards,
+  increaseNumberOfDevelopmentCardsPlayed,
+  clearNumberOfDevelopmentCardsPlayed
 } from "./actions";
 import { Events } from "./events";
 import {
@@ -90,7 +94,11 @@ const machineConfig = setup({
     moveRobber,
     stealResource,
     setAvailablePlayersToStealFrom,
-    clearAvailablePlayersToStealFrom
+    clearAvailablePlayersToStealFrom,
+    setCanPlayDevelopmentCards,
+    clearCanPlayDevelopmentCards,
+    increaseNumberOfDevelopmentCardsPlayed,
+    clearNumberOfDevelopmentCardsPlayed
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -158,17 +166,19 @@ export function createBaseGameStateMachine(
           "setAvailableCityIntersections",
           "setAvailableEdges",
           "setCanBuyDevelopmentCards",
+          "setCanPlayDevelopmentCards"
         ],
         exit: [
           "clearAvailableSettlementIntersections",
           "clearAvailableCityIntersections",
           "clearAvailableEdges",
           "clearCanBuyDevelopmentCards",
+          "clearCanPlayDevelopmentCards"
         ],
         on: {
           END_TURN: {
             target: "rollingDice",
-            actions: "nextPlayer",
+            actions: ["clearNumberOfDevelopmentCardsPlayed", "nextPlayer"],
             guard: "isPlayerTurn",
           },
           PLACE_ROAD: {
@@ -216,6 +226,7 @@ export function createBaseGameStateMachine(
         },
       },
       playingDevelopmentCard: {
+        entry: ["increaseNumberOfDevelopmentCardsPlayed"],
         always: [
           { guard: "isKnightPlayed", target: "playingKnight" },
           { target: "turn" },

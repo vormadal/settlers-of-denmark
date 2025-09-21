@@ -8,7 +8,7 @@ export { BankTradeModal } from './BankTradeModal'
 export { DevelopmentCardDeck } from './DevelopmentCardDeck'
 export { DevelopmentCards } from './DevelopmentCards'
 export { DevelopmentCardArea } from './DevelopmentCardArea'
-export { PlayerDevelopmentCardsModal } from './PlayerDevelopmentCardsModal'
+export { PlayerDevelopmentCards } from './PlayerDevelopmentCards'
 
 // Individual development card types
 export * from './development'
