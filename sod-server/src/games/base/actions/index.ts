@@ -31,4 +31,7 @@ export * from "./moveRobber";
 export * from "./stealResource";
 export * from "./setAvailablePlayersToStealFrom";
 export * from "./clearAvailablePlayersToStealFrom";
-
+export * from "./setCanPlayDevelopmentCards";
+export * from "./clearCanPlayDevelopmentCards";
+export * from "./increaseNumberOfDevelopmentCardsPlayed";
+export * from "./clearNumberOfDevelopmentCardsPlayed";

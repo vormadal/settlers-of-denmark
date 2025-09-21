@@ -1,14 +1,5 @@
 import { Box, Typography, Tooltip, Badge } from '@mui/material'
 import { BaseCard } from './BaseCard'
-import { CardVariants } from '../../utils/CardVariants'
-import { 
-  KnightCard, 
-  VictoryPointCard, 
-  RoadBuildingCard, 
-  MonopolyCard, 
-  YearOfPlentyCard, 
-  MerchantCard 
-} from './development'
 
 interface Props {
   remainingCards: number
@@ -32,37 +23,65 @@ export function DevelopmentCardDeck({
 }: Props) {
   const isClickable = !disabled && canAfford && remainingCards > 0 && onClick
   
-  // Sample card to show on top of the deck (rotates through different types)
-  const getSampleCard = () => {
-    const cardType = remainingCards % 6 // Cycle through 6 types based on remaining cards
-    const cardProps = {
-      width: width * 0.9,
-      height: height * 0.9,
-      disabled: !isClickable
-    }
-    
-    switch (cardType) {
-      case 0:
-        return <KnightCard {...cardProps} />
-      case 1:
-        return <VictoryPointCard {...cardProps} />
-      case 2:
-        return <RoadBuildingCard {...cardProps} />
-      case 3:
-        return <MonopolyCard {...cardProps} />
-      case 4:
-        return <YearOfPlentyCard {...cardProps} />
-      case 5:
-        return <MerchantCard {...cardProps} />
-      default:
-        return <KnightCard {...cardProps} />
-    }
+  // Generic development card backside
+  const getDevelopmentCardBack = () => {
+    return (
+      <BaseCard
+        color={!isClickable ? '#B0B0B0' : '#6B4E3D'}
+        width={width * 0.9}
+        height={height * 0.9}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 0.5,
+            padding: 1,
+            height: '100%',
+            opacity: !isClickable ? 0.8 : 1,
+            filter: !isClickable ? 'grayscale(0.3)' : 'none'
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: Math.min(width * 0.08, 8),
+              fontWeight: 'bold',
+              color: !isClickable ? '#666666' : '#FFF8DC',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
+              textAlign: 'center',
+              lineHeight: 1,
+              letterSpacing: '0.5px'
+            }}
+          >
+            DEVELOPMENT
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: Math.min(width * 0.08, 8),
+              fontWeight: 'bold',
+              color: !isClickable ? '#666666' : '#FFF8DC',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
+              textAlign: 'center',
+              lineHeight: 1,
+              letterSpacing: '0.5px',
+              marginTop: -0.3
+            }}
+          >
+            CARD
+          </Typography>
+        </Box>
+      </BaseCard>
+    )
   }
 
   const tooltipTitle = () => {
     if (remainingCards === 0) return "No development cards remaining"
+    if (disabled) return "Can't buy development cards at this point in the round"
     if (!canAfford) return "Cannot afford development card (Costs: 1 Ore, 1 Grain, 1 Wool)"
-    if (disabled) return "Cannot buy development cards right now"
     return `Buy development card (${remainingCards} remaining)`
   }
 
@@ -122,7 +141,7 @@ export function DevelopmentCardDeck({
             zIndex: 3,
           }}
         >
-          {remainingCards > 0 ? getSampleCard() : (
+          {remainingCards > 0 ? getDevelopmentCardBack() : (
             <BaseCard
               color="#CCCCCC"
               width={width}

@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material'
+import { Typography, Box, Tooltip } from '@mui/material'
 import { BaseCard } from '../BaseCard'
 import { Construction } from '@mui/icons-material'
 
@@ -11,9 +11,10 @@ interface Props {
 
 export function RoadBuildingCard({ width = 80, height = 120, onClick, disabled = false }: Props) {
   return (
-    <Box onClick={!disabled ? onClick : undefined}>
+    <Tooltip title="Road Building Card" arrow>
+      <Box onClick={!disabled ? onClick : undefined}>
       <BaseCard
-        color={disabled ? '#888888' : '#228B22'}
+        color={disabled ? '#A0C0A0' : '#228B22'}
         width={width}
         height={height}
       >
@@ -25,14 +26,15 @@ export function RoadBuildingCard({ width = 80, height = 120, onClick, disabled =
             justifyContent: 'center',
             gap: 1,
             padding: 1,
-            opacity: disabled ? 0.6 : 1,
-            cursor: disabled ? 'not-allowed' : (onClick ? 'pointer' : 'default')
+            opacity: disabled ? 0.8 : 1, // Less transparent when disabled
+            cursor: disabled ? 'not-allowed' : (onClick ? 'pointer' : 'default'),
+            filter: disabled ? 'grayscale(0.5)' : 'none' // Subtle grayscale when disabled
           }}
         >
           <Construction
             sx={{
               fontSize: width * 0.4,
-              color: disabled ? '#555555' : '#FFF8DC',
+              color: disabled ? '#555555' : '#FFF8DC', // Keep readable contrast
               filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'
             }}
           />
@@ -41,7 +43,7 @@ export function RoadBuildingCard({ width = 80, height = 120, onClick, disabled =
             sx={{
               fontSize: Math.min(width * 0.1, 10),
               fontWeight: 'bold',
-              color: disabled ? '#555555' : '#FFF8DC',
+              color: disabled ? '#555555' : '#FFF8DC', // Keep readable contrast
               textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
               textAlign: 'center',
               lineHeight: 1
@@ -54,7 +56,7 @@ export function RoadBuildingCard({ width = 80, height = 120, onClick, disabled =
             sx={{
               fontSize: Math.min(width * 0.1, 10),
               fontWeight: 'bold',
-              color: disabled ? '#555555' : '#FFF8DC',
+              color: disabled ? '#555555' : '#FFF8DC', // Keep readable contrast
               textShadow: '1px 1px 2px rgba(0,0,0,0.7)',
               textAlign: 'center',
               lineHeight: 1,
@@ -65,6 +67,7 @@ export function RoadBuildingCard({ width = 80, height = 120, onClick, disabled =
           </Typography>
         </Box>
       </BaseCard>
-    </Box>
+      </Box>
+    </Tooltip>
   )
 }

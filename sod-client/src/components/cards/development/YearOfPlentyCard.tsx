@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material'
+import { Typography, Box, Tooltip } from '@mui/material'
 import { BaseCard } from '../BaseCard'
 import { Agriculture, Landscape } from '@mui/icons-material'
 
@@ -11,9 +11,10 @@ interface Props {
 
 export function YearOfPlentyCard({ width = 80, height = 120, onClick, disabled = false }: Props) {
   return (
-    <Box onClick={!disabled ? onClick : undefined}>
+    <Tooltip title="Year of Plenty Card" arrow>
+      <Box onClick={!disabled ? onClick : undefined}>
       <BaseCard
-        color={disabled ? '#888888' : '#32CD32'}
+        color={disabled ? '#B0E0B0' : '#32CD32'}
         width={width}
         height={height}
       >
@@ -25,7 +26,8 @@ export function YearOfPlentyCard({ width = 80, height = 120, onClick, disabled =
             justifyContent: 'center',
             gap: 0.5,
             padding: 1,
-            opacity: disabled ? 0.6 : 1,
+            opacity: disabled ? 0.8 : 1, // Less transparent when disabled
+            filter: disabled ? 'grayscale(0.5)' : 'none', // Subtle grayscale when disabled
             cursor: disabled ? 'not-allowed' : (onClick ? 'pointer' : 'default')
           }}
         >
@@ -74,6 +76,7 @@ export function YearOfPlentyCard({ width = 80, height = 120, onClick, disabled =
           </Typography>
         </Box>
       </BaseCard>
-    </Box>
+      </Box>
+    </Tooltip>
   )
 }

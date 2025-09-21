@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material'
+import { Typography, Box, Tooltip } from '@mui/material'
 import { BaseCard } from '../BaseCard'
 import { Star } from '@mui/icons-material'
 
@@ -9,11 +9,12 @@ interface Props {
   disabled?: boolean
 }
 
-export function VictoryPointCard({ width = 80, height = 120, onClick, disabled = false }: Props) {
+export function VictoryPointCard({ width = 80, height = 120 }: Props) {
   return (
-    <Box onClick={!disabled ? onClick : undefined}>
+    <Tooltip title="Victory Point Card" arrow>
+      <Box>
       <BaseCard
-        color={disabled ? '#888888' : '#FFD700'}
+        color="#FFD700"
         width={width}
         height={height}
       >
@@ -25,14 +26,14 @@ export function VictoryPointCard({ width = 80, height = 120, onClick, disabled =
             justifyContent: 'center',
             gap: 1,
             padding: 1,
-            opacity: disabled ? 0.6 : 1,
-            cursor: disabled ? 'not-allowed' : (onClick ? 'pointer' : 'default')
+            opacity: 1,
+            cursor: 'default'
           }}
         >
           <Star
             sx={{
               fontSize: width * 0.4,
-              color: disabled ? '#555555' : '#8B4513',
+              color: '#8B4513',
               filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.3))'
             }}
           />
@@ -41,7 +42,7 @@ export function VictoryPointCard({ width = 80, height = 120, onClick, disabled =
             sx={{
               fontSize: Math.min(width * 0.1, 10),
               fontWeight: 'bold',
-              color: disabled ? '#555555' : '#8B4513',
+              color: '#8B4513',
               textShadow: '1px 1px 2px rgba(255,255,255,0.7)',
               textAlign: 'center',
               lineHeight: 1
@@ -54,7 +55,7 @@ export function VictoryPointCard({ width = 80, height = 120, onClick, disabled =
             sx={{
               fontSize: Math.min(width * 0.1, 10),
               fontWeight: 'bold',
-              color: disabled ? '#555555' : '#8B4513',
+              color: '#8B4513',
               textShadow: '1px 1px 2px rgba(255,255,255,0.7)',
               textAlign: 'center',
               lineHeight: 1,
@@ -65,6 +66,7 @@ export function VictoryPointCard({ width = 80, height = 120, onClick, disabled =
           </Typography>
         </Box>
       </BaseCard>
-    </Box>
+      </Box>
+    </Tooltip>
   )
 }

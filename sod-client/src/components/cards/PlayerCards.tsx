@@ -4,6 +4,7 @@ import { useCurrentPlayer, useDeck, usePhase } from "../../hooks/stateHooks";
 import { Player } from "../../state/Player";
 import { colors } from "../../utils/colors";
 import { BankTradeModal } from "./BankTradeModal";
+import { PlayerDevelopmentCards } from "./PlayerDevelopmentCards";
 import {
   CARD_WIDTH,
   CardGroup,
@@ -82,26 +83,32 @@ export function PlayerCards({ player }: Props) {
 
   return (
     <>
-      <Box
-        ref={containerRef}
-        sx={{
-          display: "flex",
-          overflow: "hidden", // Remove scrolling
-          minWidth: 0,
-          height: "70px",
-          alignItems: "flex-end",
-          width: "100%", // Ensure it takes full width
-        }}
-      >
-        {resourceVariants.map((variant) => (
-          <CardGroup
-            key={variant}
-            color={colors[variant]}
-            count={resourceCards.filter((x) => x.variant === variant).length}
-            maxSpacing={optimalSpacing}
-            onClick={canTrade ? () => handleCardGroupClick(variant) : undefined}
-          />
-        ))}
+      <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+        {/* Resource Cards */}
+        <Box
+          ref={containerRef}
+          sx={{
+            display: "flex",
+            overflow: "hidden", // Remove scrolling
+            minWidth: 0,
+            height: "70px",
+            alignItems: "flex-end",
+            width: "100%", // Ensure it takes full width
+          }}
+        >
+          {resourceVariants.map((variant) => (
+            <CardGroup
+              key={variant}
+              color={colors[variant]}
+              count={resourceCards.filter((x) => x.variant === variant).length}
+              maxSpacing={optimalSpacing}
+              onClick={canTrade ? () => handleCardGroupClick(variant) : undefined}
+            />
+          ))}
+        </Box>
+
+        {/* Development Cards */}
+        <PlayerDevelopmentCards player={player} />
       </Box>
 
       <BankTradeModal

@@ -8,12 +8,14 @@ interface Props {
   onCardClick?: (card: Card) => void
   maxWidth?: number
   title?: string
+  disabled?: boolean
+  currentRound?: number
 }
 
 const cardWidth = 40
 const cardHeight = 60
 
-export function DevelopmentCards({ cards, onCardClick, maxWidth = 400, title = "Development Cards" }: Props) {
+export function DevelopmentCards({ cards, onCardClick, maxWidth = 400, title = "Development Cards", disabled = false, currentRound }: Props) {
   // Filter only development cards
   const developmentCards = cards.filter(card => card.type === CardTypes.Development)
   
@@ -25,6 +27,20 @@ export function DevelopmentCards({ cards, onCardClick, maxWidth = 400, title = "
     groups[card.variant].push(card)
     return groups
   }, {} as Record<string, Card[]>)
+
+  // Check if a variant can be played (has at least one card not bought this turn)
+  const canPlayVariant = (variant: string): { canPlay: boolean; playableCard: Card | null } => {
+    if (disabled) {
+      return { canPlay: false, playableCard: null }
+    }
+    
+    const cards = cardGroups[variant] || []
+    const playableCard = currentRound !== undefined 
+      ? cards.find(card => card.boughtInTurn !== currentRound)
+      : cards[0] // If no round info, allow playing the first card
+    
+    return { canPlay: !!playableCard, playableCard: playableCard || null }
+  }
 
   if (developmentCards.length === 0) {
     return (
@@ -54,30 +70,34 @@ export function DevelopmentCards({ cards, onCardClick, maxWidth = 400, title = "
           alignItems: 'flex-start'
         }}
       >
-        {Object.entries(cardGroups).map(([variant, variantCards]) => (
-          <Box
-            key={variant}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              position: 'relative'
-            }}
-          >
-            {/* Show one card representing the group */}
+        {Object.entries(cardGroups).map(([variant, variantCards]) => {
+          const { canPlay, playableCard } = canPlayVariant(variant)
+          
+          return (
             <Box
+              key={variant}
               sx={{
-                position: 'relative',
-                cursor: onCardClick ? 'pointer' : 'default'
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                position: 'relative'
               }}
-              onClick={onCardClick ? () => onCardClick(variantCards[0]) : undefined}
             >
-              <DevelopmentCard
-                variant={variant}
-                width={cardWidth}
-                height={cardHeight}
-                onClick={onCardClick ? () => onCardClick(variantCards[0]) : undefined}
-              />
+              {/* Show one card representing the group */}
+              <Box
+                sx={{
+                  position: 'relative',
+                  cursor: (onCardClick && canPlay) ? 'pointer' : 'default'
+                }}
+                onClick={(onCardClick && canPlay && playableCard) ? () => onCardClick(playableCard) : undefined}
+              >
+                <DevelopmentCard
+                  variant={variant}
+                  width={cardWidth}
+                  height={cardHeight}
+                  onClick={(onCardClick && canPlay && playableCard) ? () => onCardClick(playableCard) : undefined}
+                  disabled={!canPlay}
+                />
               
               {/* Stack effect for multiple cards */}
               {variantCards.length > 1 && (
@@ -144,7 +164,8 @@ export function DevelopmentCards({ cards, onCardClick, maxWidth = 400, title = "
               )}
             </Box>
           </Box>
-        ))}
+        )
+      })}
       </Box>
     </Box>
   )

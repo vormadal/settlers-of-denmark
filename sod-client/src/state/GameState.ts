@@ -35,6 +35,7 @@ export class GameState extends Schema {
     @type([ "string" ]) public availablePlayersToStealFrom: ArraySchema<string> = new ArraySchema<string>();
     @type("string") public robberHex!: string;
     @type("boolean") public canBuyDevelopmentCards!: boolean;
+    @type("boolean") public canPlayDevelopmentCards!: boolean;
     @type("string") public hasLongestRoad!: string;
     @type("string") public hasLargestArmy!: string;
     @type([ Die ]) public dice: ArraySchema<Die> = new ArraySchema<Die>();

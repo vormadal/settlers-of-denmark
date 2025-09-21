@@ -38,7 +38,7 @@ export function BaseGame() {
 
   // Calculate dynamic heights based on mobile vs desktop
   const playerInfoHeight = isMobile ? Math.min(100, height * 0.12) : Math.min(140, height * 0.15)
-  const actionMenuHeight = isMobile ? Math.min(120, height * 0.16) : Math.min(140, height * 0.15)
+  const actionMenuHeight = isMobile ? Math.min(160, height * 0.22) : Math.min(180, height * 0.2) // Increased to accommodate development cards
   const boardHeight = height - playerInfoHeight - actionMenuHeight
 
   return (

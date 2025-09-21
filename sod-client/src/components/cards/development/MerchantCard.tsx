@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material'
+import { Typography, Box, Tooltip } from '@mui/material'
 import { BaseCard } from '../BaseCard'
 import { StoreMallDirectory } from '@mui/icons-material'
 
@@ -11,9 +11,10 @@ interface Props {
 
 export function MerchantCard({ width = 80, height = 120, onClick, disabled = false }: Props) {
   return (
-    <Box onClick={!disabled ? onClick : undefined}>
+    <Tooltip title="Merchant Card" arrow>
+      <Box onClick={!disabled ? onClick : undefined}>
       <BaseCard
-        color={disabled ? '#888888' : '#4169E1'}
+        color={disabled ? '#A0B0E0' : '#4169E1'}
         width={width}
         height={height}
       >
@@ -25,7 +26,8 @@ export function MerchantCard({ width = 80, height = 120, onClick, disabled = fal
             justifyContent: 'center',
             gap: 1,
             padding: 1,
-            opacity: disabled ? 0.6 : 1,
+            opacity: disabled ? 0.8 : 1, // Less transparent when disabled
+            filter: disabled ? 'grayscale(0.5)' : 'none', // Subtle grayscale when disabled
             cursor: disabled ? 'not-allowed' : (onClick ? 'pointer' : 'default')
           }}
         >
@@ -51,6 +53,7 @@ export function MerchantCard({ width = 80, height = 120, onClick, disabled = fal
           </Typography>
         </Box>
       </BaseCard>
-    </Box>
+      </Box>
+    </Tooltip>
   )
 }
