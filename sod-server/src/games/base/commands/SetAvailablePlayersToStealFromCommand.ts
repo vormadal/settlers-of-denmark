@@ -15,6 +15,6 @@ export class SetAvailablePlayersToStealFromCommand extends Command<MyRoom, Paylo
     const hex = state.hexes.find((h) => h.id === state.robberHex)
     const structures = hex.getStructures(state)
     const playersToStealFrom = new Set<string>(structures.map(s => s.owner).filter((id) => id !== player.id))
-    state.availablePlayersToStealFrom = new ArraySchema<string>(...playersToStealFrom)
+    state.availablePlayersToSomethingFrom = new ArraySchema<string>(...playersToStealFrom)
   }
 }

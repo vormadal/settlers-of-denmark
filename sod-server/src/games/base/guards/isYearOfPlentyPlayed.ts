@@ -2,7 +2,7 @@ import { DevelopmentCardVariants } from '../../../rooms/schema/Card';
 import { InputType } from '../BaseGameStateMachine';
 import { PlayDevelopmentCardEvent } from '../events';
 
-export function isKnightPlayed({ context, event }: InputType) {
+export function isYearOfPlentyPlayed({ context, event }: InputType) {
     const e = event as PlayDevelopmentCardEvent;
     const card = context.gameState.deck.find(c => c.id === e.payload.cardId);
 
@@ -11,5 +11,5 @@ export function isKnightPlayed({ context, event }: InputType) {
         return false;
     }
 
-    return card.variant === DevelopmentCardVariants.Knight;
+    return card.variant === DevelopmentCardVariants.YearOfPlenty;
 }

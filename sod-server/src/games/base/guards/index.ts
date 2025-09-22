@@ -4,3 +4,6 @@ export { initialRoundIsComplete } from './initialRoundIsComplete';
 export { isGameEnded } from './isGameEnded';
 export { isPlayerTurn } from './isPlayerTurn';
 export { isKnightPlayed } from './isKnightPlayed';
+export { isMonopolyPlayed } from './isMonopolyPlayed';
+export { isRoadBuildingPlayed } from './isRoadBuildingPlayed';
+export { isYearOfPlentyPlayed } from './isYearOfPlentyPlayed';

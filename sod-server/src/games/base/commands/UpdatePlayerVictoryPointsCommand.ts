@@ -22,6 +22,7 @@ export class UpdatePlayerVictoryPointsCommand extends Command<MyRoom, Payload> {
       CardVariants.VictoryPoint
     ).length;
 
-    player.victoryPoints = settlementVP + cityVP + longestRoadVP + largestArmyVP + devCardVP;
+    player.victoryPoints = settlementVP + cityVP + longestRoadVP + largestArmyVP;
+    player.secretVictoryPoints = devCardVP;
   }
 }

@@ -107,7 +107,8 @@ export function usePhase() {
           turn: `${state.currentPlayer}'s Turn`,
           playingKnight: `${state.currentPlayer} played a Knight card`,
           moveRobber: `${state.currentPlayer} is moving the robber`,
-          stealingResource: `${state.currentPlayer} is stealing a resource`
+          stealingResource: `${state.currentPlayer} is stealing a resource`,
+          playingMonopoly: `${state.currentPlayer} is selecting monopoly resource`
         }[value] || value
 
       setPhase({ key: value, label })
@@ -277,17 +278,17 @@ export function useRobberHex() {
   return robberHex
 }
 
-export function useAvailablePlayersToStealFrom() {
+export function useAvailablePlayersToSomethingFrom() {
   const gameRoom = useRoom()
   const [availablePlayerIds, setAvailablePlayerIds] = useState<string[]>(
-    gameRoom?.state.availablePlayersToStealFrom.toArray() || []
+    gameRoom?.state.availablePlayersToSomethingFrom.toArray() || []
   )
   const [availablePlayers, setAvailablePlayers] = useState<Player[]>([])
 
   useEffect(() => {
     if (!gameRoom) return
 
-    gameRoom.state.listen('availablePlayersToStealFrom', (playerIds) => {
+    gameRoom.state.listen('availablePlayersToSomethingFrom', (playerIds) => {
       setAvailablePlayerIds(playerIds.toArray())
     })
   }, [gameRoom])

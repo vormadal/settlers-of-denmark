@@ -1,6 +1,7 @@
 import { Box, Typography, Chip } from '@mui/material'
 import { Player } from '../state/Player'
 import { useCurrentPlayer, useDeck, usePlayers, useHasLongestRoad } from '../hooks/stateHooks'
+import { usePlayer } from '../context/PlayerContext'
 import { CartoonStatCard } from './CartoonStatCard'
 import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
 
@@ -13,13 +14,22 @@ interface Props {
 export function PlayerInfo({ width, player, color }: Props) {
   const cards = useDeck()
   const currentPlayer = useCurrentPlayer()
+  const currentUser = usePlayer() // The logged-in user
   const players = usePlayers()
   const isActivePlayer = currentPlayer?.id === player.id
+  const isCurrentUser = currentUser?.id === player.id // Check if this is the current user's player
   const longestRoadOwner = useHasLongestRoad()
   const hasLongestRoad = longestRoadOwner === player.id && player.longestRoadLength > 0
   const isMobile = width < 250 // Compact mode for smaller widths
+  
+  // Calculate victory points - show secret VPs only for current user
+  const publicVP = player.victoryPoints ?? 0
+  const secretVP = player.secretVictoryPoints ?? 0
+  const displayVP = isCurrentUser ? publicVP + secretVP : publicVP
+  const hasSecretVP = isCurrentUser && secretVP > 0
+  
   const maxVP = players.length ? Math.max(...players.map(p => p.victoryPoints ?? 0)) : 0
-  const isVpLeader = (player.victoryPoints ?? 0) === maxVP && maxVP > 0
+  const isVpLeader = publicVP === maxVP && maxVP > 0
 
   const developmentCardsCount = cards.filter((x) => x.type === 'Development' && x.owner === player.id).length
   const resourceCardsCount = cards.filter((x) => x.type === 'Resource' && x.owner === player.id).length
@@ -158,13 +168,14 @@ export function PlayerInfo({ width, player, color }: Props) {
           </Typography>
           <Chip
             size={isMobile ? 'small' : 'medium'}
-            label={`${player.victoryPoints ?? 0} VP`}
+            label={hasSecretVP ? `${displayVP} VP (${publicVP}+${secretVP}🔒)` : `${displayVP} VP`}
             color={isVpLeader ? 'warning' : 'default'}
             sx={{
               fontWeight: 700,
-              bgcolor: isVpLeader ? 'warning.light' : 'rgba(255,255,255,0.8)',
+              bgcolor: isVpLeader ? 'warning.light' : hasSecretVP ? 'rgba(255,215,0,0.8)' : 'rgba(255,255,255,0.8)',
               color: 'rgba(0,0,0,0.8)',
-              border: '1px solid rgba(0,0,0,0.1)'
+              border: '1px solid rgba(0,0,0,0.1)',
+              boxShadow: hasSecretVP ? '0 0 8px rgba(255,215,0,0.6)' : undefined
             }}
           />
           {hasLongestRoad && (
