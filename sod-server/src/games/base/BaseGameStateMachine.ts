@@ -34,11 +34,14 @@ import {
   moveRobber,
   stealResource,
   setAvailablePlayersToStealFrom,
-  clearAvailablePlayersToStealFrom,
+  clearAvailablePlayersToSomethingFrom,
   setCanPlayDevelopmentCards,
   clearCanPlayDevelopmentCards,
   increaseNumberOfDevelopmentCardsPlayed,
-  clearNumberOfDevelopmentCardsPlayed
+  clearNumberOfDevelopmentCardsPlayed,
+  monopolizeResource,
+  setAvailablePlayersToMonopolyzeFrom,
+  playMonopolyDevelopmentCard
 } from "./actions";
 import { Events } from "./events";
 import {
@@ -47,6 +50,9 @@ import {
   isGameEnded,
   isPlayerTurn,
   isKnightPlayed,
+  isMonopolyPlayed,
+  isRoadBuildingPlayed,
+  isYearOfPlentyPlayed
 } from "./guards";
 
 export type InputType = {
@@ -94,17 +100,23 @@ const machineConfig = setup({
     moveRobber,
     stealResource,
     setAvailablePlayersToStealFrom,
-    clearAvailablePlayersToStealFrom,
+    clearAvailablePlayersToSomethingFrom,
     setCanPlayDevelopmentCards,
     clearCanPlayDevelopmentCards,
     increaseNumberOfDevelopmentCardsPlayed,
-    clearNumberOfDevelopmentCardsPlayed
+    clearNumberOfDevelopmentCardsPlayed,
+    monopolizeResource,
+    setAvailablePlayersToMonopolyzeFrom,
+    playMonopolyDevelopmentCard
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
     isPlayerTurn,
     isGameEnded,
     isKnightPlayed,
+    isMonopolyPlayed,
+    isRoadBuildingPlayed,
+    isYearOfPlentyPlayed
   },
 });
 
@@ -229,6 +241,9 @@ export function createBaseGameStateMachine(
         entry: ["increaseNumberOfDevelopmentCardsPlayed"],
         always: [
           { guard: "isKnightPlayed", target: "playingKnight" },
+          { guard: "isMonopolyPlayed", target: "playingMonopoly" },
+          // { guard: "isRoadBuildingPlayed", target: "playingRoadBuilding" },
+          // { guard: "isYearOfPlentyPlayed", target: "playingYearOfPlenty" },
           { target: "turn" },
         ],
       },
@@ -237,9 +252,27 @@ export function createBaseGameStateMachine(
         exit: ["updateLargestArmy", "updatePlayerVictoryPoints"],
         always: [{ guard: "isGameEnded", target: "ended" }, { target: "moveRobber" }],
       },
-      playRoadBuilding: {},
-      playMonopoly: {},
-      playYearOfPlenty: {},
+      playingMonopoly: {
+        entry: ["playMonopolyDevelopmentCard", "setAvailablePlayersToMonopolyzeFrom"],
+        exit: ["clearAvailablePlayersToSomethingFrom"],
+        on: {
+          SELECT_MONOPOLY_RESOURCE: {
+            target: "turn",
+            actions: ["monopolizeResource"],
+            guard: "isPlayerTurn",
+          },
+        },
+      },
+      playRoadBuilding: {
+        // entry: ["playRoadBuildingDevelopmentCard"],
+        // exit: ["updatePlayerVictoryPoints"],
+        // always: [{ guard: "isGameEnded", target: "ended" }, { target: "moveRobber" }],
+      },
+      playYearOfPlenty: {
+        // entry: ["playYearOfPlentyDevelopmentCard"],
+        // exit: ["updatePlayerVictoryPoints"],
+        // always: [{ guard: "isGameEnded", target: "ended" }, { target: "moveRobber" }],
+      },
       moveRobber: {
         entry: ["setAvailableHexesForRobber"],
         exit: ["clearAvailableHexes"],
@@ -253,7 +286,7 @@ export function createBaseGameStateMachine(
       },
       stealingResource: {
         entry: ["setAvailablePlayersToStealFrom"],
-        exit: ["clearAvailablePlayersToStealFrom"],
+        exit: ["clearAvailablePlayersToSomethingFrom"],
         on: {
           STEAL_RESOURCE: {
             target: "turn",

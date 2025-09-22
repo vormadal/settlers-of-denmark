@@ -16,9 +16,9 @@ export const ResourceCardVariants = {
 
 export const DevelopmentCardVariants = {
   Knight: 'Knight',
-  VictoryPoint: 'VictoryPoint',
-  RoadBuilding: 'RoadBuilding',
   Monopoly: 'Monopoly',
+  RoadBuilding: 'RoadBuilding',
+  VictoryPoint: 'VictoryPoint',
   YearOfPlenty: 'YearOfPlenty',
   Merchant: 'Merchant'
 }

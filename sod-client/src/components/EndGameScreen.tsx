@@ -13,8 +13,14 @@ export function EndGameScreen({ onExamineBoard }: EndGameScreenProps) {
   const navigate = useNavigate()
   const room = useRoom()
 
-  const maxVP = Math.max(...players.map(p => p.victoryPoints || 0), 0)
-  const winners = players.filter(p => p.victoryPoints >= vpToWin && p.victoryPoints === maxVP)
+  // Calculate total victory points (public + secret) for each player
+  const playersWithTotalVP = players.map(p => ({
+    ...p,
+    totalVP: (p.victoryPoints || 0) + (p.secretVictoryPoints || 0)
+  }))
+  
+  const maxVP = Math.max(...playersWithTotalVP.map(p => p.totalVP), 0)
+  const winners = playersWithTotalVP.filter(p => p.totalVP >= vpToWin && p.totalVP === maxVP)
 
   function returnToLobby() {
     try {
@@ -73,7 +79,7 @@ export function EndGameScreen({ onExamineBoard }: EndGameScreenProps) {
                   fontWeight: 700,
                   fontSize: '1.2rem'
                 }}>
-                  {w.name} — {w.victoryPoints} VP
+                  {w.name} — {w.totalVP} VP {w.secretVictoryPoints > 0 ? `(${w.victoryPoints}+${w.secretVictoryPoints}🔒)` : ''}
                 </Box>
               ))}
             </Stack>
@@ -88,8 +94,8 @@ export function EndGameScreen({ onExamineBoard }: EndGameScreenProps) {
           Final Scores
         </Typography>
         <Stack spacing={0.75} sx={{ mb: 4 }}>
-          {players
-            .sort((a, b) => b.victoryPoints - a.victoryPoints)
+          {playersWithTotalVP
+            .sort((a, b) => b.totalVP - a.totalVP)
             .map(p => (
               <Box key={p.id} sx={{
                 display: 'flex',
@@ -102,7 +108,7 @@ export function EndGameScreen({ onExamineBoard }: EndGameScreenProps) {
                 boxShadow: winners.some(w => w.id === p.id) ? '0 0 0 2px #FF6B35' : 'none'
               }}>
                 <span>{p.name}</span>
-                <span>{p.victoryPoints} VP</span>
+                <span>{p.totalVP} VP {p.secretVictoryPoints > 0 ? `(${p.victoryPoints}+${p.secretVictoryPoints}🔒)` : ''}</span>
               </Box>
             ))}
         </Stack>

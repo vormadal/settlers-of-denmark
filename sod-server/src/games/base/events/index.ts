@@ -11,3 +11,4 @@ export { BuyDevelopmentCardEvent } from './BuyDevelopmentCardEvent';
 export { PlayDevelopmentCardEvent } from './PlayDevelopmentCardEvent';
 export { MoveRobberEvent } from './MoveRobberEvent';
 export { StealResourceEvent } from './StealResource';
+export { SelectMonopolyResourceEvent } from './SelectMonopolyResourceEvent';

@@ -90,7 +90,7 @@ export default function ActionMenu() {
 
   
         {/* Phase indicator */}
-        {(phase.key === 'moveRobber' || phase.key === 'stealingResource' || phase.key === 'playingKnight') && (
+        {(phase.key === 'moveRobber' || phase.key === 'stealingResource' || phase.key === 'playingKnight' || phase.key === 'playingMonopoly') && (
           <Box sx={{
             backgroundColor: 'rgba(244, 67, 54, 0.1)',
             border: '2px solid rgba(244, 67, 54, 0.3)',
@@ -106,6 +106,7 @@ export default function ActionMenu() {
             {phase.key === 'moveRobber' && '🏴‍☠️ Move Robber'}
             {phase.key === 'stealingResource' && '💰 Steal Resource'}
             {phase.key === 'playingKnight' && '⚔️ Knight Active'}
+            {phase.key === 'playingMonopoly' && '🏛️ Choose Resource'}
           </Box>
         )}
       
