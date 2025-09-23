@@ -5,7 +5,7 @@ import { BorderEdge } from "../state/BorderEdge";
 import { Point } from "../state/Point";
 import { getLineRotation } from "../utils/VectorMath";
 import { useRoom } from "../context/RoomContext";
-import { useAvailableEdges, useCurrentPlayer } from "../hooks/stateHooks";
+import { useAvailableEdges, useCurrentPlayer, usePhase } from "../hooks/stateHooks";
 import { usePlayer } from "../context/PlayerContext";
 
 interface Props {
@@ -23,8 +23,11 @@ export function EdgeShape({ edge }: Props) {
   const room = useRoom();
   const player = usePlayer();
   const currentPlayer = useCurrentPlayer();
+  const phase = usePhase();
   const [focus, setFocus] = useState(false);
   const availableEdges = useAvailableEdges();
+  
+  const isRoadBuildingActive = phase.key === 'placingRoadBuilding';
 
   function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
     setFocus(true);
@@ -46,6 +49,12 @@ export function EdgeShape({ edge }: Props) {
   if (!availableEdges.includes(edge.id) || player?.id !== currentPlayer?.id)
     return null;
 
+  // Subtle enhancements for Road Building phase
+  const roadBuildingColor = isRoadBuildingActive ? "#8B4513" : "#ffffff";
+  const roadBuildingOpacity = isRoadBuildingActive ? 0.8 : 0.6;
+  const roadBuildingStroke = isRoadBuildingActive ? "#ffffff" : "#000000";
+  const roadBuildingStrokeWidth = isRoadBuildingActive ? 1.2 : 0.9;
+
   return (
     <Ellipse
       x={center.x}
@@ -55,19 +64,19 @@ export function EdgeShape({ edge }: Props) {
       radiusX={11}
       radiusY={6}
       rotation={rotation}
-      fill={"#ffffff"}
+      fill={roadBuildingColor}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       scaleX={focus ? 1.6 : 1}
       scaleY={focus ? 1.6 : 1}
-      opacity={0.6}
+      opacity={roadBuildingOpacity}
       shadowEnabled={true}
       shadowColor="#000000"
       shadowOffsetX={1}
       shadowBlur={2}
       shadowOpacity={0.3}
-      strokeWidth={0.9}
-      stroke={"#000000"}
+      strokeWidth={roadBuildingStrokeWidth}
+      stroke={roadBuildingStroke}
     />
   );
 }

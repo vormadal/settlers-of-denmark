@@ -44,7 +44,7 @@ export function MonopolySelectionModal({ open, onClose }: Props) {
     if (player) {
       room?.send('SELECT_MONOPOLY_RESOURCE', { 
         playerId: player.id,
-        cardId: resourceType 
+        resourceVariant: resourceType
       })
     }
     onClose()

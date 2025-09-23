@@ -3,12 +3,12 @@ import { MyRoom } from '../../../rooms/MyRoom'
 
 interface Payload { 
     playerId: string, 
-    cardId: string 
+    resourceVariant: string 
 }
 
 export class MonopolizeResourceCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
-    const resourceName = payload.cardId;
+    const resourceName = payload.resourceVariant;
     const allPlayers = Array.from(this.room.state.players.values());
     const currentPlayer = this.room.state.players.get(payload.playerId);
 

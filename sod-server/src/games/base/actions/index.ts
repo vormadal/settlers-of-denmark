@@ -38,3 +38,8 @@ export * from "./clearNumberOfDevelopmentCardsPlayed";
 export * from "./monopolizeResource";
 export * from "./setAvailablePlayersToMonopolyzeFrom";
 export * from "./playMonopolyDevelopmentCard";
+export * from "./playYearOfPlentyDevelopmentCard";
+export * from "./getYearOfPlentyResources";
+export * from "./increaseRoadBuildingPhase";
+export * from "./clearRoadBuildingPhase";
+export * from "./playRoadBuildingDevelopmentCard";

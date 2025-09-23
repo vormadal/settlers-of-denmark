@@ -7,3 +7,4 @@ export { isKnightPlayed } from './isKnightPlayed';
 export { isMonopolyPlayed } from './isMonopolyPlayed';
 export { isRoadBuildingPlayed } from './isRoadBuildingPlayed';
 export { isYearOfPlentyPlayed } from './isYearOfPlentyPlayed';
+export { roadBuildingComplete } from './roadBuildingComplete';

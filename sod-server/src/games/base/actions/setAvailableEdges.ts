@@ -1,8 +1,8 @@
 import { InputType } from "../BaseGameStateMachine";
-import { SetAvailableEdgesCommand } from "../commands/SetAvailableRoadEdgesCommand";
+import { SetAvailableRoadEdgesCommand } from "../commands/SetAvailableRoadEdgesCommand";
 
 export function setAvailableEdges({ context }: InputType) {
-  context.dispatcher.dispatch(new SetAvailableEdgesCommand(), {
+  context.dispatcher.dispatch(new SetAvailableRoadEdgesCommand(), {
     initialPlacement: context.gameState.round < 3,
   });
 }
