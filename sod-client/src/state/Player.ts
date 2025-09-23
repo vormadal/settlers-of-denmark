@@ -13,6 +13,7 @@ import { ExchangeRate } from './ExchangeRate'
 
 export class Player extends Schema {
     @type("string") public id!: string;
+    @type("string") public sessionId!: string;
     @type("string") public name!: string;
     @type("boolean") public connected!: boolean;
     @type([ Settlement ]) public settlements: ArraySchema<Settlement> = new ArraySchema<Settlement>();
