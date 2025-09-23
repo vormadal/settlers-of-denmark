@@ -33,6 +33,7 @@ export class GameState extends Schema {
     @type([ "string" ]) public availableEdges: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availableHexes: ArraySchema<string> = new ArraySchema<string>();
     @type([ "string" ]) public availablePlayersToSomethingFrom: ArraySchema<string> = new ArraySchema<string>();
+    @type("number") public roadBuildingDevelopmentCardPhase!: number;
     @type("string") public robberHex!: string;
     @type("boolean") public canBuyDevelopmentCards!: boolean;
     @type("boolean") public canPlayDevelopmentCards!: boolean;

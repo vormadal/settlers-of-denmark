@@ -6,7 +6,7 @@ import { CardVariants } from '../../../rooms/schema/Card'
 interface Payload {
   initialPlacement: boolean
 }
-export class SetAvailableEdgesCommand extends Command<MyRoom, Payload> {
+export class SetAvailableRoadEdgesCommand extends Command<MyRoom, Payload> {
   execute(payload: Payload) {
     const player = this.state.players.get(this.state.currentPlayer)
 

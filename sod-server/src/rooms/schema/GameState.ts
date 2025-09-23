@@ -31,6 +31,7 @@ export class GameState extends Schema {
   @type(['string']) availableEdges = new ArraySchema<string>()
   @type(['string']) availableHexes = new ArraySchema<string>()
   @type(['string']) availablePlayersToSomethingFrom = new ArraySchema<string>()
+  @type('number') roadBuildingDevelopmentCardPhase: number = 0
   @type('string') robberHex: string = ''
   @type('boolean') canBuyDevelopmentCards: boolean = false
   @type('boolean') canPlayDevelopmentCards: boolean = false

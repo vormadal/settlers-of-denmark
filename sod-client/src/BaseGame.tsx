@@ -7,6 +7,7 @@ import { PlayerInfo } from './components/PlayerInfo'
 import { WaitingSplashScreen } from './components/WaitingSplashScreen'
 import { StealResourceModal } from './components/StealResourceModal'
 import { MonopolySelectionModal } from './components/MonopolySelectionModal'
+import { YearOfPlentyModal } from './components/YearOfPlentyModal'
 import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom } from './hooks/stateHooks'
 import { getUniqueColor } from './utils/colors'
 
@@ -21,6 +22,7 @@ export function BaseGame() {
   const availablePlayersToStealFrom = useAvailablePlayersToSomethingFrom()
   const showStealModal = phase.key === 'stealingResource'
   const showMonopolyModal = phase.key === 'playingMonopoly'
+  const showYearOfPlentyModal = phase.key === 'playingYearOfPlenty'
 
   useEffect(() => {
     const handleResize = () => {
@@ -147,6 +149,12 @@ export function BaseGame() {
       <MonopolySelectionModal
         open={showMonopolyModal}
         onClose={() => {}} // Modal should only close when a resource is selected
+      />
+
+      {/* Year of Plenty Selection Modal */}
+      <YearOfPlentyModal
+        open={showYearOfPlentyModal}
+        onClose={() => {}} // Modal should only close when resources are selected
       />
     </Box>
   )

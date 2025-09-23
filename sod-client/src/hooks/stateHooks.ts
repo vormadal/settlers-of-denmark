@@ -99,7 +99,7 @@ export function usePhase() {
     if (!gameRoom) return
     gameRoom.state.listen('phase', (value) => {
       const state = gameRoom.state
-      let label =
+        let label =
         {
           placingSettlement: `${state.currentPlayer} is placing settlement`,
           placingRoad: `${state.currentPlayer} is placing road`,
@@ -108,7 +108,8 @@ export function usePhase() {
           playingKnight: `${state.currentPlayer} played a Knight card`,
           moveRobber: `${state.currentPlayer} is moving the robber`,
           stealingResource: `${state.currentPlayer} is stealing a resource`,
-          playingMonopoly: `${state.currentPlayer} is selecting monopoly resource`
+          playingMonopoly: `${state.currentPlayer} is selecting monopoly resource`,
+          placingRoadBuilding: `${state.currentPlayer} is placing Road Building road ${state.roadBuildingDevelopmentCardPhase + 1}/2`
         }[value] || value
 
       setPhase({ key: value, label })
@@ -305,4 +306,18 @@ export function useAvailablePlayersToSomethingFrom() {
   }, [availablePlayerIds, gameRoom])
 
   return availablePlayers
+}
+
+export function useRoadBuildingPhase() {
+  const gameRoom = useRoom()
+  const [roadBuildingPhase, setRoadBuildingPhase] = useState<number>(
+    gameRoom?.state.roadBuildingDevelopmentCardPhase || 0
+  )
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('roadBuildingDevelopmentCardPhase', (value) => {
+      setRoadBuildingPhase(value)
+    })
+  }, [gameRoom])
+  return roadBuildingPhase
 }

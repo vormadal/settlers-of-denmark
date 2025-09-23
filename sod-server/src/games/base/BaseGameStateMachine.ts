@@ -41,7 +41,12 @@ import {
   clearNumberOfDevelopmentCardsPlayed,
   monopolizeResource,
   setAvailablePlayersToMonopolyzeFrom,
-  playMonopolyDevelopmentCard
+  playMonopolyDevelopmentCard,
+  playYearOfPlentyDevelopmentCard,
+  getYearOfPlentyResources,
+  increaseRoadBuildingPhase,
+  clearRoadBuildingPhase,
+  playRoadBuildingDevelopmentCard
 } from "./actions";
 import { Events } from "./events";
 import {
@@ -52,7 +57,8 @@ import {
   isKnightPlayed,
   isMonopolyPlayed,
   isRoadBuildingPlayed,
-  isYearOfPlentyPlayed
+  isYearOfPlentyPlayed,
+  roadBuildingComplete
 } from "./guards";
 
 export type InputType = {
@@ -107,10 +113,16 @@ const machineConfig = setup({
     clearNumberOfDevelopmentCardsPlayed,
     monopolizeResource,
     setAvailablePlayersToMonopolyzeFrom,
-    playMonopolyDevelopmentCard
+    playMonopolyDevelopmentCard,
+    playYearOfPlentyDevelopmentCard,
+    getYearOfPlentyResources,
+    increaseRoadBuildingPhase,
+    clearRoadBuildingPhase,
+    playRoadBuildingDevelopmentCard
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
+    roadBuildingComplete: guard(roadBuildingComplete, isPlayerTurn),
     isPlayerTurn,
     isGameEnded,
     isKnightPlayed,
@@ -242,8 +254,8 @@ export function createBaseGameStateMachine(
         always: [
           { guard: "isKnightPlayed", target: "playingKnight" },
           { guard: "isMonopolyPlayed", target: "playingMonopoly" },
-          // { guard: "isRoadBuildingPlayed", target: "playingRoadBuilding" },
-          // { guard: "isYearOfPlentyPlayed", target: "playingYearOfPlenty" },
+          { guard: "isRoadBuildingPlayed", target: "playingRoadBuilding" },
+          { guard: "isYearOfPlentyPlayed", target: "playingYearOfPlenty" },
           { target: "turn" },
         ],
       },
@@ -263,15 +275,19 @@ export function createBaseGameStateMachine(
           },
         },
       },
-      playRoadBuilding: {
-        // entry: ["playRoadBuildingDevelopmentCard"],
-        // exit: ["updatePlayerVictoryPoints"],
-        // always: [{ guard: "isGameEnded", target: "ended" }, { target: "moveRobber" }],
+      playingRoadBuilding: {
+        entry: ["playRoadBuildingDevelopmentCard"],
+        always: { target: "placingRoadBuilding" },
       },
-      playYearOfPlenty: {
-        // entry: ["playYearOfPlentyDevelopmentCard"],
-        // exit: ["updatePlayerVictoryPoints"],
-        // always: [{ guard: "isGameEnded", target: "ended" }, { target: "moveRobber" }],
+      playingYearOfPlenty: {
+        entry: ["playYearOfPlentyDevelopmentCard"],
+        on: {
+          SELECT_YEAR_OF_PLENTY_RESOURCES: {
+            target: "turn",
+            actions: ["getYearOfPlentyResources"],
+            guard: "isPlayerTurn",
+          },
+        },
       },
       moveRobber: {
         entry: ["setAvailableHexesForRobber"],
@@ -293,6 +309,24 @@ export function createBaseGameStateMachine(
             actions: ["stealResource"],
             guard: "isPlayerTurn",
           },
+        },
+      },
+      placingRoadBuilding: {
+        entry: ["setAvailableEdges"],
+        exit: ["clearAvailableEdges"],
+        on: {
+          PLACE_ROAD: [
+            {
+              target: "turn",
+              actions: ["placeRoad", "updatePlayerLongestRoad", "clearRoadBuildingPhase"],
+              guard: "roadBuildingComplete",
+            },
+            {
+              target: "placingRoadBuilding",
+              actions: ["placeRoad", "updatePlayerLongestRoad", "increaseRoadBuildingPhase", "setAvailableEdges"],
+              guard: "isPlayerTurn",
+            },
+          ],
         },
       },
       checkingEnd: {

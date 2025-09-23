@@ -5,6 +5,7 @@ import { IntersectionShape } from "./shapes/IntersectionShape";
 import { Land } from "./shapes/LandShape";
 import { RoadShape } from "./shapes/RoadShape";
 import { RobberShape } from "./shapes/RobberShape";
+import { RobberPlacementIndicator } from "./shapes/RobberPlacementIndicator";
 import { getUniqueColor } from "./utils/colors";
 import { 
   useEdges, 
@@ -104,10 +105,20 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
           <Land 
             key={x.id} 
             tile={x}
-            isHighlighted={isRobberMoveable && availableHexes.includes(x.id)}
-            onClick={isRobberMoveable ? () => handleMoveRobber(x.id) : undefined}
           />
         ))}
+
+        {/* Robber placement indicators - only show when moving robber */}
+        {isRobberMoveable && availableHexes.map((hexId) => {
+          const hex = hexes.find(h => h.id === hexId);
+          return hex ? (
+            <RobberPlacementIndicator
+              key={`robber-indicator-${hexId}`}
+              hex={hex}
+              onClick={handleMoveRobber}
+            />
+          ) : null;
+        })}
 
         {edges.map((x) => (
           <EdgeShape key={x.id} edge={x} />
@@ -154,7 +165,6 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
           <RobberShape
             hex={hexes.find(h => h.id === robberHex)!}
             isMoveable={isRobberMoveable}
-            onMove={handleMoveRobber}
           />
         )}
       </Layer>
