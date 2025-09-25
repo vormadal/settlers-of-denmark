@@ -43,3 +43,7 @@ export * from "./getYearOfPlentyResources";
 export * from "./increaseRoadBuildingPhase";
 export * from "./clearRoadBuildingPhase";
 export * from "./playRoadBuildingDevelopmentCard";
+export * from "./setAvailablePlayersForDiscarding";
+export * from "./discardResources";
+export * from "./removePlayerFromSomethingList";
+export * from "./clearCurrentDevelopmentCardId";

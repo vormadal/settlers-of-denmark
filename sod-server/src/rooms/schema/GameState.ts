@@ -20,6 +20,7 @@ export class GameState extends Schema {
 
   @type('string') phase: string = GamePhases.WaitingForPlayers
   @type('string') currentPlayer: string = ''
+  @type('string') currentDevelopmentCardId?: string;
 
   @type([HexProduction]) hexProductions = new ArraySchema<HexProduction>()
   @type('number') round = 1

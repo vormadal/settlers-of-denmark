@@ -1,5 +1,5 @@
-import { Command } from '@colyseus/command'
-import { MyRoom } from '../../../rooms/MyRoom'
+import { Command } from "@colyseus/command";
+import { MyRoom } from "../../../rooms/MyRoom";
 
 export class IncreaseRoadBuildingPhaseCommand extends Command<MyRoom> {
   execute() {

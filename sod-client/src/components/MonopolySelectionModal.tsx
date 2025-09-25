@@ -1,8 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
   Box, 
   Typography,
   Button,
@@ -13,6 +10,7 @@ import { usePlayer } from '../context/PlayerContext'
 import { CardVariants } from '../utils/CardVariants'
 import { colors } from '../utils/colors'
 import { BaseCard } from './cards/BaseCard'
+import { GameModal } from './GameModal'
 
 interface Props {
   open: boolean
@@ -38,7 +36,6 @@ const resourceEmojis = {
 export function MonopolySelectionModal({ open, onClose }: Props) {
   const room = useRoom()
   const player = usePlayer()
-  const [isMinimized, setIsMinimized] = useState(false)
 
   const handleSelectResource = (resourceType: string) => {
     if (player) {
@@ -51,46 +48,17 @@ export function MonopolySelectionModal({ open, onClose }: Props) {
   }
 
   return (
-    <>
-      <Dialog 
-        open={open && !isMinimized} 
-        onClose={onClose}
-        maxWidth="xs"
-        fullWidth={false}
-        PaperProps={{
-          sx: {
-            backgroundColor: '#f5f5f5',
-            backgroundImage: 'linear-gradient(145deg, #f0f0f0 0%, #e0e0e0 100%)',
-            maxWidth: '500px',
-            width: 'auto'
-          }
-        }}
-      >
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        backgroundColor: 'rgba(220, 20, 60, 0.1)',
-        borderBottom: '2px solid rgba(220, 20, 60, 0.2)',
-        position: 'relative'
-      }}>
-        <Typography variant="h6" component="div">
-          🏛️ Monopoly Card
-        </Typography>
-        <Button
-          size="small"
-          onClick={() => setIsMinimized(true)}
-          sx={{
-            minWidth: 'auto',
-            padding: '4px 8px',
-            fontSize: '0.75rem'
-          }}
-        >
-          Hide
-        </Button>
-      </DialogTitle>
-      
-      <DialogContent sx={{ padding: 3, overflow: 'hidden' }}>
+    <GameModal
+      open={open}
+      onClose={onClose}
+      title="🏛️ Monopoly Card"
+      accentColor="#dc143c"
+      maxWidth="xs"
+      fullWidth={false}
+      paperSx={{ maxWidth: '500px', width: 'auto' }}
+      contentSx={{ padding: 3, overflow: 'hidden' }}
+      minimizable={{ showLabel: '🏛️ Show Monopoly' }}
+    >
         <Typography variant="body1" sx={{ marginBottom: 3, textAlign: 'center' }}>
           Choose which resource type you want to monopolize:
         </Typography>
@@ -175,39 +143,6 @@ export function MonopolySelectionModal({ open, onClose }: Props) {
             💡 All other players must give you all their cards of the selected resource type
           </Typography>
         </Box>
-      </DialogContent>
-    </Dialog>
-    
-    {/* Show/Hide Button - positioned like EndGameScreen */}
-    {open && isMinimized && (
-      <Button
-        variant="outlined"
-        onClick={() => setIsMinimized(false)}
-        sx={{
-          position: 'fixed',
-          top: 20,
-          right: 20,
-          zIndex: 1300,
-          fontWeight: 700,
-          textTransform: 'none',
-          px: 3,
-          py: 1,
-          borderRadius: 3,
-          borderWidth: 2,
-          backdropFilter: 'blur(2px)',
-          background: 'rgba(255,255,255,0.4)',
-          borderColor: 'rgba(220, 20, 60, 0.6)',
-          color: 'rgba(220, 20, 60, 0.9)',
-          '&:hover': { 
-            background: 'rgba(255,255,255,0.6)',
-            borderColor: 'rgba(220, 20, 60, 0.8)',
-            color: 'rgba(220, 20, 60, 1)',
-          }
-        }}
-      >
-        🏛️ Show Monopoly
-      </Button>
-    )}
-    </>
+    </GameModal>
   )
 }

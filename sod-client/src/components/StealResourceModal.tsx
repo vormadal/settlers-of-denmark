@@ -1,21 +1,17 @@
 import React from 'react'
 import { 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  IconButton, 
   Box, 
   Typography,
   Button,
   Avatar
 } from '@mui/material'
-import { Close as CloseIcon } from '@mui/icons-material'
 import { Player } from '../state/Player'
 import { useRoom } from '../context/RoomContext'
 import { usePlayer } from '../context/PlayerContext'
 import { getUniqueColor } from '../utils/colors'
 import { useDeck } from '../hooks/stateHooks'
 import { Card } from '../state/Card'
+import { GameModal } from './GameModal'
 
 interface Props {
   open: boolean
@@ -39,36 +35,19 @@ export function StealResourceModal({ open, onClose, eligiblePlayers }: Props) {
   }
 
   // Get resource cards count for a player
-  const getPlayerResourceCount = (playerId: string) => {
+  const getPlayerResourceCount = (playerId: string): number => {
     return deck.filter((card: Card) => card.owner === playerId && card.type === 'Resource').length
   }
 
   return (
-    <Dialog 
-      open={open} 
+    <GameModal
+      open={open}
       onClose={onClose}
+      title="🏴‍☠️ Steal Resource"
+      accentColor="#f44336"
       maxWidth="sm"
       fullWidth
-      PaperProps={{
-        sx: {
-          backgroundColor: '#f5f5f5',
-          backgroundImage: 'linear-gradient(145deg, #f0f0f0 0%, #e0e0e0 100%)',
-        }
-      }}
     >
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        backgroundColor: 'rgba(244, 67, 54, 0.1)',
-        borderBottom: '2px solid rgba(244, 67, 54, 0.2)'
-      }}>
-        <Typography variant="h6" component="div">
-          🏴‍☠️ Steal Resource
-        </Typography>
-      </DialogTitle>
-      
-      <DialogContent sx={{ padding: 3 }}>
         {eligiblePlayers.length === 0 ? (
           <Box sx={{ 
             textAlign: 'center', 
@@ -104,23 +83,24 @@ export function StealResourceModal({ open, onClose, eligiblePlayers }: Props) {
                 const playerColor = getUniqueColor(index)
                 // Get total resource cards for this player
                 const resourceCardCount = getPlayerResourceCount(player.id)
+                const hasResources = resourceCardCount > 0
                 
                 return (
                   <Button
                     key={player.id}
                     variant="outlined"
                     onClick={() => handleStealFromPlayer(player.id)}
-                    disabled={resourceCardCount === 0}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: 2,
-                      backgroundColor: resourceCardCount > 0 ? 'rgba(244, 67, 54, 0.05)' : 'rgba(0,0,0,0.02)',
-                      border: `2px solid ${resourceCardCount > 0 ? 'rgba(244, 67, 54, 0.3)' : '#ccc'}`,
+                      backgroundColor: hasResources ? 'rgba(244, 67, 54, 0.05)' : 'rgba(0,0,0,0.02)',
+                      border: `2px solid ${hasResources ? 'rgba(244, 67, 54, 0.3)' : 'rgba(0,0,0,0.15)'}`,
+                      opacity: hasResources ? 1 : 0.9,
                       '&:hover': {
-                        backgroundColor: resourceCardCount > 0 ? 'rgba(244, 67, 54, 0.1)' : 'rgba(0,0,0,0.05)',
-                        borderColor: resourceCardCount > 0 ? 'rgba(244, 67, 54, 0.5)' : '#999',
+                        backgroundColor: hasResources ? 'rgba(244, 67, 54, 0.1)' : 'rgba(0,0,0,0.05)',
+                        borderColor: hasResources ? 'rgba(244, 67, 54, 0.5)' : 'rgba(0,0,0,0.3)',
                       }
                     }}
                   >
@@ -146,8 +126,11 @@ export function StealResourceModal({ open, onClose, eligiblePlayers }: Props) {
                       </Box>
                     </Box>
                     
-                    {resourceCardCount === 0 ? (
-                      <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                    {!hasResources ? (
+                      <Typography
+                        variant="body2"
+                        sx={{ color: 'text.secondary', fontStyle: 'italic', textAlign: 'right' }}
+                      >
                         No resources
                       </Typography>
                     ) : (
@@ -173,7 +156,6 @@ export function StealResourceModal({ open, onClose, eligiblePlayers }: Props) {
             💡 You will randomly steal one resource card from the selected player
           </Typography>
         </Box>
-      </DialogContent>
-    </Dialog>
+    </GameModal>
   )
 }

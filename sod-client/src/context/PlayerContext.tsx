@@ -17,18 +17,15 @@ export function PlayerContextProvider({ children, override }: Props) {
   const players = usePlayers();
   const room = useRoom();
   const [player, setPlayer] = useState<Player | undefined>(
-    players.find((x) => x.id === room.sessionId)
+    players.find((x) => x.sessionId === room.sessionId)
   );
 
   useEffect(() => {
     const sessionPlayers = players.filter(
       (x) => x.sessionId === room.sessionId
     );
-    const currentPlayer = players.find(
-      (x) => x.id === room.state.currentPlayer
-    );
-    setPlayer(currentPlayer || sessionPlayers[0]);
-  }, [players, room.sessionId, room.state.currentPlayer]);
+    setPlayer(sessionPlayers[0]);
+  }, [players, room.sessionId]);
 
   return (
     <PlayerContext.Provider value={override || player}>

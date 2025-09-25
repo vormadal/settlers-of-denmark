@@ -109,7 +109,8 @@ export function usePhase() {
           moveRobber: `${state.currentPlayer} is moving the robber`,
           stealingResource: `${state.currentPlayer} is stealing a resource`,
           playingMonopoly: `${state.currentPlayer} is selecting monopoly resource`,
-          placingRoadBuilding: `${state.currentPlayer} is placing Road Building road ${state.roadBuildingDevelopmentCardPhase + 1}/2`
+          placingRoadBuilding: `${state.currentPlayer} is placing Road Building road ${state.roadBuildingDevelopmentCardPhase + 1}/2`,
+          discardingCards: `Players are discarding cards (7 rolled)`
         }[value] || value
 
       setPhase({ key: value, label })

@@ -15,11 +15,13 @@ import {
   usePlayers, 
   useRobberHex, 
   useAvailableHexes, 
-  usePhase 
+  usePhase,
+  useCurrentPlayer
 } from "./hooks/stateHooks";
 import { CityShape } from "./shapes/CityShape";
 import { HarborShape } from "./shapes/HarborShape";
 import { useRoom } from "./context/RoomContext";
+import { usePlayer } from "./context/PlayerContext";
 
 interface Props {
   width: number;
@@ -29,6 +31,8 @@ interface Props {
 const colors = new Array(8).fill(0).map((_, i) => getUniqueColor(i));
 export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const players = usePlayers();
+  const currentPlayer = useCurrentPlayer(); // The player whose turn it is
+  const player = usePlayer(); // The current user's player
   const hexes = useHexes();
   const edges = useEdges();
   const intersections = useIntersections();
@@ -85,13 +89,14 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
 
   // Handle robber movement
   const handleMoveRobber = (hexId: string) => {
-    if (phase.key === 'moveRobber' && availableHexes.includes(hexId)) {
+    if (phase.key === 'moveRobber' && availableHexes.includes(hexId) && isCurrentPlayerTurn) {
       room?.send('MOVE_ROBBER', { hexId });
     }
   };
 
-  // Check if we're in robber movement phase
-  const isRobberMoveable = phase.key === 'moveRobber';
+  // Check if we're in robber movement phase AND it's the current user's turn
+  const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id);
+  const isRobberMoveable = phase.key === 'moveRobber' && isCurrentPlayerTurn;
 
   return (
     <Stage

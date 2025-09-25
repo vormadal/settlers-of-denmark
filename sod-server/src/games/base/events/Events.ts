@@ -1,5 +1,6 @@
 import { BankTradeEvent } from './BankTradeEvent';
 import { BuyDevelopmentCardEvent } from './BuyDevelopmentCardEvent';
+import { DiscardResourcesEvent } from './DiscardResourcesEvent';
 import { EndTurn } from './EndTurn';
 import { MoveRobberEvent } from './MoveRobberEvent';
 import { PlaceCityEvent } from './PlaceCityEvent';
@@ -23,4 +24,5 @@ export type Events =
   | StealResourceEvent
   | SelectMonopolyResourceEvent
   | SelectYearOfPlentyResources
+  | DiscardResourcesEvent
   | EndTurn;
