@@ -27,7 +27,10 @@ export function PlayerContextProvider({ children, override }: Props) {
     const currentPlayer = players.find(
       (x) => x.id === room.state.currentPlayer
     );
-    setPlayer(currentPlayer || sessionPlayers[0]);
+    // should just be a single player with this session id.
+    // but when debugging, all players have the same session id
+    // this allows one player to play for all
+    setPlayer(sessionPlayers.length > 1 ? currentPlayer : sessionPlayers[0]);
   }, [players, room.sessionId, room.state.currentPlayer]);
 
   return (
