@@ -54,6 +54,7 @@ export class MyRoom extends Room<GameState> {
       numPlayers: 2,
       numRoads: 19,
       defaultExchangeRate: 4,
+      resourceCards: {},
       // Default initial player resource cards for debug mode
       initialPlayerResourceCards: options.debug ? {
         [CardVariants.Brick]: 5,
