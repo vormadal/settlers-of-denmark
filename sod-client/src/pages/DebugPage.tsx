@@ -137,7 +137,6 @@ function DebugPage() {
       const room = await client.createRoom(RoomNames.Debug, {
         ...config,
         name: config.name.trim(),
-        sessionId: client.room?.sessionId,
       });
 
       if (config.debug && room) {
@@ -175,7 +174,7 @@ function DebugPage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            p: 2
+            p: 2,
           }}
         >
           <Button
@@ -341,21 +340,20 @@ function DebugPage() {
                   {Object.entries(config.resourceCards).map(
                     ([resource, count]) => (
                       <Grid item xs={12} sm={6} md={2} key={resource}>
-                       
-                          <TextField
-                            size="small"
-                            type="number"
-                            fullWidth
-                            label={resource}
-                            inputProps={{ min: 0, max: 50 }}
-                            value={count}
-                            onChange={(e) =>
-                              handleResourceCardChange(
-                                resource,
-                                Number(e.target.value)
-                              )
-                            }
-                          />
+                        <TextField
+                          size="small"
+                          type="number"
+                          fullWidth
+                          label={resource}
+                          inputProps={{ min: 0, max: 50 }}
+                          value={count}
+                          onChange={(e) =>
+                            handleResourceCardChange(
+                              resource,
+                              Number(e.target.value)
+                            )
+                          }
+                        />
                       </Grid>
                     )
                   )}

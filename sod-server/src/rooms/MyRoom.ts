@@ -21,7 +21,6 @@ import { HarborFactory } from "../algorithms/HarborFactory";
 import { cardGenerator } from "../utils/cardGenerator";
 
 export interface RoomOptions {
-  sessionId?: string; // for debug, allow setting the sessionId of the players
   debug?: boolean;
   numPlayers?: number;
   numSettlements?: number;
@@ -56,13 +55,15 @@ export class MyRoom extends Room<GameState> {
       defaultExchangeRate: 4,
       resourceCards: {},
       // Default initial player resource cards for debug mode
-      initialPlayerResourceCards: options.debug ? {
-        [CardVariants.Brick]: 5,
-        [CardVariants.Grain]: 5,
-        [CardVariants.Lumber]: 5,
-        [CardVariants.Ore]: 5,
-        [CardVariants.Wool]: 5,
-      } : undefined,
+      initialPlayerResourceCards: options.debug
+        ? {
+            [CardVariants.Brick]: 5,
+            [CardVariants.Grain]: 5,
+            [CardVariants.Lumber]: 5,
+            [CardVariants.Ore]: 5,
+            [CardVariants.Wool]: 5,
+          }
+        : undefined,
       ...options,
     };
 
@@ -202,14 +203,6 @@ export class MyRoom extends Room<GameState> {
     this.setState(state);
 
     if (this.options.debug) {
-      for (let i = 0; i < this.options.numPlayers; i++) {
-        this.addPlayer(
-          this.options.sessionId,
-          `Player ${i}`,
-          `debug-${i}`
-        );
-      }
-
       this.onMessage("startGame", (client, message) => {
         this.stateMachine.start();
         if (message?.autoPlace) {
@@ -263,10 +256,16 @@ export class MyRoom extends Room<GameState> {
     execute();
   }
 
-  async onJoin(client: Client, options: any) {
+  async onJoin(client: Client, options: RoomOptions) {
     const player = this.addPlayer(client.sessionId, options.name);
     console.log(client.sessionId, "joined!");
-    if (this.state.players.size === this.options.numPlayers) {
+
+    if (options.debug) {
+      for (let i = 1; i < this.options.numPlayers; i++) {
+        this.addPlayer(client.sessionId, `Player ${i}`, `debug-${i}`);
+      }
+    }
+    if (this.state.players.size >= this.options.numPlayers) {
       this.stateMachine.start();
     }
   }
@@ -300,18 +299,23 @@ export class MyRoom extends Room<GameState> {
 
     // Add initial player resource cards if specified
     if (this.options.initialPlayerResourceCards) {
-      Object.entries(this.options.initialPlayerResourceCards).forEach(([variant, count]) => {
-        if (Object.values(ResourceCardVariants).includes(variant) && count > 0) {
-          this.state.deck.push(
-            ...cardGenerator(
-              count,
-              CardTypes.Resource,
-              variant,
-              (card) => (card.owner = player.id)
-            )
-          );
+      Object.entries(this.options.initialPlayerResourceCards).forEach(
+        ([variant, count]) => {
+          if (
+            Object.values(ResourceCardVariants).includes(variant) &&
+            count > 0
+          ) {
+            this.state.deck.push(
+              ...cardGenerator(
+                count,
+                CardTypes.Resource,
+                variant,
+                (card) => (card.owner = player.id)
+              )
+            );
+          }
         }
-      });
+      );
     }
 
     this.state.players.set(player.id, player);
