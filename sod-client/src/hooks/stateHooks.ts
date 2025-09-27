@@ -249,6 +249,16 @@ export function useCanPlayDevelopmentCards() {
   return canPlay
 }
 
+export function useCanPlayKnightDevelopmentCard() {
+  const gameRoom = useRoom()
+  const [canPlayKnight, setCanPlayKnight] = useState<boolean>(gameRoom?.state.canPlayKnightDevelopmentCard || false)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('canPlayKnightDevelopmentCard', (value) => setCanPlayKnight(value))
+  }, [gameRoom])
+  return canPlayKnight
+}
+
 export function useCurrentRound() {
   const gameRoom = useRoom()
   const [round, setRound] = useState<number>(gameRoom?.state.round || 0)

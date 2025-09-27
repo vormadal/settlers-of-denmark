@@ -1,9 +1,10 @@
 import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useCurrentPlayer, useDeck, usePhase, useCanPlayDevelopmentCards, useCurrentRound } from "../../hooks/stateHooks";
+import { useCurrentPlayer, useDeck, usePhase, useCanPlayDevelopmentCards, useCanPlayKnightDevelopmentCard, useCurrentRound } from "../../hooks/stateHooks";
 import { Player } from "../../state/Player";
 import { Card } from "../../state/Card";
 import { CardTypes } from "../../utils/CardTypes";
+import { CardVariants } from "../../utils/CardVariants";
 import { useRoom } from "../../context/RoomContext";
 import { DevelopmentCard } from "./development/DevelopmentCard";
 
@@ -21,6 +22,7 @@ export function PlayerDevelopmentCards({ player }: Props) {
   const currentPlayer = useCurrentPlayer();
   const phase = usePhase();
   const canPlayDevelopmentCards = useCanPlayDevelopmentCards();
+  const canPlayKnightCard = useCanPlayKnightDevelopmentCard();
   const currentRound = useCurrentRound();
   const room = useRoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,17 +45,22 @@ export function PlayerDevelopmentCards({ player }: Props) {
   );
 
   // Check if player can play cards (is current player and in turn phase)
-  const canPlay = currentPlayer?.id === player.id && phase.key === "turn" && canPlayDevelopmentCards;
+  const isCurrentPlayer = currentPlayer?.id === player.id;
+  const canPlayNormally = isCurrentPlayer && phase.key === "turn" && canPlayDevelopmentCards;
+  const canPlayKnight = isCurrentPlayer && canPlayKnightCard;
 
   // Check if a variant can be played (has at least one card not bought this turn)
   const canPlayVariant = (variant: string): { canPlay: boolean; playableCard: Card | null } => {
-    if (!canPlay) {
+    const isKnight = variant === CardVariants.Knight;
+    const canPlayForVariant = isKnight ? (canPlayNormally || canPlayKnight) : canPlayNormally;
+
+    if (!canPlayForVariant) {
       return { canPlay: false, playableCard: null };
     }
-    
+
     const cards = developmentCards.filter((x) => x.variant === variant);
     const playableCard = cards.find(card => card.boughtInTurn !== currentRound);
-    
+
     return { canPlay: !!playableCard, playableCard: playableCard || null };
   };
 
