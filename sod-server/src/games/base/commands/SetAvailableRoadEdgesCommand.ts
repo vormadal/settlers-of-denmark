@@ -56,7 +56,7 @@ const updateAvailableRoadEdges = (state: GameState, player: Player) => {
         .map((x) => state.edges.find((edge) => edge.id === x.edge))
 
       const availableEdges = playerOccupiedEdges
-        .map((x) => x.getConnectedEdges(state))
+        .map((x) => x.getConnectedEdgesExcludingStructures(state, player.id))
         .flat()
         .filter((x) => !occupiedEdgeIds.includes(x.id))
 

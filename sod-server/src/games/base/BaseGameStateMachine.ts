@@ -367,6 +367,7 @@ export function createBaseGameStateMachine(
               actions: [
                 "placeRoad",
                 "updatePlayerLongestRoad",
+                "updatePlayerVictoryPoints",
                 "clearRoadBuildingPhase",
               ],
               guard: "roadBuildingComplete",
@@ -376,6 +377,7 @@ export function createBaseGameStateMachine(
               actions: [
                 "placeRoad",
                 "updatePlayerLongestRoad",
+                "updatePlayerVictoryPoints",
                 "increaseRoadBuildingPhase",
                 "setAvailableEdges",
               ],

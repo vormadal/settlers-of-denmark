@@ -4,6 +4,7 @@ import { useCurrentPlayer, useDeck, usePlayers, useHasLongestRoad, useHasLargest
 import { usePlayer } from '../context/PlayerContext'
 import { CartoonStatCard } from './CartoonStatCard'
 import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
+import { KnightIcon } from './icons/KnightIcon'
 
 interface Props {
   width: number
@@ -22,7 +23,7 @@ export function PlayerInfo({ width, player, color }: Props) {
   const largestArmyOwner = useHasLargestArmy()
   const hasLongestRoad = longestRoadOwner === player.id && player.longestRoadLength > 0
   const hasLargestArmy = largestArmyOwner === player.id && player.knightsPlayed > 0
-  const isMobile = width < 250 // Compact mode for smaller widths
+  const isMobile = width < 280 // Adjusted threshold for compact mode
   
   // Calculate victory points - show secret VPs only for current user
   const publicVP = player.victoryPoints ?? 0
@@ -44,13 +45,13 @@ export function PlayerInfo({ width, player, color }: Props) {
       component="section"
       sx={{
         width: `${width}px`,
-        minWidth: isMobile ? '180px' : '250px',
+        minWidth: isMobile ? '220px' : '300px', // Increased minimum widths
         background: isActivePlayer 
           ? `linear-gradient(145deg, ${color} 0%, ${color}DD 50%, #FFEB3B33 100%)`
           : `linear-gradient(145deg, ${color} 0%, ${color}CC 100%)`,
         borderRadius: isMobile ? '12px' : '16px',
-        // Slightly increased vertical padding so second row chips sit comfortably inside border
-        p: isMobile ? '8px 6px 10px' : '14px 12px 18px',
+        // Reduced vertical padding
+        p: isMobile ? '6px 8px 6px' : '10px 14px 10px', // Increased horizontal padding
         boxShadow: isActivePlayer
           ? '0 8px 25px rgba(255,235,59,0.4), 0 0 20px rgba(255,107,107,0.3)'
           : '0 6px 15px rgba(0,0,0,0.15)',
@@ -90,8 +91,8 @@ export function PlayerInfo({ width, player, color }: Props) {
       <Box
         sx={{
           display: 'flex',
-          gap: isMobile ? '2px' : '4px',
-          marginBottom: isMobile ? '4px' : '8px',
+          gap: isMobile ? '3px' : '5px', // Increased gap slightly
+          marginBottom: isMobile ? '2px' : '4px', // Reduced margin
           justifyContent: 'center',
           position: 'relative',
           zIndex: 1,
@@ -111,6 +112,13 @@ export function PlayerInfo({ width, player, color }: Props) {
           compact={isMobile}
         >
           <ResourceIcon size={isMobile ? 12 : 16} color="#D2691E" />
+        </CartoonStatCard>
+        <CartoonStatCard
+          count={player.knightsPlayed || 0}
+          label={hasLargestArmy ? 'Largest Army' : 'Knights Played'}
+          compact={isMobile}
+        >
+          <KnightIcon size={isMobile ? 12 : 16} color={hasLargestArmy ? '#9C27B0' : '#8B4513'} />
         </CartoonStatCard>
         <CartoonStatCard
           count={availableRoads}
@@ -143,7 +151,7 @@ export function PlayerInfo({ width, player, color }: Props) {
       </Box>
 
       {/* Player Name (Line 1) */}
-      <Box sx={{ textAlign: 'center', zIndex: 1, position: 'relative', mb: isMobile ? 0.5 : 1 }}>
+      <Box sx={{ textAlign: 'center', zIndex: 1, position: 'relative', mb: isMobile ? 0.25 : 0.5 }}> {/* Reduced margin */}
         <Typography
           variant={isMobile ? 'body2' : 'h6'}
           sx={{
@@ -151,10 +159,10 @@ export function PlayerInfo({ width, player, color }: Props) {
             textShadow: '0 2px 4px rgba(255,255,255,0.8)',
             fontWeight: 700,
             fontSize: isActivePlayer
-              ? (isMobile ? '0.9rem' : '1.15rem')
-              : (isMobile ? '0.75rem' : '1.0rem'),
+              ? (isMobile ? '0.85rem' : '1.1rem') // Slightly smaller font sizes
+              : (isMobile ? '0.7rem' : '0.95rem'),
             transition: 'font-size 0.3s ease',
-            lineHeight: 1.15,
+            lineHeight: 1.1, // Tighter line height
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis'
@@ -170,12 +178,12 @@ export function PlayerInfo({ width, player, color }: Props) {
         sx={{
           display: 'flex',
           justifyContent: 'center',
-          gap: isMobile ? '4px' : '8px',
+          gap: isMobile ? '3px' : '6px', // Slightly reduced gap
           flexWrap: 'nowrap',
           alignItems: 'center',
           zIndex: 1,
-          mb: isMobile ? 0.5 : 1,
-          minHeight: isMobile ? 26 : 32
+          mb: 0, // Removed bottom margin
+          minHeight: isMobile ? 24 : 28 // Reduced height
         }}
       >
         <Chip
@@ -184,6 +192,7 @@ export function PlayerInfo({ width, player, color }: Props) {
           color={isVpLeader ? 'warning' : 'default'}
           sx={{
             fontWeight: 700,
+            fontSize: isMobile ? '0.7rem' : '0.8rem', // Slightly smaller font
             bgcolor: isVpLeader ? 'warning.light' : hasSecretVP ? 'rgba(255,215,0,0.85)' : 'rgba(255,255,255,0.85)',
             color: 'rgba(0,0,0,0.8)',
             border: '1px solid rgba(0,0,0,0.12)',
@@ -197,6 +206,7 @@ export function PlayerInfo({ width, player, color }: Props) {
             color="warning"
             sx={{
               fontWeight: 700,
+              fontSize: isMobile ? '0.7rem' : '0.8rem', // Slightly smaller font
               bgcolor: '#FF9800',
               color: '#212121',
               border: '1px solid rgba(0,0,0,0.15)',
@@ -211,6 +221,7 @@ export function PlayerInfo({ width, player, color }: Props) {
             color="secondary"
             sx={{
               fontWeight: 700,
+              fontSize: isMobile ? '0.7rem' : '0.8rem', // Slightly smaller font
               bgcolor: '#9C27B0',
               color: '#FAFAFA',
               border: '1px solid rgba(0,0,0,0.15)',
