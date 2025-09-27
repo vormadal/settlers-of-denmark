@@ -13,4 +13,4 @@ export { roadBuildingComplete } from './roadBuildingComplete';
 export { isDieCastSeven } from './isDieCastSeven';
 export { noPlayersTooRich } from './noPlayersTooRich';
 export { isPlayerTooRich } from './isPlayerTooRich';
-
+export { hasDiceBeenRolled } from './hasDiceBeenRolled';

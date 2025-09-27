@@ -23,6 +23,7 @@ export class GameState extends Schema {
   @type('string') currentDevelopmentCardId?: string;
 
   @type([HexProduction]) hexProductions = new ArraySchema<HexProduction>()
+  @type('boolean') hasDiceBeenRolled: boolean = false
   @type('number') round = 1
   @type('number') victoryPointsToWin: number = 10
   @type('boolean') isGameEnded: boolean = false
@@ -36,6 +37,7 @@ export class GameState extends Schema {
   @type('string') robberHex: string = ''
   @type('boolean') canBuyDevelopmentCards: boolean = false
   @type('boolean') canPlayDevelopmentCards: boolean = false
+  @type('boolean') canPlayKnightDevelopmentCard: boolean = false
   @type('string') hasLongestRoad: string = ''
   @type('string') hasLargestArmy: string = ''
 

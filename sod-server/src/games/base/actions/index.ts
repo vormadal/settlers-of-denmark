@@ -47,3 +47,6 @@ export * from "./setAvailablePlayersForDiscarding";
 export * from "./discardResources";
 export * from "./removePlayerFromSomethingList";
 export * from "./clearCurrentDevelopmentCardId";
+export * from "./setCanPlayKnightDevelopmentCards";
+export * from "./clearCanPlayKnightDevelopmentCards";
+export * from "./clearHasDiceBeenRolled";
