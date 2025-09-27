@@ -10,3 +10,7 @@ export { isMonopolyPlayed } from './isMonopolyPlayed';
 export { isRoadBuildingPlayed } from './isRoadBuildingPlayed';
 export { isYearOfPlentyPlayed } from './isYearOfPlentyPlayed';
 export { roadBuildingComplete } from './roadBuildingComplete';
+export { isDieCastSeven } from './isDieCastSeven';
+export { noPlayersTooRich } from './noPlayersTooRich';
+export { isPlayerTooRich } from './isPlayerTooRich';
+

@@ -254,15 +254,6 @@ export function createBaseGameStateMachine(
             target: "playingDevelopmentCard",
             guard: "isPlayerTurn",
           },
-          BUY_DEVELOPMENT_CARD: {
-            target: "checkingEnd",
-            actions: ["buyDevelopmentCard", "updatePlayerVictoryPoints"],
-            guard: "isPlayerTurn",
-          },
-          PLAY_DEVELOPMENT_CARD: {
-            target: "playingDevelopmentCard",
-            guard: "isPlayerTurn",
-          },
           BANK_TRADE: {
             target: "turn",
             // forces the exit and entry transitions on 'turn' state to be rerun
