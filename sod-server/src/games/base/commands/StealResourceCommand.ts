@@ -1,5 +1,6 @@
 import { Command } from "@colyseus/command";
 import { MyRoom } from "../../../rooms/MyRoom";
+import { CardTypes } from "../../../rooms/schema/Card";
 
 interface Payload {
   playerId: string;
@@ -17,7 +18,7 @@ export class StealResourceCommand extends Command<MyRoom, Payload> {
       return;
     }
 
-    const cards = state.deck.filter((card) => card.owner === victim.id);
+    const cards = state.deck.filter((card) => card.owner === victim.id && card.type === CardTypes.Resource);
     if (cards.length === 0) {
       console.warn('StealResourceCommand: Victim has no resources to steal');
       return;

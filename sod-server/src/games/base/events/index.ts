@@ -13,3 +13,4 @@ export { MoveRobberEvent } from './MoveRobberEvent';
 export { StealResourceEvent } from './StealResource';
 export { SelectMonopolyResourceEvent } from './SelectMonopolyResourceEvent';
 export { SelectYearOfPlentyResources } from './SelectYearOfPlentyResources';
+export { DiscardResourcesEvent } from './DiscardResourcesEvent';

@@ -92,6 +92,18 @@ export function useHasLongestRoad() {
   return playerId
 }
 
+export function useHasLargestArmy() {
+  const gameRoom = useRoom()
+  const [playerId, setPlayerId] = useState<string | null>(gameRoom?.state.hasLargestArmy || null)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('hasLargestArmy', (value) => {
+      setPlayerId(value || null)
+    })
+  }, [gameRoom])
+  return playerId
+}
+
 export function usePhase() {
   const gameRoom = useRoom()
   const [phase, setPhase] = useState<{ key: string; label: string }>({ key: '', label: '' })
@@ -109,7 +121,8 @@ export function usePhase() {
           moveRobber: `${state.currentPlayer} is moving the robber`,
           stealingResource: `${state.currentPlayer} is stealing a resource`,
           playingMonopoly: `${state.currentPlayer} is selecting monopoly resource`,
-          placingRoadBuilding: `${state.currentPlayer} is placing Road Building road ${state.roadBuildingDevelopmentCardPhase + 1}/2`
+          placingRoadBuilding: `${state.currentPlayer} is placing Road Building road ${state.roadBuildingDevelopmentCardPhase + 1}/2`,
+          discardingCards: `Players are discarding cards (7 rolled)`
         }[value] || value
 
       setPhase({ key: value, label })

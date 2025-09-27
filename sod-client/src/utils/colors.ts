@@ -1,6 +1,6 @@
 export const colors: { [key: string]: string } = {
   // tiles
-  Dessert: '#d9bf65',
+  Desert: '#d9bf65',
   Forest: '#008000',
   Mountains: '#708090',
   Pastures: '#adff2f',

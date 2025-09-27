@@ -8,21 +8,33 @@ import { WaitingSplashScreen } from './components/WaitingSplashScreen'
 import { StealResourceModal } from './components/StealResourceModal'
 import { MonopolySelectionModal } from './components/MonopolySelectionModal'
 import { YearOfPlentyModal } from './components/YearOfPlentyModal'
-import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom } from './hooks/stateHooks'
+import { DiscardCardsModal } from './components/DiscardCardsModal'
+import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer } from './hooks/stateHooks'
+import { usePlayer } from './context/PlayerContext'
 import { getUniqueColor } from './utils/colors'
 
 export function BaseGame() {
   const players = usePlayers()
+  const currentPlayer = useCurrentPlayer() // The player whose turn it is
+  const player = usePlayer() // The current user's player
   const [width, setWidth] = useState(window.innerWidth)
   const [height, setHeight] = useState(window.innerHeight)
   const isMobile = width < 768
   const gameEnded = useIsGameEnded()
   const [examiningBoard, setExaminingBoard] = useState(false)
   const phase = usePhase()
-  const availablePlayersToStealFrom = useAvailablePlayersToSomethingFrom()
-  const showStealModal = phase.key === 'stealingResource'
-  const showMonopolyModal = phase.key === 'playingMonopoly'
-  const showYearOfPlentyModal = phase.key === 'playingYearOfPlenty'
+  const eligiblePlayersForRobberActions = useAvailablePlayersToSomethingFrom()
+  
+  // Only show modals if the current user is the player whose turn it is
+  const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id)
+  
+  const showStealModal = Boolean(phase.key === 'stealingResource' && isCurrentPlayerTurn)
+  const showMonopolyModal = Boolean(phase.key === 'playingMonopoly' && isCurrentPlayerTurn)
+  const showYearOfPlentyModal = Boolean(phase.key === 'playingYearOfPlenty' && isCurrentPlayerTurn)
+  const showDiscardModal = Boolean(
+    phase.key === 'discardingResources' &&
+    eligiblePlayersForRobberActions.some(p => p.id === player?.id)
+  )
 
   useEffect(() => {
     const handleResize = () => {
@@ -142,7 +154,7 @@ export function BaseGame() {
       <StealResourceModal
         open={showStealModal}
         onClose={() => {}} // Modal should only close when a player is selected
-        eligiblePlayers={availablePlayersToStealFrom}
+        eligiblePlayers={eligiblePlayersForRobberActions}
       />
 
       {/* Monopoly Selection Modal */}
@@ -155,6 +167,13 @@ export function BaseGame() {
       <YearOfPlentyModal
         open={showYearOfPlentyModal}
         onClose={() => {}} // Modal should only close when resources are selected
+      />
+
+      {/* Discard Cards Modal */}
+      <DiscardCardsModal
+        open={showDiscardModal}
+        onClose={() => {}} // Modal should only close when cards are discarded
+        eligiblePlayers={eligiblePlayersForRobberActions}
       />
     </Box>
   )

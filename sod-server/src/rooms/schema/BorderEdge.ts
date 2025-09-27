@@ -1,27 +1,63 @@
-import { Schema, type } from '@colyseus/schema'
-import { GameState } from './GameState'
-import { Point } from './Point'
+import { Schema, type } from "@colyseus/schema";
+import { GameState } from "./GameState";
+import { Point } from "./Point";
 
 export class BorderEdge extends Schema {
-  @type(Point) pointA: Point
-  @type(Point) pointB: Point
-  @type('string') id: string
+  @type(Point) pointA: Point;
+  @type(Point) pointB: Point;
+  @type("string") id: string;
 
   getIntersections(state: GameState) {
     return state.intersections.filter(
-      (intersection) => intersection.position.id === this.pointA.id || intersection.position.id === this.pointB.id
-    )
+      (intersection) =>
+        intersection.position.id === this.pointA.id ||
+        intersection.position.id === this.pointB.id
+    );
   }
 
-  getConnectedEdges(state: GameState) {
-    const myPoints = [this.pointA.id, this.pointB.id]
-    return state.edges.filter((edge) => {
-      return (myPoints.includes(edge.pointA.id) || myPoints.includes(edge.pointB.id)) && edge.id !== this.id
-    })
+  getConnectedEdges(
+    state: GameState,
+    isPointABlocked: boolean = false,
+    isPointBBlocked: boolean = false
+  ) {
+    const availablePoints = [
+      ...(isPointABlocked ? [] : [this.pointA.id]),
+      ...(isPointBBlocked ? [] : [this.pointB.id]),
+    ];
+
+    return state.edges.filter(
+      (edge) =>
+        edge.id !== this.id &&
+        availablePoints.some((point) =>
+          [edge.pointA.id, edge.pointB.id].includes(point)
+        )
+    );
+  }
+
+  getConnectedEdgesExcludingStructures(state: GameState, playerId: string) {
+    const structurePointIds = state.structures
+      .filter(
+        (structure) => structure.owner !== playerId && structure.intersection
+      )
+      .map((structure) => structure.intersection);
+    const isPointABlocked = state.intersections.some((intersection) => {
+      return (
+        intersection.position.id === this.pointA.id &&
+        structurePointIds.includes(intersection.id)
+      );
+    });
+    const isPointBBlocked = state.intersections.some((intersection) => {
+      return (
+        intersection.position.id === this.pointB.id &&
+        structurePointIds.includes(intersection.id)
+      );
+    });
+
+    return this.getConnectedEdges(state, isPointABlocked, isPointBBlocked);
   }
 
   getAdjacentHexes(state: GameState) {
-    return state.hexes.filter((hex) => hex.edges.includes(this.id))
+    return state.hexes.filter((hex) => hex.edges.includes(this.id));
   }
 
   getAllPoints(state: GameState) {

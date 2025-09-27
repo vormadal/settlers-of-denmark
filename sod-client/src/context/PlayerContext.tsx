@@ -17,7 +17,7 @@ export function PlayerContextProvider({ children, override }: Props) {
   const players = usePlayers();
   const room = useRoom();
   const [player, setPlayer] = useState<Player | undefined>(
-    players.find((x) => x.id === room.sessionId)
+    players.find((x) => x.sessionId === room.sessionId)
   );
 
   useEffect(() => {

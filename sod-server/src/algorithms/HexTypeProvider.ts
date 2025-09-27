@@ -20,7 +20,7 @@ export class RandomHexTypeProvider implements HexTypeProvider {
 export class PercentageHexTypeProvider implements HexTypeProvider {
   static default() {
     return new PercentageHexTypeProvider({
-      [HexTypes.Dessert]: (1 / 19) * 100,
+      [HexTypes.Desert]: (1 / 19) * 100,
       [HexTypes.Forest]: (4 / 19) * 100,
       [HexTypes.Fields]: (4 / 19) * 100,
       [HexTypes.Pastures]: (4 / 19) * 100,
@@ -63,7 +63,7 @@ export class PercentageHexTypeProvider implements HexTypeProvider {
 
     for (const hex of gameState.hexes) {
       const type = availableHexes[index++ % availableHexes.length]
-      hex.type = type ?? HexTypes.Dessert
+      hex.type = type ?? HexTypes.Desert
     }
   }
 }

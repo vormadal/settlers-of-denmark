@@ -97,7 +97,7 @@ export default function ActionMenu() {
           justifyContent: 'flex-end'
         }}>
           {/* Phase indicator */}
-          {(phase.key === 'moveRobber' || phase.key === 'stealingResource' || phase.key === 'playingKnight' || phase.key === 'playingMonopoly' || phase.key === 'placingRoadBuilding' || phase.key === 'playingYearOfPlenty') && (
+          {(phase.key === 'moveRobber' || phase.key === 'stealingResource' || phase.key === 'playingKnight' || phase.key === 'playingMonopoly' || phase.key === 'placingRoadBuilding' || phase.key === 'playingYearOfPlenty' || phase.key === 'discardingCards') && (
             <Box sx={{
               backgroundColor: 'rgba(244, 67, 54, 0.1)',
               border: '2px solid rgba(244, 67, 54, 0.3)',
@@ -117,6 +117,7 @@ export default function ActionMenu() {
               {phase.key === 'playingMonopoly' && '🏛️ Choose Resource'}
               {phase.key === 'placingRoadBuilding' && '🛤️ Road Building'}
               {phase.key === 'playingYearOfPlenty' && '🌟 Year of Plenty'}
+              {phase.key === 'discardingCards' && '🎲 Discard Cards'}
             </Box>
           )}
       

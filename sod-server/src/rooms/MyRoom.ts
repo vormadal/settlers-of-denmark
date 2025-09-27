@@ -133,37 +133,39 @@ export class MyRoom extends Room<GameState> {
     // new DebugNumberTokenProvider().assign(state)
     new DefaultNumberTokenProvider().assign(state);
     new HarborFactory().createHarbors(state);
+    state.robberHex = state.hexes.find((x) => x.type === HexTypes.Desert).id;
+
 
     this.diceCup = new BaseGameDiceCup();
 
     this.diceCup.init(state);
     state.deck.push(
       ...cardGenerator(
-        this.options.resourceCards[CardVariants.Brick] || 19,
+        this.options.resourceCards?.[CardVariants.Brick] ?? 19,
         CardTypes.Resource,
         CardVariants.Brick,
         (card) => card
       ),
       ...cardGenerator(
-        this.options.resourceCards[CardVariants.Grain] || 19,
+        this.options.resourceCards?.[CardVariants.Grain] ?? 19,
         CardTypes.Resource,
         CardVariants.Grain,
         (card) => card
       ),
       ...cardGenerator(
-        this.options.resourceCards[CardVariants.Lumber] || 19,
+        this.options.resourceCards?.[CardVariants.Lumber] ?? 19,
         CardTypes.Resource,
         CardVariants.Lumber,
         (card) => card
       ),
       ...cardGenerator(
-        this.options.resourceCards[CardVariants.Ore] || 19,
+        this.options.resourceCards?.[CardVariants.Ore] ?? 19,
         CardTypes.Resource,
         CardVariants.Ore,
         (card) => card
       ),
       ...cardGenerator(
-        this.options.resourceCards[CardVariants.Wool] || 19,
+        this.options.resourceCards?.[CardVariants.Wool] ?? 19,
         CardTypes.Resource,
         CardVariants.Wool,
         (card) => card
