@@ -62,7 +62,7 @@ export class MyRoom extends Room<GameState> {
             [CardVariants.Ore]: 5,
             [CardVariants.Wool]: 5,
           }
-        : {},
+        : undefined,
       ...options,
     };
 
