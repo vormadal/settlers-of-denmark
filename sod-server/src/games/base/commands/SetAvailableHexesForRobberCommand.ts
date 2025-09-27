@@ -5,7 +5,7 @@ import { ArraySchema } from '@colyseus/schema';
 
 export class SetAvailableHexesForRobberCommand extends Command<MyRoom> {
   execute() {
-    const hexes = this.state.hexes.filter(h => h.id !== this.state.robberHex && h.type !== HexTypes.Dessert);
+    const hexes = this.state.hexes.filter(h => h.id !== this.state.robberHex && h.type !== HexTypes.Desert);
     this.state.availableHexes = new ArraySchema<string>(...hexes.map(h => h.id));
   }
 }

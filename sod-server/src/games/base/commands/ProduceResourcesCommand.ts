@@ -12,7 +12,7 @@ export class ProduceResourcesCommand extends Command<MyRoom> {
       return;
     }
 
-    const hexes = this.state.hexes.filter((x) => x.value === diceRoll);
+    const hexes = this.state.hexes.filter((x) => x.value === diceRoll && x.id !== this.state.robberHex);
 
     const currentPlayer = this.state.players.get(this.state.currentPlayer);
     const currentPlayerIndex = this.state.playerList.indexOf(currentPlayer);

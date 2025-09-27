@@ -4,7 +4,7 @@ import { GameState } from './GameState'
 
 export const HexTypes = {
   // base game
-  Dessert: 'Dessert',
+  Desert: 'Desert',
   Forest: 'Forest',
   Mountains: 'Mountains',
   Pastures: 'Pastures',

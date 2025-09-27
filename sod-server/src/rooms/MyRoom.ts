@@ -131,6 +131,8 @@ export class MyRoom extends Room<GameState> {
     // new DebugNumberTokenProvider().assign(state)
     new DefaultNumberTokenProvider().assign(state);
     new HarborFactory().createHarbors(state);
+    state.robberHex = state.hexes.find((x) => x.type === HexTypes.Desert).id;
+
 
     this.diceCup = new BaseGameDiceCup();
 

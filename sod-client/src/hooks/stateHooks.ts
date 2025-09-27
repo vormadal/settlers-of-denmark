@@ -92,6 +92,18 @@ export function useHasLongestRoad() {
   return playerId
 }
 
+export function useHasLargestArmy() {
+  const gameRoom = useRoom()
+  const [playerId, setPlayerId] = useState<string | null>(gameRoom?.state.hasLargestArmy || null)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('hasLargestArmy', (value) => {
+      setPlayerId(value || null)
+    })
+  }, [gameRoom])
+  return playerId
+}
+
 export function usePhase() {
   const gameRoom = useRoom()
   const [phase, setPhase] = useState<{ key: string; label: string }>({ key: '', label: '' })

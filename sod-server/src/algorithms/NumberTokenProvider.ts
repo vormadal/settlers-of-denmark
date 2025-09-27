@@ -30,7 +30,7 @@ export class BalancedNumberTokenProvider implements NumberTokenProvider {
   assign(gameState: GameState): void {
     let index = 0
     for (const hex of gameState.hexes) {
-      if (hex.type !== HexTypes.Dessert) {
+      if (hex.type !== HexTypes.Desert) {
         hex.value = this.values[index++ % this.values.length]
       }
     }
@@ -43,7 +43,7 @@ export class DefaultNumberTokenProvider implements NumberTokenProvider {
   assign(gameState: GameState): void {
     let index = 0
     for (const hex of gameState.hexes) {
-      if (hex.type !== HexTypes.Dessert) {
+      if (hex.type !== HexTypes.Desert) {
         hex.value = this.values[index % this.values.length]
         index++
       }

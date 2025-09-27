@@ -1,6 +1,6 @@
 import { Box, Typography, Chip } from '@mui/material'
 import { Player } from '../state/Player'
-import { useCurrentPlayer, useDeck, usePlayers, useHasLongestRoad } from '../hooks/stateHooks'
+import { useCurrentPlayer, useDeck, usePlayers, useHasLongestRoad, useHasLargestArmy } from '../hooks/stateHooks'
 import { usePlayer } from '../context/PlayerContext'
 import { CartoonStatCard } from './CartoonStatCard'
 import { DevelopmentIcon, ResourceIcon, RoadIcon, SettlementIcon, CityIcon } from './icons'
@@ -19,7 +19,9 @@ export function PlayerInfo({ width, player, color }: Props) {
   const isActivePlayer = currentPlayer?.id === player.id
   const isCurrentUser = currentUser?.id === player.id // Check if this is the current user's player
   const longestRoadOwner = useHasLongestRoad()
+  const largestArmyOwner = useHasLargestArmy()
   const hasLongestRoad = longestRoadOwner === player.id && player.longestRoadLength > 0
+  const hasLargestArmy = largestArmyOwner === player.id && player.knightsPlayed > 0
   const isMobile = width < 250 // Compact mode for smaller widths
   
   // Calculate victory points - show secret VPs only for current user
@@ -47,16 +49,20 @@ export function PlayerInfo({ width, player, color }: Props) {
           ? `linear-gradient(145deg, ${color} 0%, ${color}DD 50%, #FFEB3B33 100%)`
           : `linear-gradient(145deg, ${color} 0%, ${color}CC 100%)`,
         borderRadius: isMobile ? '12px' : '16px',
-        padding: isMobile ? '6px' : '12px',
+        // Slightly increased vertical padding so second row chips sit comfortably inside border
+        p: isMobile ? '8px 6px 10px' : '14px 12px 18px',
         boxShadow: isActivePlayer
           ? '0 8px 25px rgba(255,235,59,0.4), 0 0 20px rgba(255,107,107,0.3)'
           : '0 6px 15px rgba(0,0,0,0.15)',
         border: isActivePlayer ? `2px solid #FFB347` : `1px solid rgba(255,255,255,0.5)`,
         transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
         position: 'relative',
-        overflow: 'hidden',
+        overflow: 'hidden', // keep gradient mask effect
         animation: isActivePlayer ? 'subtle-pulse 3s ease-in-out infinite' : 'none',
         flexShrink: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -136,63 +142,82 @@ export function PlayerInfo({ width, player, color }: Props) {
         </CartoonStatCard>
       </Box>
 
-      {/* Player Name */}
+      {/* Player Name (Line 1) */}
+      <Box sx={{ textAlign: 'center', zIndex: 1, position: 'relative', mb: isMobile ? 0.5 : 1 }}>
+        <Typography
+          variant={isMobile ? 'body2' : 'h6'}
+          sx={{
+            color: 'rgba(0,0,0,0.85)',
+            textShadow: '0 2px 4px rgba(255,255,255,0.8)',
+            fontWeight: 700,
+            fontSize: isActivePlayer
+              ? (isMobile ? '0.9rem' : '1.15rem')
+              : (isMobile ? '0.75rem' : '1.0rem'),
+            transition: 'font-size 0.3s ease',
+            lineHeight: 1.15,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+          title={player.name}
+        >
+          {isVpLeader ? '👑 ' : ''}{player.name}{isVpLeader ? ' 👑' : ''}
+        </Typography>
+      </Box>
+
+      {/* VP & Badges Row (Line 2) */}
       <Box
         sx={{
-          textAlign: 'center',
-          position: 'relative',
+          display: 'flex',
+          justifyContent: 'center',
+          gap: isMobile ? '4px' : '8px',
+          flexWrap: 'nowrap',
+          alignItems: 'center',
           zIndex: 1,
+          mb: isMobile ? 0.5 : 1,
+          minHeight: isMobile ? 26 : 32
         }}
       >
-        <Box
+        <Chip
+          size={isMobile ? 'small' : 'medium'}
+          label={hasSecretVP ? `${displayVP} VP (${publicVP}+${secretVP}🔒)` : `${displayVP} VP`}
+          color={isVpLeader ? 'warning' : 'default'}
           sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: isMobile ? '6px' : '8px',
+            fontWeight: 700,
+            bgcolor: isVpLeader ? 'warning.light' : hasSecretVP ? 'rgba(255,215,0,0.85)' : 'rgba(255,255,255,0.85)',
+            color: 'rgba(0,0,0,0.8)',
+            border: '1px solid rgba(0,0,0,0.12)',
+            boxShadow: hasSecretVP ? '0 0 6px rgba(255,215,0,0.5)' : '0 1px 3px rgba(0,0,0,0.15)'
           }}
-        >
-          <Typography
-            variant={isMobile ? "body2" : "h6"}
-            sx={{
-              color: 'rgba(0,0,0,0.85)',
-              textShadow: '0 2px 4px rgba(255,255,255,0.8)',
-              fontWeight: 700,
-              fontSize: isActivePlayer 
-                ? (isMobile ? '0.875rem' : '1.1rem') 
-                : (isMobile ? '0.75rem' : '1rem'),
-              transition: 'font-size 0.3s ease',
-              lineHeight: 1.2,
-            }}
-          >
-            {isVpLeader ? '👑 ' : ''}{player.name}{isVpLeader ? ' 👑' : ''}
-          </Typography>
+        />
+        {hasLongestRoad && (
           <Chip
             size={isMobile ? 'small' : 'medium'}
-            label={hasSecretVP ? `${displayVP} VP (${publicVP}+${secretVP}🔒)` : `${displayVP} VP`}
-            color={isVpLeader ? 'warning' : 'default'}
+            label={`🚗 ${player.longestRoadLength}`}
+            color="warning"
             sx={{
               fontWeight: 700,
-              bgcolor: isVpLeader ? 'warning.light' : hasSecretVP ? 'rgba(255,215,0,0.8)' : 'rgba(255,255,255,0.8)',
-              color: 'rgba(0,0,0,0.8)',
-              border: '1px solid rgba(0,0,0,0.1)',
-              boxShadow: hasSecretVP ? '0 0 8px rgba(255,215,0,0.6)' : undefined
+              bgcolor: '#FF9800',
+              color: '#212121',
+              border: '1px solid rgba(0,0,0,0.15)',
+              boxShadow: '0 0 6px rgba(255,152,0,0.45)'
             }}
           />
-          {hasLongestRoad && (
-            <Chip
-              size={isMobile ? 'small' : 'medium'}
-              label={`🚗 ${player.longestRoadLength}`}
-              color="warning"
-              sx={{
-                fontWeight: 700,
-                bgcolor: '#FF9800',
-                color: '#212121',
-                border: '1px solid rgba(0,0,0,0.15)',
-                boxShadow: '0 0 8px rgba(255,152,0,0.6)'
-              }}
-            />
-          )}
-        </Box>
+        )}
+        {hasLargestArmy && (
+          <Chip
+            size={isMobile ? 'small' : 'medium'}
+            label={`⚔️ ${player.knightsPlayed}`}
+            color="secondary"
+            sx={{
+              fontWeight: 700,
+              bgcolor: '#9C27B0',
+              color: '#FAFAFA',
+              border: '1px solid rgba(0,0,0,0.15)',
+              boxShadow: '0 0 6px rgba(156,39,176,0.45)'
+            }}
+          />
+        )}
       </Box>
     </Box>
   )
