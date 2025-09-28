@@ -1,27 +1,32 @@
-import { CssBaseline, ThemeProvider } from '@mui/material'
-import { createHashRouter, RouterProvider } from 'react-router-dom'
-import './App.css'
-import { ColyseusProvider } from './context/ColyseusContext'
-import DebugPage from './pages/DebugPage'
-import GamePage from './pages/GamePage'
-import LobbyPage from './pages/LobbyPage'
-import theme from './theme'
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { createHashRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
+import { ColyseusProvider } from "./context/ColyseusContext";
+import DebugPage from "./pages/DebugPage";
+import GamePage from "./pages/GamePage";
+import LobbyPage from "./pages/LobbyPage";
+import theme from "./theme";
+import DebugAlgorithmPage from "./pages/DebugAlgorithmPage";
 
 const router = createHashRouter(
   [
     {
-      path: '/',
-      element: <LobbyPage />
+      path: "/",
+      element: <LobbyPage />,
     },
     {
-      path: 'game/:roomId',
+      path: "game/:roomId",
 
-      element: <GamePage />
+      element: <GamePage />,
     },
     {
-      path: 'debug',
-      element: <DebugPage />
-    }
+      path: "debug",
+      element: <DebugPage />,
+    },
+    {
+      path: "debug-algorithm",
+      element: <DebugAlgorithmPage />,
+    },
   ],
   {
     future: {
@@ -30,9 +35,9 @@ const router = createHashRouter(
       v7_normalizeFormMethod: true,
       v7_fetcherPersist: true,
       v7_relativeSplatPath: true,
-    }
+    },
   }
-)
+);
 
 function App() {
   return (
@@ -43,12 +48,12 @@ function App() {
         <RouterProvider
           router={router}
           future={{
-            v7_startTransition: true
+            v7_startTransition: true,
           }}
         />
       </ColyseusProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

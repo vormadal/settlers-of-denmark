@@ -125,6 +125,7 @@ export class MyRoom extends Room<GameState> {
       )
     );
     this.maxClients = this.options.numPlayers;
+    state.maxPlayers = this.options.numPlayers;
 
     const positions = new HexLayoutAlgorithm(3).createLayout();
     new HexFactory().createHexMap(state, positions);

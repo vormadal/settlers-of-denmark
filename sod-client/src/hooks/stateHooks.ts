@@ -80,6 +80,19 @@ export function usePlayers() {
   return players
 }
 
+export function useMaxPlayers() {
+  const gameRoom = useRoom()
+  const [maxPlayers, setMaxPlayers] = useState<number>(gameRoom?.state.maxPlayers || 2)
+  useEffect(() => {
+    if (!gameRoom) return
+
+    gameRoom.state.listen('maxPlayers', (value) => {
+      setMaxPlayers(value)
+    })
+  }, [gameRoom])
+  return maxPlayers
+}
+
 export function useHasLongestRoad() {
   const gameRoom = useRoom()
   const [playerId, setPlayerId] = useState<string | null>(gameRoom?.state.hasLongestRoad || null)

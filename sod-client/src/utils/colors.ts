@@ -1,31 +1,44 @@
 export const colors: { [key: string]: string } = {
   // tiles
-  Desert: '#d9bf65',
-  Forest: '#008000',
-  Mountains: '#708090',
-  Pastures: '#adff2f',
-  Hills: '#d2691e',
-  Fields: '#ffdf00',
+  Desert: "#d9bf65",
+  Forest: "#008000",
+  Mountains: "#708090",
+  Pastures: "#adff2f",
+  Hills: "#d2691e",
+  Fields: "#ffdf00",
   // resources
-  Lumber: '#008000',
-  Wool: '#adff2f',
-  Grain: '#ffdf00',
-  Ore: '#708090',
-  Brick: '#d2691e'
-}
+  Lumber: "#008000",
+  Wool: "#adff2f",
+  Grain: "#ffdf00",
+  Ore: "#708090",
+  Brick: "#d2691e",
+};
 
-export function getUniqueColor(n: number, brightness = 160) {
-  const rgb = [0, 0, 0]
+export function getUniqueColor(n: number, brightness = 120) {
+  return [
+    "#ff0000",
+    "#00ff00",
+    "#0000ff",
+    "#ffff00",
+    "#00ffff",
+    "#ff00ff",
+    "#ffffff",
+  ][n];
+
+  const rgb = [0, 0, 0];
   for (let i = 0; i < 24; i++) {
-    rgb[i % 3] <<= 1
-    rgb[i % 3] |= n & 0x01
-    n >>= 1
+    rgb[i % 3] <<= 1;
+    rgb[i % 3] |= n & 0x01;
+    n >>= 1;
   }
-  
+
   return (
-    '#' +
+    "#" +
     rgb
       .map((x) => (x + brightness > 255 ? 255 : x + brightness))
-      .reduce((a, c) => (c > 0x0f ? c.toString(16) : '0' + c.toString(16)) + a, '')
-  )
+      .reduce(
+        (a, c) => (c > 0x0f ? c.toString(16) : "0" + c.toString(16)) + a,
+        ""
+      )
+  );
 }

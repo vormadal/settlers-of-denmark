@@ -9,12 +9,13 @@ import { StealResourceModal } from './components/StealResourceModal'
 import { MonopolySelectionModal } from './components/MonopolySelectionModal'
 import { YearOfPlentyModal } from './components/YearOfPlentyModal'
 import { DiscardCardsModal } from './components/DiscardCardsModal'
-import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer } from './hooks/stateHooks'
+import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer, useMaxPlayers } from './hooks/stateHooks'
 import { usePlayer } from './context/PlayerContext'
 import { getUniqueColor } from './utils/colors'
 
 export function BaseGame() {
   const players = usePlayers()
+  const maxPlayers = useMaxPlayers()
   const currentPlayer = useCurrentPlayer() // The player whose turn it is
   const player = usePlayer() // The current user's player
   const [width, setWidth] = useState(window.innerWidth)
@@ -46,10 +47,10 @@ export function BaseGame() {
   }, [])
 
   // Show splash screen only while waiting for players to join
-  const shouldShowSplashScreen = players.length < 2
+  const shouldShowSplashScreen = players.length < maxPlayers
 
   if (shouldShowSplashScreen) {
-    return <WaitingSplashScreen maxPlayers={2} />
+    return <WaitingSplashScreen maxPlayers={maxPlayers} />
   }
 
   // Calculate dynamic heights based on mobile vs desktop

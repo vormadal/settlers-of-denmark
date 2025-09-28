@@ -7,6 +7,7 @@ import path from "path";
  * Import your Room files
  */
 import { MyRoom } from "./rooms/MyRoom";
+import { DebugAlgorithmRoom } from "./rooms/DebugAlgorithmRoom";
 
 export default config({
   initializeGameServer: (gameServer) => {
@@ -27,6 +28,7 @@ export default config({
     });
 
     gameServer.define("debug", MyRoom, { debug: true });
+    gameServer.define("debug-algorithm", DebugAlgorithmRoom);
   },
 
   initializeExpress: (app) => {
