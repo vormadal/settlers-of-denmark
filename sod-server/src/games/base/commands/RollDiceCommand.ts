@@ -13,5 +13,6 @@ export class RollDiceCommand extends Command<MyRoom> {
     for (let i = 0; i < this.state.dice.length; i++) {
       this.state.dice[i].value = this.diceValues[i]
     }
+    this.state.hasDiceBeenRolled = true;
   }
 }

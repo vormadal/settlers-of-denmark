@@ -51,6 +51,9 @@ import {
   discardResources,
   removePlayerFromSomethingList,
   clearCurrentDevelopmentCardId,
+  setCanPlayKnightDevelopmentCards,
+  clearCanPlayKnightDevelopmentCards,
+  clearHasDiceBeenRolled,
 } from "./actions";
 import { Events } from "./events";
 import {
@@ -66,6 +69,7 @@ import {
   isDieCastSeven,
   noPlayersTooRich,
   isPlayerTooRich,
+  hasDiceBeenRolled,
 } from "./guards";
 
 export type InputType = {
@@ -130,6 +134,9 @@ const machineConfig = setup({
     discardResources,
     removePlayerFromSomethingList,
     clearCurrentDevelopmentCardId,
+    setCanPlayKnightDevelopmentCards,
+    clearCanPlayKnightDevelopmentCards,
+    clearHasDiceBeenRolled,
   },
   guards: {
     initialRoundIsComplete: guard(initialRoundIsComplete, isPlayerTurn),
@@ -143,6 +150,7 @@ const machineConfig = setup({
     isDieCastSeven,
     noPlayersTooRich,
     isPlayerTooRich,
+    hasDiceBeenRolled,
   },
 });
 
@@ -190,10 +198,20 @@ export function createBaseGameStateMachine(
         },
       },
       rollingDice: {
+        entry: [
+          "setCanPlayKnightDevelopmentCards",
+        ],
+        exit: [
+          "clearCanPlayKnightDevelopmentCards",
+        ],
         on: {
           ROLL_DICE: {
             target: "isDieCastSeven",
             actions: ["rollDice", "produceResources"],
+            guard: "isPlayerTurn",
+          },
+          PLAY_DEVELOPMENT_CARD: {
+            target: "playingDevelopmentCard",
             guard: "isPlayerTurn",
           },
         },
@@ -216,7 +234,7 @@ export function createBaseGameStateMachine(
         on: {
           END_TURN: {
             target: "rollingDice",
-            actions: ["clearNumberOfDevelopmentCardsPlayed", "nextPlayer"],
+            actions: ["clearNumberOfDevelopmentCardsPlayed", "nextPlayer", "clearHasDiceBeenRolled"],
             guard: "isPlayerTurn",
           },
           PLACE_ROAD: {
@@ -351,11 +369,17 @@ export function createBaseGameStateMachine(
         exit: ["clearAvailablePlayersToSomethingFrom"],
         on: {
           STEAL_RESOURCE: {
-            target: "turn",
+            target: "hasDiceBeenRolled",
             actions: ["stealResource"],
             guard: "isPlayerTurn",
           },
         },
+      },
+      hasDiceBeenRolled:{
+        always: [
+          { guard: "hasDiceBeenRolled", target: "turn" },
+          { target: "rollingDice" },
+        ],
       },
       placingRoadBuilding: {
         entry: ["setAvailableEdges"],
