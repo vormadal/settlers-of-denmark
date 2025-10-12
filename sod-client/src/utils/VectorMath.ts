@@ -10,8 +10,8 @@ export function getLineRotation(pointA: Point, pointB: Point) {
   }
 
   const test = v.angleFrom(baseVector)
-  const degrees = (test * 180) / Math.PI
-  return degrees
+  const degrees = Math.round((test * 180) / Math.PI)
+  return degrees % 360
 }
 
 export function getCenter(pointA: Point, pointB: Point) {

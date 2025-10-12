@@ -1,30 +1,23 @@
 import { KonvaEventObject } from 'konva/lib/Node'
 import { useState } from 'react'
 import { Group, Line } from 'react-konva'
-import { usePlayer } from '../context/PlayerContext'
-import { useRoom } from '../context/RoomContext'
-import { useUpgradableSettlements, useCurrentPlayer } from '../hooks/stateHooks'
 import { Intersection } from '../state/Intersection'
 
 interface Props {
   intersection: Intersection
   color: string
+  isUpgradable?: boolean
+  onUpgrade?: (intersectionId: string) => void
 }
 
 const points = [10, 10, -10, 10, -10, -5, 0, -15, 10, -5]
-export function SettlementShape({ intersection, color = '#000000' }: Props) {
-  const room = useRoom()
+export function SettlementShape({ intersection, color = '#000000', isUpgradable = false, onUpgrade }: Props) {
   const [focus, setFocus] = useState(false)
-  const upgradableSettlements = useUpgradableSettlements()
-  const player = usePlayer()
-  const currentPlayer = useCurrentPlayer()
-  
-  const isUpgradable = upgradableSettlements.includes(intersection.id) && currentPlayer?.id === player?.id
 
   function handleUpgradeClick() {
-    room?.send('PLACE_CITY', {
-      intersectionId: intersection.id
-    })
+    if (onUpgrade) {
+      onUpgrade(intersection.id)
+    }
   }
 
   function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
