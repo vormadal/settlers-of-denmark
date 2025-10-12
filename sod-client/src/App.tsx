@@ -5,6 +5,7 @@ import { ColyseusProvider } from './context/ColyseusContext'
 import DebugPage from './pages/DebugPage'
 import GamePage from './pages/GamePage'
 import LobbyPage from './pages/LobbyPage'
+import { ComponentsPage } from './pages/ComponentsPage'
 import theme from './theme'
 
 const router = createHashRouter(
@@ -21,6 +22,10 @@ const router = createHashRouter(
     {
       path: 'debug',
       element: <DebugPage />
+    },
+    {
+      path: 'components',
+      element: <ComponentsPage />
     }
   ],
   {

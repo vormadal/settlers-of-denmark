@@ -16,7 +16,8 @@ import {
   useRobberHex, 
   useAvailableHexes, 
   usePhase,
-  useCurrentPlayer
+  useCurrentPlayer,
+  useUpgradableSettlements
 } from "./hooks/stateHooks";
 import { CityShape } from "./shapes/CityShape";
 import { HarborShape } from "./shapes/HarborShape";
@@ -41,6 +42,7 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const availableHexes = useAvailableHexes();
   const phase = usePhase();
   const room = useRoom();
+  const upgradableSettlements = useUpgradableSettlements();
 
   if (hexes.length === 0) return null;
 
@@ -94,6 +96,13 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
     }
   };
 
+  // Handle settlement upgrade to city
+  const handleUpgradeSettlement = (intersectionId: string) => {
+    room?.send('PLACE_CITY', {
+      intersectionId: intersectionId
+    });
+  };
+
   // Check if we're in robber movement phase AND it's the current user's turn
   const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id);
   const isRobberMoveable = phase.key === 'moveRobber' && isCurrentPlayerTurn;
@@ -137,15 +146,22 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
           <IntersectionShape key={x.id} intersection={x} />
         ))}
 
-        {settlements.map(({ settlement, player, color }) => (
-          <SettlementShape
-            key={settlement.id}
-            color={color}
-            intersection={
-              intersections.find((x) => x.id === settlement.intersection)!
-            }
-          />
-        ))}
+        {settlements.map(({ settlement, player: settlementPlayer, color }) => {
+          const intersection = intersections.find((x) => x.id === settlement.intersection)!;
+          const isUpgradable = upgradableSettlements.includes(settlement.intersection) && 
+                              isCurrentPlayerTurn && 
+                              settlementPlayer.id === player?.id;
+          
+          return (
+            <SettlementShape
+              key={settlement.id}
+              color={color}
+              intersection={intersection}
+              isUpgradable={isUpgradable}
+              onUpgrade={handleUpgradeSettlement}
+            />
+          );
+        })}
 
         {cities.map(({ settlement, player, color }) => (
           <CityShape
