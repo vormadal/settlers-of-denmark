@@ -22,6 +22,9 @@ import { Intersection } from "../state/Intersection";
 import { Point } from "../state/Point";
 import { SettlementShape } from "../shapes/SettlementShape";
 import { CityShape } from "../shapes/CityShape";
+import { HarborShape } from "../shapes/HarborShape";
+import { Harbor } from "../state/Harbor";
+import { CardNames } from "../utils/CardNames";
 
 const playerColors = [
   "#ff4444", // Red
@@ -98,6 +101,16 @@ const createEdge = (pointA: Point, pointB: Point) => {
   return edge;
 };
 
+// Helper to create Harbor instances
+const createHarbor = (edge: BorderEdge, ratio: number, cardTypes: string[]) => {
+  const harbor = new Harbor();
+  harbor.edge = edge;
+  harbor.ratio = ratio;
+  harbor.id = `harbor-${edge.id}`;
+  harbor.cardTypes = new ArraySchema<string>(...cardTypes);
+  return harbor;
+};
+
 export function ComponentsPage() {
   const [selectedColor, setSelectedColor] = useState(playerColors[0]);
   const [selectedTileType, setSelectedTileType] = useState(tileTypes[0]);
@@ -108,6 +121,11 @@ export function ComponentsPage() {
   const hex = createHex(center, selectedTileType);
   const roads = createHexRoads(center);
   const intersections = hexPoints.map(createIntersection);
+
+  // Create harbor examples on some edges
+  const harbors = roads.map(
+    (x) => createHarbor(x, 3, [CardNames.Lumber, CardNames.Wool]) // Lumber harbor
+  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -184,11 +202,23 @@ export function ComponentsPage() {
               Shape Preview
             </Typography>
 
-            <Stage width={800} height={600}>
+            <Stage
+              width={800}
+              height={600}
+              style={{ backgroundColor: "#2d77d2ff" }}
+            >
               <Layer>
                 {/* Hex with Roads - Game Board Scale */}
                 <Land tile={hex} />
 
+                {/* Harbors */}
+                {harbors.map((harbor) => (
+                  <HarborShape
+                    key={harbor.id}
+                    harbor={harbor}
+                    hexCenter={center}
+                  />
+                ))}
                 {/* Number Token */}
                 <NumberToken value={8} position={createPoint(400, 300)} />
 
