@@ -7,17 +7,18 @@ import { RoadShape } from "./shapes/RoadShape";
 import { RobberShape } from "./shapes/RobberShape";
 import { RobberPlacementIndicator } from "./shapes/RobberPlacementIndicator";
 import { getUniqueColor } from "./utils/colors";
-import { 
-  useEdges, 
-  useHarbors, 
-  useHexes, 
-  useIntersections, 
-  usePlayers, 
-  useRobberHex, 
-  useAvailableHexes, 
+import {
+  useEdges,
+  useHarbors,
+  useHexes,
+  useIntersections,
+  usePlayers,
+  useRobberHex,
+  useAvailableHexes,
   usePhase,
   useCurrentPlayer,
-  useUpgradableSettlements
+  useUpgradableSettlements,
+  useAvailableEdges,
 } from "./hooks/stateHooks";
 import { CityShape } from "./shapes/CityShape";
 import { HarborShape } from "./shapes/HarborShape";
@@ -43,6 +44,7 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const phase = usePhase();
   const room = useRoom();
   const upgradableSettlements = useUpgradableSettlements();
+  const availableEdges = useAvailableEdges();
 
   if (hexes.length === 0) return null;
 
@@ -91,21 +93,27 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
 
   // Handle robber movement
   const handleMoveRobber = (hexId: string) => {
-    if (phase.key === 'moveRobber' && availableHexes.includes(hexId) && isCurrentPlayerTurn) {
-      room?.send('MOVE_ROBBER', { hexId });
+    if (
+      phase.key === "moveRobber" &&
+      availableHexes.includes(hexId) &&
+      isCurrentPlayerTurn
+    ) {
+      room?.send("MOVE_ROBBER", { hexId });
     }
   };
 
   // Handle settlement upgrade to city
   const handleUpgradeSettlement = (intersectionId: string) => {
-    room?.send('PLACE_CITY', {
-      intersectionId: intersectionId
+    room?.send("PLACE_CITY", {
+      intersectionId: intersectionId,
     });
   };
 
   // Check if we're in robber movement phase AND it's the current user's turn
-  const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id);
-  const isRobberMoveable = phase.key === 'moveRobber' && isCurrentPlayerTurn;
+  const isCurrentPlayerTurn = Boolean(
+    player && currentPlayer && player.id === currentPlayer.id
+  );
+  const isRobberMoveable = phase.key === "moveRobber" && isCurrentPlayerTurn;
 
   return (
     <Stage
@@ -116,26 +124,24 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
     >
       <Layer scale={{ x: scale, y: scale }}>
         {hexes.map((x) => (
-          <Land 
-            key={x.id} 
-            tile={x}
-          />
+          <Land key={x.id} tile={x} />
         ))}
 
         {/* Robber placement indicators - only show when moving robber */}
-        {isRobberMoveable && availableHexes.map((hexId) => {
-          const hex = hexes.find(h => h.id === hexId);
-          return hex ? (
-            <RobberPlacementIndicator
-              key={`robber-indicator-${hexId}`}
-              hex={hex}
-              onClick={handleMoveRobber}
-            />
-          ) : null;
-        })}
+        {isRobberMoveable &&
+          availableHexes.map((hexId) => {
+            const hex = hexes.find((h) => h.id === hexId);
+            return hex ? (
+              <RobberPlacementIndicator
+                key={`robber-indicator-${hexId}`}
+                hex={hex}
+                onClick={handleMoveRobber}
+              />
+            ) : null;
+          })}
 
         {edges.map((x) => (
-          <EdgeShape key={x.id} edge={x} />
+          <EdgeShape show={availableEdges.includes(x.id)} key={x.id} edge={x} />
         ))}
 
         {harbors.map((h) => (
@@ -147,11 +153,14 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
         ))}
 
         {settlements.map(({ settlement, player: settlementPlayer, color }) => {
-          const intersection = intersections.find((x) => x.id === settlement.intersection)!;
-          const isUpgradable = upgradableSettlements.includes(settlement.intersection) && 
-                              isCurrentPlayerTurn && 
-                              settlementPlayer.id === player?.id;
-          
+          const intersection = intersections.find(
+            (x) => x.id === settlement.intersection
+          )!;
+          const isUpgradable =
+            upgradableSettlements.includes(settlement.intersection) &&
+            isCurrentPlayerTurn &&
+            settlementPlayer.id === player?.id;
+
           return (
             <SettlementShape
               key={settlement.id}
@@ -184,7 +193,7 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
         {/* Render the robber */}
         {robberHex && (
           <RobberShape
-            hex={hexes.find(h => h.id === robberHex)!}
+            hex={hexes.find((h) => h.id === robberHex)!}
             isMoveable={isRobberMoveable}
           />
         )}
