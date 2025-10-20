@@ -21,7 +21,7 @@ export class Intersection extends Schema {
 
   GetSurroundingHexes(state: GameState) {
     return state.hexes.filter((hex) => {
-      return hex.intersections.some((intersectionId) => intersectionId === this.id)
+      return hex.intersections.some((intersection) => intersection.id === this.id)
     })
   }
 }

@@ -1,16 +1,17 @@
-import { Group, Text, Rect, Line } from "react-konva";
+import { Group, Line, Rect, Text } from "react-konva";
+import { getCenter } from "../geometry/geometryUtils";
 import { Harbor } from "../state/Harbor";
-import { getCenter } from "../utils/VectorMath";
 import { Point } from "../state/Point";
 
 interface Props {
   harbor: Harbor;
-  hexCenter?: Point;
+  hexCenter: Point;
 }
 
 // Calculate outward normal direction from edge
-function getOutwardNormal(edge: any, hexCenter?: Point) {
-  const center = getCenter(edge.pointA, edge.pointB);
+function getOutwardNormal(edge: any, hexCenter: Point) {
+  const center = getCenter([edge.pointA, edge.pointB]);
+
   const dx = edge.pointB.x - edge.pointA.x;
   const dy = edge.pointB.y - edge.pointA.y;
 
@@ -46,7 +47,7 @@ function Pier({
   edgeCenter: Pick<Point, "x" | "y">;
 }) {
   // Calculate offset toward edge center to avoid overlap with neighboring harbors
-  const offsetFactor = 0.1; // Move 30% toward edge center
+  const offsetFactor = 0.1; // Move 10% toward edge center
   const offsetX = start.x + (edgeCenter.x - start.x) * offsetFactor;
   const offsetY = start.y + (edgeCenter.y - start.y) * offsetFactor;
 
@@ -147,6 +148,8 @@ export function HarborShape({ harbor, hexCenter }: Props) {
   const edge = harbor.edge;
   if (!edge?.pointA || !edge?.pointB) return null;
 
+
+
   const { nx, ny, center } = getOutwardNormal(edge, hexCenter);
   const boatX = center.x + nx * 40;
   const boatY = center.y + ny * 40;
@@ -156,15 +159,15 @@ export function HarborShape({ harbor, hexCenter }: Props) {
   const pierLength = 30;
 
   // Calculate slightly angled directions for piers to point toward each other
-  const rotationAngle = -20; // degrees
+  const rotationAngle = 20; // degrees
   const rotationRad = (rotationAngle * Math.PI) / 180;
-  
+
   // Left pier (from pointA) rotates clockwise toward center
   const leftCos = Math.cos(-rotationRad);
   const leftSin = Math.sin(-rotationRad);
   const leftDirX = nx * leftCos - ny * leftSin;
   const leftDirY = nx * leftSin + ny * leftCos;
-  
+
   // Right pier (from pointB) rotates counter-clockwise toward center
   const rightCos = Math.cos(rotationRad);
   const rightSin = Math.sin(rotationRad);
