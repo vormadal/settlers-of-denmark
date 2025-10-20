@@ -14,18 +14,7 @@ export const colors: { [key: string]: string } = {
   Brick: '#d2691e'
 }
 
-export function getUniqueColor(n: number, brightness = 160) {
-  const rgb = [0, 0, 0]
-  for (let i = 0; i < 24; i++) {
-    rgb[i % 3] <<= 1
-    rgb[i % 3] |= n & 0x01
-    n >>= 1
-  }
-  
-  return (
-    '#' +
-    rgb
-      .map((x) => (x + brightness > 255 ? 255 : x + brightness))
-      .reduce((a, c) => (c > 0x0f ? c.toString(16) : '0' + c.toString(16)) + a, '')
-  )
+const playerColors = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6']
+export function getUniqueColor(n: number) {
+  return playerColors[n % playerColors.length]
 }
