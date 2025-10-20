@@ -5,17 +5,22 @@ import { RoomNames } from './utils/RoomNames'
 
 export class ColyseusClient {
   client: Colyseus.Client
-  room: Room<GameState> | null
+
+  _room: Room<GameState> | null = null
+  get room() {
+    return this._room
+  }
+  set room(value: Room<GameState> | null) {
+    this._room = value
+    console.log('colyseus: room set:', { sessionId: value?.sessionId, id: value?.id, roomId: value?.roomId })
+  }
 
   isConnecting = false
 
-  static instance = new ColyseusClient()
-
-  private constructor() {
+  constructor() {
     this.client = new Colyseus.Client(
       process.env.NODE_ENV === 'production' ? `wss://${window.location.hostname}` : 'ws://localhost:2567'
     )
-    this.room = null
   }
 
   get reconnectionToken(): string | null {
@@ -48,9 +53,7 @@ export class ColyseusClient {
     this.isConnecting = true
 
     console.log('colyseus: joining room:', roomId)
-    if (!this.reconnectionToken) {
-      this.room = await this.reconnect()
-    }
+    this.room = await this.reconnect(roomId)
 
     if (!this.room) {
       this.room = await this.client.joinById<GameState>(roomId, { name })
@@ -63,8 +66,8 @@ export class ColyseusClient {
     return this.room
   }
 
-  private async reconnect() {
-    if (!this.reconnectionToken) return this.room
+  private async reconnect(roomId: string) {
+    if (!this.reconnectionToken || !this.reconnectionToken.includes(roomId)) return this.room
 
     try {
       this.room = await this.client.reconnect(this.reconnectionToken)
@@ -81,5 +84,3 @@ export class ColyseusClient {
     return this.client.getAvailableRooms<GameState>()
   }
 }
-
-export default ColyseusClient.instance
