@@ -103,6 +103,12 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
     })
   }
 
+  function placeRoad(edgeId: string) {
+    room?.send("PLACE_ROAD", {
+      edgeId: edgeId,
+    });
+  }
+
   // Check if we're in robber movement phase AND it's the current user's turn
   const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id)
   const isRobberMoveable = phase.key === 'moveRobber' && isCurrentPlayerTurn
@@ -140,6 +146,8 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
             show={availableEdges.includes(x.id)}
             key={x.id}
             edge={x}
+            onClick={() => placeRoad(x.id)}
+
           />
         ))}
 
