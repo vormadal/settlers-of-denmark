@@ -1,5 +1,5 @@
 import { Circle, Text } from 'react-konva'
-import { Point } from '../state/Point'
+import Point from '../geometry/Point'
 
 interface Props {
   value?: number

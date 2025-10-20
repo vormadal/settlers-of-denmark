@@ -1,5 +1,16 @@
 import { Vector } from 'ts-matrix'
-import { Point } from '../state/Point'
+import Point from './Point'
+
+export function getCenter(points: Point[]): Point {
+  const center: Point = { x: 0, y: 0 }
+  points.forEach((point) => {
+    center.x += point.x
+    center.y += point.y
+  })
+  center.x /= points.length
+  center.y /= points.length
+  return center
+}
 
 export function getLineRotation(pointA: Point, pointB: Point) {
   const v = new Vector([pointA.x - pointB.x, pointA.y - pointB.y])
@@ -12,11 +23,4 @@ export function getLineRotation(pointA: Point, pointB: Point) {
   const test = v.angleFrom(baseVector)
   const degrees = Math.round((test * 180) / Math.PI)
   return degrees % 360
-}
-
-export function getCenter(pointA: Point, pointB: Point) {
-  return {
-    x: (pointA.x + pointB.x) / 2,
-    y: (pointA.y + pointB.y) / 2
-  }
 }

@@ -1,6 +1,8 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema'
 import { Point } from './Point'
 import { GameState } from './GameState'
+import { BorderEdge } from './BorderEdge'
+import { Intersection } from './Intersection'
 
 export const HexTypes = {
   // base game
@@ -13,23 +15,25 @@ export const HexTypes = {
 }
 
 export class Hex extends Schema {
-  @type(Point) position: Point
-  @type('number') radius: number
   @type('string') id: string
   @type('string') type: string
-  @type(['string']) edges = new ArraySchema<string>()
-  @type(['string']) intersections = new ArraySchema<string>()
+  @type([Intersection]) intersections = new ArraySchema<Intersection>()
   @type('number') value?: number
 
-  getIntersections(state: GameState) {
-    return this.intersections.map((id) => state.intersections.find((x) => x.id === id))
+  getPosition() {
+    // Return the center position of the hex based on its intersections
+    const [sx, sy] = this.intersections.reduce(
+      ([x, y], intersection) => {
+        return [x + intersection.position.x, y + intersection.position.y]
+      },
+      [0, 0]
+    )
+    const center = new Point().assign({ x: sx / this.intersections.length, y: sy / this.intersections.length })
+    return center
   }
-
   getStructures(state: GameState) {
-    const intersections = this.getIntersections(state)
-    
     const structures = []
-    for (const intersection of intersections) {
+    for (const intersection of this.intersections) {
       if (intersection) {
         const structure = state.structures.find((s) => s.intersection === intersection.id)
         if (structure) {
@@ -37,7 +41,7 @@ export class Hex extends Schema {
         }
       }
     }
-    
+
     return structures
-  } 
+  }
 }

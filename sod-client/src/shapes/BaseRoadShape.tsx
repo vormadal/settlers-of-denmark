@@ -1,6 +1,6 @@
 import { Group, Line } from 'react-konva'
 import { BorderEdge } from '../state/BorderEdge'
-import { getCenter, getLineRotation } from '../utils/VectorMath'
+import { getCenter, getLineRotation } from '../geometry/geometryUtils'
 
 interface Props {
   edge: BorderEdge
@@ -45,10 +45,10 @@ function RoadLine({ stroke, roadWidth }: { stroke?: string; roadWidth: number })
   )
 }
 
-export function BaseRoadShape({ 
+export function BaseRoadShape({
   edge,
-  borderColor = '#654321', 
-  fillColor = '#000000', 
+  borderColor = '#654321',
+  fillColor = '#000000',
   roadWidth: customRoadWidth = roadWidth,
   opacity = 1,
   onClick,
@@ -57,7 +57,7 @@ export function BaseRoadShape({
   onMouseLeave,
   scale = 1
 }: Props) {
-  const center = getCenter(edge.pointA, edge.pointB);
+  const center = getCenter([edge.pointA, edge.pointB]);
   const rotation = getLineRotation(edge.pointA, edge.pointB);
 
   return (

@@ -50,12 +50,12 @@ const createPoint = (x: number, y: number) => {
   return point;
 };
 const hexPoints = [
-  createPoint(100, 0),
-  createPoint(50, 87),
-  createPoint(-50, 87),
-  createPoint(-100, 0),
-  createPoint(-50, -87),
   createPoint(50, -87),
+  createPoint(-50, -87),
+  createPoint(-100, 0),
+  createPoint(-50, 87),
+  createPoint(50, 87),
+  createPoint(100, 0),
 ];
 
 const getHexPoints = (point: Point) => {
@@ -80,8 +80,8 @@ const createHex = (center: Point, type: string) => {
   hex.id = "preview-hex";
   hex.type = type;
   hex.value = 8;
-  hex.position = center;
-  hex.radius = 100; // Arbitrary for preview
+  hex.intersections = new ArraySchema<Intersection>();
+  hex.intersections.push(...getHexPoints(center).map(createIntersection));
   return hex;
 };
 
@@ -107,7 +107,8 @@ const createHarbor = (edge: BorderEdge, ratio: number, cardTypes: string[]) => {
   harbor.edge = edge;
   harbor.ratio = ratio;
   harbor.id = `harbor-${edge.id}`;
-  harbor.cardTypes = new ArraySchema<string>(...cardTypes);
+  harbor.cardTypes = new ArraySchema<string>();
+  harbor.cardTypes.push(...cardTypes);
   return harbor;
 };
 
@@ -117,14 +118,14 @@ export function ComponentsPage() {
   const [showEdges, setShowEdges] = useState(true);
 
   const center = createPoint(400, 300);
-  const hexPoints = getHexPoints(center);
   const hex = createHex(center, selectedTileType);
+  const intersections = [...hex.intersections];
   const roads = createHexRoads(center);
-  const intersections = hexPoints.map(createIntersection);
+
 
   // Create harbor examples on some edges
-  const harbors = roads.map(
-    (x) => createHarbor(x, 3, [CardNames.Lumber, CardNames.Wool]) // Lumber harbor
+  const harbors = roads.slice(0, 1).map(
+    (x) => createHarbor(x, 3, [CardNames.Lumber]) // Lumber harbor
   );
 
   return (
@@ -209,7 +210,7 @@ export function ComponentsPage() {
             >
               <Layer>
                 {/* Hex with Roads - Game Board Scale */}
-                <Land tile={hex} />
+                <Land hex={hex} />
 
                 {/* Harbors */}
                 {harbors.map((harbor) => (
@@ -219,8 +220,6 @@ export function ComponentsPage() {
                     hexCenter={center}
                   />
                 ))}
-                {/* Number Token */}
-                <NumberToken value={8} position={createPoint(400, 300)} />
 
                 {/* Roads around the hex using exact game coordinates */}
                 {roads.slice(0, 3).map((road) => (
