@@ -2,7 +2,7 @@ import { Command } from '@colyseus/command'
 import { MyRoom } from '../../../rooms/MyRoom'
 import { CardVariants } from '../../../rooms/schema/Card';
 
-interface Payload { 
+export interface Payload { 
     playerId: string
     cardId: string
 }
