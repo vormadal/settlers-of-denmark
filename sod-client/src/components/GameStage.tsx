@@ -15,26 +15,28 @@ interface GameStageProps {
 }
 
 export function GameStage({ width: windowWidth, height: windowHeight, boardBounds, children }: GameStageProps) {
-  // Camera state for zoom and pan
-  const [stagePos, setStagePos] = useState({ x: 0, y: 0 })
-  const [stageScale, setStageScale] = useState(1)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const stageRef = useRef<any>(null)
-
   const { xMin, xMax, yMin, yMax } = boardBounds
-  const [cx, cy] = [(xMin + xMax) / 2, (yMin + yMax) / 2]
   const width = xMax - xMin
   const height = yMax - yMin
 
   const scaleWidth = windowWidth / width
   const scaleHeight = windowHeight / height
-  const initialScale = scaleHeight > scaleWidth ? scaleWidth : scaleHeight
+  const fitScale = Math.min(scaleWidth, scaleHeight)
+  // Scale down by 10% to add some padding around the board
+  const initialScale = fitScale * 0.9
+
+  // Camera state for zoom and pan
+  const [stagePos, setStagePos] = useState({ x: 0, y: 0 })
+  const [stageScale, setStageScale] = useState(initialScale)
+  const [isInitialized, setIsInitialized] = useState(false)
+  const stageRef = useRef<any>(null)
 
   // Initialize camera position and scale on first load
   if (!isInitialized) {
-    const initialOffsetX = -windowWidth / 2 + cx * initialScale
-    const initialOffsetY = -windowHeight / 2 + cy * initialScale
-    setStagePos({ x: -initialOffsetX, y: -initialOffsetY })
+    // Center the board in the window
+    const initialOffsetX = (windowWidth - width * initialScale) / 2 - xMin * initialScale
+    const initialOffsetY = (windowHeight - height * initialScale) / 2 - yMin * initialScale
+    setStagePos({ x: initialOffsetX, y: initialOffsetY })
     setStageScale(initialScale)
     setIsInitialized(true)
   }
@@ -56,7 +58,7 @@ export function GameStage({ width: windowWidth, height: windowHeight, boardBound
     const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy
     
     // Clamp scale between reasonable limits
-    const clampedScale = Math.max(0.1, Math.min(5, newScale))
+    const clampedScale = Math.max(0.5, Math.min(3, newScale))
     
     setStageScale(clampedScale)
     setStagePos({
