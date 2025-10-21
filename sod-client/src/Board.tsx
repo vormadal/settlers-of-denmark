@@ -176,6 +176,14 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
           />
         ))}
 
+        {roads.map(({ road, player, color }) => (
+          <RoadShape
+            key={road.id}
+            color={color}
+            edge={edges.find((x) => x.id === road.edge)!}
+          />
+        ))}
+        
         {settlements.map(({ settlement, player: settlementPlayer, color }) => {
           const intersection = intersections.find((x) => x.id === settlement.intersection)!
           const isUpgradable =
@@ -199,14 +207,6 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
             key={settlement.id}
             color={color}
             intersection={intersections.find((x) => x.id === settlement.intersection)!}
-          />
-        ))}
-
-        {roads.map(({ road, player, color }) => (
-          <RoadShape
-            key={road.id}
-            color={color}
-            edge={edges.find((x) => x.id === road.edge)!}
           />
         ))}
 

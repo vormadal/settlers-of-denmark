@@ -34,7 +34,8 @@ export function IntersectionShape({ intersection, show, onClick }: Props) {
   return (
     <BaseSettlementShape
       ref={shapeRef}
-      intersection={intersection}
+      x={intersection.position.x}
+      y={intersection.position.y}
       fillColor="#ffffff"
       borderColor="#000000"
       opacity={0.6}

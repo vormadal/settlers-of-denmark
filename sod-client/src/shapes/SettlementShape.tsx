@@ -43,10 +43,8 @@ export function SettlementShape({ intersection, color = '#000000', isUpgradable 
   }
 
   return (
-    <Group>
+    <Group ref={groupRef} x={intersection.position.x} y={intersection.position.y}>
       <BaseSettlementShape
-        ref={groupRef}
-        intersection={intersection}
         fillColor={color}
         borderColor="#000000"
         onClick={isUpgradable ? handleUpgradeClick : undefined}
@@ -55,10 +53,7 @@ export function SettlementShape({ intersection, color = '#000000', isUpgradable 
         onMouseLeave={isUpgradable ? handleMouseLeave : undefined}
       />
       {isUpgradable && (
-        <Group
-          x={intersection.position.x}
-          y={intersection.position.y}
-        >
+        <Group>
           <UpgradeArrow points={leftArrowPoints} />
           <UpgradeArrow points={centerArrowPoints} />
           <UpgradeArrow points={rightArrowPoints} />
