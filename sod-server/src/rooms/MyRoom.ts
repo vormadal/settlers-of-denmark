@@ -88,6 +88,7 @@ export class MyRoom extends Room<GameState> {
     new DefaultNumberTokenProvider().assign(state)
     new HarborFactory().createHarbors(state)
     state.robberHex = state.hexes.find((x) => x.type === HexTypes.Desert).id
+    state.maxPlayers = this.options.numPlayers
 
     this.diceCup = new BaseGameDiceCup()
 

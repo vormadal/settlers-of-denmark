@@ -334,3 +334,15 @@ export function useRoadBuildingPhase() {
   }, [gameRoom])
   return roadBuildingPhase
 }
+
+export function useMaxPlayers() {
+  const gameRoom = useRoom()
+  const [maxPlayers, setMaxPlayers] = useState<number>(gameRoom?.state.maxPlayers || 2)
+  useEffect(() => {
+    if (!gameRoom) return
+    gameRoom.state.listen('maxPlayers', (value) => {
+      setMaxPlayers(value)
+    })
+  }, [gameRoom])
+  return maxPlayers
+}
