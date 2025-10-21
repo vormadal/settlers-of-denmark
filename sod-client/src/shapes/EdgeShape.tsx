@@ -37,7 +37,7 @@ export function EdgeShape({ edge, show, onClick }: Props) {
       edge={edge}
       fillColor="#ffffff"
       borderColor="#000000"
-      opacity={0.6}
+      opacity={0.5}
       onClick={onClick}
       onTouchEnd={onClick}
       onMouseEnter={handleMouseEnter}

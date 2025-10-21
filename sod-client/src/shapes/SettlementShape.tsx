@@ -1,9 +1,9 @@
-import { KonvaEventObject } from 'konva/lib/Node'
 import { useRef, useState } from 'react'
 import { Group, Line } from 'react-konva'
 import { Group as GroupType } from 'konva/lib/Group'
 import { Intersection } from '../state/Intersection'
 import { usePulseAnimation } from '../utils/konvaAnimations'
+import { BaseSettlementShape } from './BaseSettlementShape'
 
 interface Props {
   intersection: Intersection
@@ -12,7 +12,6 @@ interface Props {
   onUpgrade?: (intersectionId: string) => void
 }
 
-const points = [10, 10, -10, 10, -10, -5, 0, -15, 10, -5]
 // Simple triangular arrow points like in the image
 const leftArrowPoints = [-6, -18, -12, -28, -18, -18]
 const centerArrowPoints = [-4, -20, 0, -30, 4, -20]
@@ -35,7 +34,7 @@ export function SettlementShape({ intersection, color = '#000000', isUpgradable 
     }
   }
 
-  function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
+  function handleMouseEnter() {
     setFocus(true)
   }
 
@@ -43,34 +42,27 @@ export function SettlementShape({ intersection, color = '#000000', isUpgradable 
     setFocus(false)
   }
 
-
-
   return (
-    <Group ref={groupRef}
-      x={intersection.position.x}
-      y={intersection.position.y}
-      onClick={isUpgradable ? handleUpgradeClick : undefined}
-      onTouchEnd={isUpgradable ? handleUpgradeClick : undefined}
-      onMouseEnter={isUpgradable ? handleMouseEnter : undefined}
-      onMouseLeave={isUpgradable ? handleMouseLeave : undefined}>
-      <Line
-        points={points}
-        closed={true}
-        shadowEnabled={true}
-        shadowColor="#000000"
-        shadowOffsetX={2}
-        shadowBlur={5}
-        shadowOpacity={0.6}
-        strokeWidth={1.1}
-        stroke={'#000000'}
-        fill={color}
+    <Group>
+      <BaseSettlementShape
+        ref={groupRef}
+        intersection={intersection}
+        fillColor={color}
+        borderColor="#000000"
+        onClick={isUpgradable ? handleUpgradeClick : undefined}
+        onTouchEnd={isUpgradable ? handleUpgradeClick : undefined}
+        onMouseEnter={isUpgradable ? handleMouseEnter : undefined}
+        onMouseLeave={isUpgradable ? handleMouseLeave : undefined}
       />
       {isUpgradable && (
-        <>
+        <Group
+          x={intersection.position.x}
+          y={intersection.position.y}
+        >
           <UpgradeArrow points={leftArrowPoints} />
           <UpgradeArrow points={centerArrowPoints} />
           <UpgradeArrow points={rightArrowPoints} />
-        </>
+        </Group>
       )}
     </Group>
   )

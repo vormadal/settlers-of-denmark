@@ -18,7 +18,8 @@ import {
   usePhase,
   useCurrentPlayer,
   useUpgradableSettlements,
-  useAvailableEdges
+  useAvailableEdges,
+  useAvailableSettlementIntersections
 } from './hooks/stateHooks'
 import { CityShape } from './shapes/CityShape'
 import { HarborShape } from './shapes/HarborShape'
@@ -45,6 +46,7 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
   const room = useRoom()
   const upgradableSettlements = useUpgradableSettlements()
   const availableEdges = useAvailableEdges()
+  const availableIntersections = useAvailableSettlementIntersections()
 
   if (hexes.length === 0) return null
 
@@ -109,6 +111,12 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
     });
   }
 
+  function placeSettlement(intersectionId: string) {
+    room?.send('PLACE_SETTLEMENT', {
+      intersectionId: intersectionId
+    })
+  }
+
   // Check if we're in robber movement phase AND it's the current user's turn
   const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id)
   const isRobberMoveable = phase.key === 'moveRobber' && isCurrentPlayerTurn
@@ -163,6 +171,8 @@ export function Board({ width: windowWidth, height: windowHeight }: Props) {
           <IntersectionShape
             key={x.id}
             intersection={x}
+            show={availableIntersections.includes(x.id) && isCurrentPlayerTurn}
+            onClick={() => placeSettlement(x.id)}
           />
         ))}
 
