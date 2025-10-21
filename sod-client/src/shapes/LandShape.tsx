@@ -1,8 +1,8 @@
-import { Group, Line, RegularPolygon } from 'react-konva'
+import { Group, Line } from 'react-konva'
+import { getCenter } from '../geometry/geometryUtils'
 import { Hex } from '../state/Hex'
 import { colors } from '../utils/colors'
 import NumberToken from './NumberToken'
-import { getCenter } from '../geometry/geometryUtils'
 
 interface Type {
   hex: Hex

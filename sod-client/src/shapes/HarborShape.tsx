@@ -1,7 +1,8 @@
-import { Group, Line, Rect, Text } from "react-konva";
+import { Group, Line, Rect, Text, Circle, Arc } from "react-konva";
 import { getCenter } from "../geometry/geometryUtils";
 import { Harbor } from "../state/Harbor";
 import { Point } from "../state/Point";
+import { colors } from "../utils/colors";
 
 interface Props {
   harbor: Harbor;
@@ -12,22 +13,13 @@ interface Props {
 function getOutwardNormal(edge: any, hexCenter: Point) {
   const center = getCenter([edge.pointA, edge.pointB]);
 
-  const dx = edge.pointB.x - edge.pointA.x;
-  const dy = edge.pointB.y - edge.pointA.y;
+  // Direction is simply from hex center through edge center
+  const dx = center.x - hexCenter.x;
+  const dy = center.y - hexCenter.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
 
-  let nx = -dy / Math.sqrt(dx * dx + dy * dy);
-  let ny = dx / Math.sqrt(dx * dx + dy * dy);
-
-  // Ensure normal points away from hex if hex center is provided
-  if (hexCenter) {
-    const hexToCenterX = center.x - hexCenter.x;
-    const hexToCenterY = center.y - hexCenter.y;
-    const dot = nx * hexToCenterX + ny * hexToCenterY;
-    if (dot < 0) {
-      nx = -nx;
-      ny = -ny;
-    }
-  }
+  const nx = dx / length;
+  const ny = dy / length;
 
   return { nx, ny, center };
 }
@@ -71,18 +63,75 @@ function Pier({
   );
 }
 
+// Harbor circle background component
+function HarborCircle({ cardType }: { cardType: string }) {
+  const radius = 25;
+
+  if (cardType === "Any") {
+    // Create sections for all resource types when it's an "Any" harbor
+    const resourceTypes = ["Grain", "Wool", "Lumber", "Ore", "Brick"];
+    const sectionAngle = 360 / resourceTypes.length;
+
+    return (
+      <Group>
+        {/* Base circle */}
+        <Circle
+          x={0}
+          y={0}
+          radius={radius}
+          fill="#ffffff"
+          stroke="#333333"
+          strokeWidth={1}
+        />
+        {/* Colored sections */}
+        {resourceTypes.map((type, index) => (
+          <Arc
+            key={type}
+            x={0}
+            y={0}
+            innerRadius={0}
+            outerRadius={radius - 1}
+            angle={sectionAngle}
+            rotation={index * sectionAngle + 55}
+            fill={colors[type] || "#cccccc"}
+            stroke="#ffffff"
+            strokeWidth={0.5}
+          />
+        ))}
+      </Group>
+    );
+  } else {
+    // Single color circle for specific resource types
+    const color = colors[cardType] || "#cccccc";
+    return (
+      <Circle
+        x={0}
+        y={0}
+        radius={radius}
+        fill={color}
+        stroke="#333333"
+        strokeWidth={1}
+      />
+    );
+  }
+}
+
 // Simple boat component
 function Boat({
   x,
   y,
+  cardType,
   children,
 }: {
   x: number;
   y: number;
+  cardType: string;
   children?: React.ReactNode;
 }) {
   return (
     <Group x={x} y={y}>
+      {/* Background circle with card type color */}
+      <HarborCircle cardType={cardType} />
       {/* Hull */}
       <Line
         points={[-14, -6, -10, 2, 0, 6, 10, 2, 14, -6]}
@@ -111,31 +160,23 @@ function HarborLabel({
   x,
   y,
   ratio,
-  cardType,
 }: {
   x: number;
   y: number;
   ratio: number;
-  cardType: string;
 }) {
-  const text = `${ratio}:1 ${cardType}`;
+  const text = `${ratio}:1`;
   const width = Math.max(50, text.length * 6);
 
   return (
     <Group x={x} y={y} offsetX={width / 2}>
-      <Rect
-        width={width}
-        height={20}
-        fill="rgba(255,255,255,0.9)"
-        stroke="#333"
-        strokeWidth={0.5}
-        cornerRadius={3}
-      />
+
       <Text
         width={width}
         height={20}
         text={text}
-        fontSize={10}
+        fontSize={16}
+        fontVariant="bold"
         fill="#333"
         align="center"
         verticalAlign="middle"
@@ -147,8 +188,6 @@ function HarborLabel({
 export function HarborShape({ harbor, hexCenter }: Props) {
   const edge = harbor.edge;
   if (!edge?.pointA || !edge?.pointB) return null;
-
-
 
   const { nx, ny, center } = getOutwardNormal(edge, hexCenter);
   const boatX = center.x + nx * 40;
@@ -193,13 +232,12 @@ export function HarborShape({ harbor, hexCenter }: Props) {
       />
 
       {/* Boat */}
-      <Boat x={boatX} y={boatY}>
+      <Boat x={boatX} y={boatY} cardType={cardType}>
         {/* Label */}
         <HarborLabel
           x={0}
-          y={7}
+          y={5}
           ratio={harbor.ratio}
-          cardType={cardType}
         />
       </Boat>
     </Group>
