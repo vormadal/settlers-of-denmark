@@ -1,6 +1,7 @@
 import { Schema, type } from '@colyseus/schema'
 import { GameState } from './GameState'
 import { Point } from './Point'
+import { Intersection } from './Intersection'
 
 export class BorderEdge extends Schema {
   @type(Point) pointA: Point
@@ -46,5 +47,13 @@ export class BorderEdge extends Schema {
 
   getAllPoints(state: GameState) {
     return [this.pointA, this.pointB]
+  }
+
+  static create(intersectionA: Intersection, intersectionB: Intersection) {
+    return new BorderEdge().assign({
+      id: `Edge:${intersectionA.id}->${intersectionB.id}`,
+      pointA: intersectionA.position.copy(),
+      pointB: intersectionB.position.copy()
+    })
   }
 }
