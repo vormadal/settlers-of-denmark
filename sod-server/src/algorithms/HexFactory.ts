@@ -29,7 +29,6 @@ export class HexFactory {
       const intersection = this.createIntersection(position, angle)
       hex.intersections.push(intersection)
     }
-    
 
     for (let index = 0; index < 6; index++) {
       this.getOrCreateEdge(hex.intersections[(index + 1) % 6], hex.intersections[index])
@@ -38,13 +37,14 @@ export class HexFactory {
   }
 
   getOrCreateEdge(intersectionA: Intersection, intersectionB: Intersection) {
-    let edge = new BorderEdge().assign({
-      id: `Edge:${intersectionA.id}->${intersectionB.id}`,
-      pointA: intersectionA.position.copy(),
-      pointB: intersectionB.position.copy()
-    })
+    let edge = BorderEdge.create(intersectionA, intersectionB)
+    let altEdge = BorderEdge.create(intersectionB, intersectionA)
 
-    this.edges.set(edge.id, edge)
+    // the same edge might be created from another hex in opposite direction a->b vs b->a giving different ids
+    if (!this.edges.has(edge.id) && !this.edges.has(altEdge.id)) {
+      this.edges.set(edge.id, edge)
+    }
+
     return edge
   }
 
@@ -60,4 +60,3 @@ export class HexFactory {
     return intersection
   }
 }
-
