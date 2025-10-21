@@ -1,6 +1,8 @@
+import React from 'react'
 import { Group, Line } from 'react-konva'
 import { BorderEdge } from '../state/BorderEdge'
 import { getCenter, getLineRotation } from '../geometry/geometryUtils'
+import type { Group as GroupType } from 'konva/lib/Group'
 
 interface Props {
   edge: BorderEdge
@@ -45,7 +47,7 @@ function RoadLine({ stroke, roadWidth }: { stroke?: string; roadWidth: number })
   )
 }
 
-export function BaseRoadShape({
+export const BaseRoadShape = React.forwardRef<GroupType, Props>(({
   edge,
   borderColor = '#654321',
   fillColor = '#000000',
@@ -56,12 +58,13 @@ export function BaseRoadShape({
   onMouseEnter,
   onMouseLeave,
   scale = 1
-}: Props) {
+}, ref) => {
   const center = getCenter([edge.pointA, edge.pointB]);
   const rotation = getLineRotation(edge.pointA, edge.pointB);
 
   return (
     <Group
+      ref={ref}
       x={center.x}
       y={center.y}
       rotation={rotation}
@@ -82,4 +85,4 @@ export function BaseRoadShape({
       />
     </Group>
   )
-}
+})

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BaseRoadShape } from "./BaseRoadShape";
 import { BorderEdge } from "../state/BorderEdge";
+import { Group } from "konva/lib/Group";
+import { usePulseAnimation } from "../utils/konvaAnimations";
 
 interface Props {
   edge: BorderEdge;
@@ -10,6 +12,14 @@ interface Props {
 
 export function EdgeShape({ edge, show, onClick }: Props) {
   const [hover, setHover] = useState(false);
+  const shapeRef = useRef<Group>(null);
+
+  usePulseAnimation(shapeRef, {
+    enabled: show && !hover,
+    period: 2000,
+    scaleAmplitude: 0.1,
+    defaultScale: hover ? 1.2 : 1.0
+  });
 
   function handleMouseEnter() {
     setHover(true);
@@ -22,7 +32,8 @@ export function EdgeShape({ edge, show, onClick }: Props) {
   if (!show) return null;
 
   return (
-    <BaseRoadShape 
+    <BaseRoadShape
+      ref={shapeRef}
       edge={edge}
       fillColor="#ffffff"
       borderColor="#000000"
@@ -31,7 +42,7 @@ export function EdgeShape({ edge, show, onClick }: Props) {
       onTouchEnd={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      scale={hover ? 1.2 : 1}
+      scale={1}
     />
   );
 }
