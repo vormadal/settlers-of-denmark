@@ -1,10 +1,10 @@
+import type { Group as GroupType } from 'konva/lib/Group'
 import React from 'react'
 import { Group, Line } from 'react-konva'
-import { Intersection } from '../state/Intersection'
-import type { Group as GroupType } from 'konva/lib/Group'
 
 interface Props {
-  intersection: Intersection
+  x?: number
+  y?: number
   borderColor?: string
   fillColor?: string
   opacity?: number
@@ -19,7 +19,7 @@ interface Props {
 const points = [10, 10, -10, 10, -10, -5, 0, -15, 10, -5]
 
 export const BaseSettlementShape = React.forwardRef<GroupType, Props>(({
-  intersection,
+  x, y,
   borderColor = '#000000',
   fillColor = '#ffffff',
   opacity = 1,
@@ -32,8 +32,8 @@ export const BaseSettlementShape = React.forwardRef<GroupType, Props>(({
   return (
     <Group
       ref={ref}
-      x={intersection.position.x}
-      y={intersection.position.y}
+      x={x}
+      y={y}
       onClick={onClick}
       onTouchEnd={onTouchEnd}
       onMouseEnter={onMouseEnter}
