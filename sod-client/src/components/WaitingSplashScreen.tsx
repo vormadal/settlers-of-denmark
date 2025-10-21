@@ -1,18 +1,17 @@
 import {
   Box,
-  Typography,
-  CircularProgress,
-  Paper,
-  Fade,
   Button,
+  Fade,
+  Paper,
+  Typography
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { usePlayers } from "../hooks/stateHooks";
-import { useRoom } from "../context/RoomContext";
+import { Player } from "../state/Player";
 
 interface WaitingSplashScreenProps {
   maxPlayers: number;
+  players: Player[];
+  onLeave: () => void;
 }
 // Settlers hex colors from the game
 const hexColors = [
@@ -23,13 +22,10 @@ const hexColors = [
   "#ffdf00", // Fields
   "#d9bf65", // Desert
 ];
-export function WaitingSplashScreen({ maxPlayers }: WaitingSplashScreenProps) {
-  const players = usePlayers();
-  const room = useRoom();
-  const navigate = useNavigate();
+export function WaitingSplashScreen({ maxPlayers, players, onLeave }: WaitingSplashScreenProps) {
   const [dots, setDots] = useState("");
   const [spinnerColor, setSpinnerColor] = useState(
-    hexColors[players.length % hexColors.length]
+    hexColors[0]
   );
   const [floatingShapes, setFloatingShapes] = useState<
     Array<{
@@ -69,10 +65,6 @@ export function WaitingSplashScreen({ maxPlayers }: WaitingSplashScreenProps) {
     };
   }, []);
 
-  const handleLeave = () => {
-    room?.leave();
-    navigate("/");
-  };
 
   return (
     <Box
@@ -321,7 +313,7 @@ export function WaitingSplashScreen({ maxPlayers }: WaitingSplashScreenProps) {
             <Button
               variant="outlined"
               color="error"
-              onClick={handleLeave}
+              onClick={onLeave}
               sx={{
                 textTransform: "none",
                 borderRadius: 2,

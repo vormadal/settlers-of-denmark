@@ -1,5 +1,6 @@
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Board } from './Board'
 import ActionMenu from './components/ActionMenu'
 import { EndGameScreen } from './components/EndGameScreen'
@@ -9,8 +10,9 @@ import { StealResourceModal } from './components/StealResourceModal'
 import { MonopolySelectionModal } from './components/MonopolySelectionModal'
 import { YearOfPlentyModal } from './components/YearOfPlentyModal'
 import { DiscardCardsModal } from './components/DiscardCardsModal'
-import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer } from './hooks/stateHooks'
+import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer, useMaxPlayers } from './hooks/stateHooks'
 import { usePlayer } from './context/PlayerContext'
+import { useRoom } from './context/RoomContext'
 import { getUniqueColor } from './utils/colors'
 
 function getBackgroundLinearGradient(deg: number): string {
@@ -20,6 +22,8 @@ export function BaseGame() {
   const players = usePlayers()
   const currentPlayer = useCurrentPlayer() // The player whose turn it is
   const player = usePlayer() // The current user's player
+  const room = useRoom()
+  const navigate = useNavigate()
   const [width, setWidth] = useState(window.innerWidth)
   const [height, setHeight] = useState(window.innerHeight)
   const isMobile = width < 768
@@ -27,6 +31,13 @@ export function BaseGame() {
   const [examiningBoard, setExaminingBoard] = useState(false)
   const phase = usePhase()
   const eligiblePlayersForRobberActions = useAvailablePlayersToSomethingFrom()
+  const maxPlayers = useMaxPlayers()
+
+  // Handle leaving the game
+  const handleLeaveGame = () => {
+    room?.leave()
+    navigate('/')
+  }
 
   // Only show modals if the current user is the player whose turn it is
   const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id)
@@ -48,11 +59,8 @@ export function BaseGame() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Show splash screen only while waiting for players to join
-  const shouldShowSplashScreen = players.length < 2
-
-  if (shouldShowSplashScreen) {
-    return <WaitingSplashScreen maxPlayers={2} />
+  if (players.length < maxPlayers) {
+    return <WaitingSplashScreen maxPlayers={maxPlayers} players={players} onLeave={handleLeaveGame} />
   }
 
   // Calculate dynamic heights for overlay elements
