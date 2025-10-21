@@ -47,15 +47,15 @@ export function PlayerInfo({ width, player, color }: Props) {
         width: `${width}px`,
         minWidth: isMobile ? '220px' : '300px', // Increased minimum widths
         background: isActivePlayer 
-          ? `linear-gradient(145deg, ${color} 0%, ${color}DD 50%, #FFEB3B33 100%)`
-          : `linear-gradient(145deg, ${color} 0%, ${color}CC 100%)`,
+          ? `linear-gradient(145deg, ${color}E6 0%, ${color}CC 50%, #FFEB3B44 100%)`
+          : `linear-gradient(145deg, ${color}E6 0%, ${color}B3 100%)`,
         borderRadius: isMobile ? '12px' : '16px',
         // Reduced vertical padding
         p: isMobile ? '6px 8px 6px' : '10px 14px 10px', // Increased horizontal padding
         boxShadow: isActivePlayer
-          ? '0 8px 25px rgba(255,235,59,0.4), 0 0 20px rgba(255,107,107,0.3)'
-          : '0 6px 15px rgba(0,0,0,0.15)',
-        border: isActivePlayer ? `2px solid #FFB347` : `1px solid rgba(255,255,255,0.5)`,
+          ? '0 8px 25px rgba(255,235,59,0.4), 0 0 20px rgba(255,107,107,0.3), 0 4px 12px rgba(0,0,0,0.3)'
+          : '0 6px 15px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15)',
+        border: isActivePlayer ? `2px solid #FFB347` : `1px solid rgba(255,255,255,0.6)`,
         transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
         position: 'relative',
         overflow: 'hidden', // keep gradient mask effect
@@ -64,6 +64,7 @@ export function PlayerInfo({ width, player, color }: Props) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
+        backdropFilter: 'blur(1px)',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -71,7 +72,7 @@ export function PlayerInfo({ width, player, color }: Props) {
           left: 0,
           right: 0,
           height: '40%',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%)',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)',
           borderRadius: isMobile ? '12px 12px 0 0' : '16px 16px 0 0',
           pointerEvents: 'none',
         },
