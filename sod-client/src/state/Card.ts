@@ -18,4 +18,5 @@ export class Card extends Schema {
     @type("string") public owner!: string;
     @type("number") public boughtInTurn!: number;
     @type("string") public playedBy!: string;
+    @type("boolean") public canBePlayedBeforeRoll!: boolean;
 }

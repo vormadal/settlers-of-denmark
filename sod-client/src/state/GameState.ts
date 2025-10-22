@@ -26,6 +26,7 @@ export class GameState extends Schema {
     @type("string") public currentPlayer!: string;
     @type("string") public currentDevelopmentCardId!: string;
     @type([ HexProduction ]) public hexProductions: ArraySchema<HexProduction> = new ArraySchema<HexProduction>();
+    @type("boolean") public hasDiceBeenRolled!: boolean;
     @type("number") public round!: number;
     @type("number") public victoryPointsToWin!: number;
     @type("number") public maxPlayers!: number;
@@ -39,7 +40,6 @@ export class GameState extends Schema {
     @type("string") public robberHex!: string;
     @type("boolean") public canBuyDevelopmentCards!: boolean;
     @type("boolean") public canPlayDevelopmentCards!: boolean;
-    @type("boolean") public canPlayKnightDevelopmentCard!: boolean;
     @type("string") public hasLongestRoad!: string;
     @type("string") public hasLargestArmy!: string;
     @type([ Die ]) public dice: ArraySchema<Die> = new ArraySchema<Die>();

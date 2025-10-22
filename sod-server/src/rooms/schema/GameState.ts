@@ -38,7 +38,6 @@ export class GameState extends Schema {
   @type('string') robberHex: string = ''
   @type('boolean') canBuyDevelopmentCards: boolean = false
   @type('boolean') canPlayDevelopmentCards: boolean = false
-  @type('boolean') canPlayKnightDevelopmentCard: boolean = false
   @type('string') hasLongestRoad: string = ''
   @type('string') hasLargestArmy: string = ''
 

@@ -14,7 +14,7 @@ import { DefaultNumberTokenProvider } from '../algorithms/NumberTokenProvider'
 import { createBaseGameStateMachine } from '../games/base/BaseGameStateMachine'
 import { generate } from '../utils/arrayHelpers'
 import { cardGenerator } from '../utils/cardGenerator'
-import { CardTypes, CardVariants, ResourceCardVariants } from './schema/Card'
+import { CardTypes, CardVariants, DevelopmentCardVariants, ResourceCardVariants } from './schema/Card'
 import { City } from './schema/City'
 import { ExchangeRate } from './schema/ExchangeRate'
 import { HexTypes } from './schema/Hex'
@@ -98,37 +98,42 @@ export class MyRoom extends Room<GameState> {
         this.options.resourceCards?.[CardVariants.Brick] ?? 19,
         CardTypes.Resource,
         CardVariants.Brick,
+        false,
         (card) => card
       ),
       ...cardGenerator(
         this.options.resourceCards?.[CardVariants.Grain] ?? 19,
         CardTypes.Resource,
         CardVariants.Grain,
+        false,
         (card) => card
       ),
       ...cardGenerator(
         this.options.resourceCards?.[CardVariants.Lumber] ?? 19,
         CardTypes.Resource,
         CardVariants.Lumber,
+        false,
         (card) => card
       ),
       ...cardGenerator(
         this.options.resourceCards?.[CardVariants.Ore] ?? 19,
         CardTypes.Resource,
         CardVariants.Ore,
+        false,
         (card) => card
       ),
       ...cardGenerator(
         this.options.resourceCards?.[CardVariants.Wool] ?? 19,
         CardTypes.Resource,
         CardVariants.Wool,
+        false,
         (card) => card
       ),
-      ...cardGenerator(14, CardTypes.Development, CardVariants.Knight, (card) => card),
-      ...cardGenerator(2, CardTypes.Development, CardVariants.Monopoly, (card) => card),
-      ...cardGenerator(2, CardTypes.Development, CardVariants.RoadBuilding, (card) => card),
-      ...cardGenerator(5, CardTypes.Development, CardVariants.VictoryPoint, (card) => card),
-      ...cardGenerator(2, CardTypes.Development, CardVariants.YearOfPlenty, (card) => card)
+      ...cardGenerator(14, CardTypes.Development, CardVariants.Knight, true, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.Monopoly, false, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.RoadBuilding, false, (card) => card),
+      ...cardGenerator(5, CardTypes.Development, CardVariants.VictoryPoint, false, (card) => card),
+      ...cardGenerator(2, CardTypes.Development, CardVariants.YearOfPlenty, false, (card) => card)
     )
     this.stateMachine = createBaseGameStateMachine(state, this.dispatcher)
     this.setState(state)
@@ -210,7 +215,7 @@ export class MyRoom extends Room<GameState> {
     if (this.options.initialPlayerResourceCards) {
       Object.entries(this.options.initialPlayerResourceCards).forEach(([variant, count]) => {
         if (Object.values(ResourceCardVariants).includes(variant) && count > 0) {
-          this.state.deck.push(...cardGenerator(count, CardTypes.Resource, variant, (card) => (card.owner = player.id)))
+          this.state.deck.push(...cardGenerator(count, CardTypes.Resource, variant, variant === DevelopmentCardVariants.Knight, (card) => (card.owner = player.id)))
         }
       })
     }

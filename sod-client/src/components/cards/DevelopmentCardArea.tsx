@@ -2,7 +2,7 @@ import { Box, Paper, Typography } from '@mui/material'
 import { DevelopmentCardDeck } from './DevelopmentCardDeck'
 import { DevelopmentCards } from './DevelopmentCards'
 import { DevelopmentCard } from './development/DevelopmentCard'
-import { useCanBuyDevelopmentCards, useCanPlayDevelopmentCards, useCanPlayKnightDevelopmentCard, useCurrentRound, useDevelopmentDeckCount } from '../../hooks/stateHooks'
+import { useCanBuyDevelopmentCards, useCanPlayDevelopmentCards, useCurrentRound, useDevelopmentDeckCount } from '../../hooks/stateHooks'
 import { useRoom } from '../../context/RoomContext'
 import { usePlayer } from '../../context/PlayerContext'
 import { Card } from '../../state/Card'
@@ -19,7 +19,6 @@ export function DevelopmentCardArea({ onBuyDevelopmentCard, onPlayDevelopmentCar
   const player = usePlayer()
   const canBuyDevelopmentCards = useCanBuyDevelopmentCards()
   const canPlayDevelopmentCards = useCanPlayDevelopmentCards()
-  const canPlayKnightDevelopmentCard = useCanPlayKnightDevelopmentCard()
   const currentRound = useCurrentRound()
   const developmentDeckCount = useDevelopmentDeckCount()
 
@@ -42,10 +41,8 @@ export function DevelopmentCardArea({ onBuyDevelopmentCard, onPlayDevelopmentCar
     if (card.boughtInTurn === currentRound) {
       return false
     }
-    if (card.variant === CardVariants.Knight) {
-      return canPlayDevelopmentCards || canPlayKnightDevelopmentCard
-    }
-    return canPlayDevelopmentCards
+    const isRollPhase = gameRoom?.state.phase === 'rollingDice'
+    return canPlayDevelopmentCards || (isRollPhase && card.canBePlayedBeforeRoll)
   }
 
   const handlePlayDevelopmentCard = (card: Card) => {
