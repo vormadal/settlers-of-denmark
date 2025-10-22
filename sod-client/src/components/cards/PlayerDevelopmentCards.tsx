@@ -30,31 +30,49 @@ export function PlayerDevelopmentCards({ player }: Props) {
     (x) => x.owner === player.id && x.type === CardTypes.Development
   );
 
-  // Get all unique variants of development cards, sorted
+  // Unique variants, sorted for stable grouping
   const developmentVariants = [
     ...new Set(
       developmentCards.map((x) => x.variant).sort((a, b) => a.localeCompare(b))
     ),
   ];
 
-  // Calculate card counts for each variant
+  // Counts per variant
   const cardCounts = developmentVariants.map(
     (variant) => developmentCards.filter((x) => x.variant === variant).length
   );
 
-  // Check if player can play cards (is current player and in turn phase)
-  const canPlay = currentPlayer?.id === player.id && phase.key === "turn" && canPlayDevelopmentCards;
+  // Phase checks
+  const isCurrentPlayer = currentPlayer?.id === player.id;
+  const isTurnPhase = phase.key === "turn";
+  const isRollPhase = room?.state.phase === "rollingDice";
+  const canPlayNormally = isCurrentPlayer && isTurnPhase && canPlayDevelopmentCards;
 
-  // Check if a variant can be played (has at least one card not bought this turn)
+  // Determine if a variant is playable and which specific card to play
   const canPlayVariant = (variant: string): { canPlay: boolean; playableCard: Card | null } => {
-    if (!canPlay) {
+    if (!isCurrentPlayer) {
       return { canPlay: false, playableCard: null };
     }
-    
+
     const cards = developmentCards.filter((x) => x.variant === variant);
-    const playableCard = cards.find(card => card.boughtInTurn !== currentRound);
-    
-    return { canPlay: !!playableCard, playableCard: playableCard || null };
+
+    console.log(cards.map(c => (`phase: ${room?.state.phase}, type: ${c.variant}, boughtInTurn: ${c.boughtInTurn}, canBePlayedBeforeRoll: ${c.canBePlayedBeforeRoll}`)));
+
+    // Normal turn phase: any card not bought this turn
+    if (canPlayNormally) {
+      const playableCard = cards.find((card) => card.boughtInTurn !== currentRound);
+      return { canPlay: !!playableCard, playableCard: playableCard ?? null };
+    }
+
+    // Roll phase: only cards explicitly allowed pre-roll and not bought this turn
+    if (isRollPhase) {
+      const playableCard = cards.find(
+        (card) => card.canBePlayedBeforeRoll && card.boughtInTurn !== currentRound
+      );
+      return { canPlay: !!playableCard, playableCard: playableCard ?? null };
+    }
+
+    return { canPlay: false, playableCard: null };
   };
 
   const handleCardClick = (variant: string) => {
@@ -64,15 +82,14 @@ export function PlayerDevelopmentCards({ player }: Props) {
     }
   };
 
-  // Calculate optimal spacing to fit all cards (similar logic to PlayerCards)
+  // Fit the card groups within the container
   useEffect(() => {
     if (!containerRef.current || developmentVariants.length === 0) return;
 
     const containerWidth = containerRef.current.offsetWidth;
-    const marginBetweenGroups = 8; // 0.5rem in pixels (approximately)
+    const marginBetweenGroups = 8; // ~0.5rem
     const totalMargins = (developmentVariants.length - 1) * marginBetweenGroups;
 
-    // Calculate total width needed for all card groups
     const calculateTotalWidth = (spacing: number) => {
       return (
         cardCounts.reduce((total, count) => {
@@ -82,7 +99,6 @@ export function PlayerDevelopmentCards({ player }: Props) {
       );
     };
 
-    // Find the maximum spacing that fits in the container
     let testSpacing = defaultMaxSpacing;
     while (
       testSpacing >= minSpacing &&
@@ -94,7 +110,6 @@ export function PlayerDevelopmentCards({ player }: Props) {
     setOptimalSpacing(Math.max(minSpacing, testSpacing));
   }, [developmentVariants.length, cardCounts, containerRef.current?.offsetWidth]);
 
-  // Don't render if no development cards
   if (developmentCards.length === 0) {
     return null;
   }
@@ -109,13 +124,13 @@ export function PlayerDevelopmentCards({ player }: Props) {
         height: "70px",
         alignItems: "flex-end",
         width: "100%",
-        marginTop: 1, // Add some spacing above development cards
+        marginTop: 1,
       }}
     >
       {developmentVariants.map((variant) => {
         const count = developmentCards.filter((x) => x.variant === variant).length;
         const { canPlay: variantCanPlay } = canPlayVariant(variant);
-        
+
         return (
           <DevelopmentCardGroup
             key={variant}
@@ -131,7 +146,6 @@ export function PlayerDevelopmentCards({ player }: Props) {
   );
 }
 
-// Component for displaying a group of development cards (similar to CardGroup but for development cards)
 interface DevelopmentCardGroupProps {
   variant: string;
   count: number;
@@ -141,7 +155,7 @@ interface DevelopmentCardGroupProps {
 }
 
 function DevelopmentCardGroup({ variant, count, maxSpacing, onClick, disabled }: DevelopmentCardGroupProps) {
-  const spacing = Math.min(maxSpacing, 6); // Max spacing of 6 for development cards
+  const spacing = Math.min(maxSpacing, 6);
   const containerWidth = cardWidth + (count - 1) * spacing;
 
   return (
@@ -168,7 +182,7 @@ function DevelopmentCardGroup({ variant, count, maxSpacing, onClick, disabled }:
             position: "absolute",
             left: `${index * spacing}px`,
             transition: 'transform 0.2s ease',
-            zIndex: index + 1, // Stack cards same way as resource cards (first card at back, later cards on top)
+            zIndex: index + 1,
           }}
         >
           <DevelopmentCard
@@ -179,8 +193,7 @@ function DevelopmentCardGroup({ variant, count, maxSpacing, onClick, disabled }:
           />
         </Box>
       ))}
-      
-      {/* Count badge for multiple cards */}
+
       {count > 1 && (
         <Box
           sx={{

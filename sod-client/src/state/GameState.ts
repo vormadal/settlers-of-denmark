@@ -26,6 +26,7 @@ export class GameState extends Schema {
     @type("string") public currentPlayer!: string;
     @type("string") public currentDevelopmentCardId!: string;
     @type([ HexProduction ]) public hexProductions: ArraySchema<HexProduction> = new ArraySchema<HexProduction>();
+    @type("boolean") public hasDiceBeenRolled!: boolean;
     @type("number") public round!: number;
     @type("number") public victoryPointsToWin!: number;
     @type("number") public maxPlayers!: number;

@@ -39,4 +39,5 @@ export class Card extends Schema {
   @type('string') owner?: string
   @type('number') boughtInTurn?: number
   @type('string') playedBy?: string
+  @type('boolean') canBePlayedBeforeRoll: boolean
 }

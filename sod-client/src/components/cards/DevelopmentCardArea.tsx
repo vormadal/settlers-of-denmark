@@ -37,8 +37,16 @@ export function DevelopmentCardArea({ onBuyDevelopmentCard, onPlayDevelopmentCar
     }
   }
 
+  const canPlayCard = (card: Card) => {
+    if (card.boughtInTurn === currentRound) {
+      return false
+    }
+    const isRollPhase = gameRoom?.state.phase === 'rollingDice'
+    return canPlayDevelopmentCards || (isRollPhase && card.canBePlayedBeforeRoll)
+  }
+
   const handlePlayDevelopmentCard = (card: Card) => {
-    if (onPlayDevelopmentCard && canPlayDevelopmentCards && card.boughtInTurn !== currentRound) {
+    if (onPlayDevelopmentCard && canPlayCard(card)) {
       onPlayDevelopmentCard(card.id)
     }
   }
