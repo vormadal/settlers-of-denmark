@@ -1,197 +1,245 @@
-import { Group, Text, Rect, Line } from 'react-konva'
-import { Harbor } from '../state/Harbor'
-import { getCenter } from '../utils/VectorMath'
+import { Group, Line, Rect, Text, Circle, Arc } from "react-konva";
+import { getCenter } from "../geometry/geometryUtils";
+import { Harbor } from "../state/Harbor";
+import { Point } from "../state/Point";
+import { colors } from "../utils/colors";
 
 interface Props {
-  harbor: Harbor
+  harbor: Harbor;
+  hexCenter: Point;
 }
 
-/*
-  HarborShape renders a harbor positioned at the midpoint of its associated edge but slightly offset outward.
-  It displays the trade ratio (e.g., 3:1) and either the specific resource or 'Any'.
-*/
-export function HarborShape({ harbor }: Props) {
-  const edge = harbor.edge
-  if (!edge?.pointA || !edge?.pointB) return null
+// Calculate outward normal direction from edge
+function getOutwardNormal(edge: any, hexCenter: Point) {
+  const center = getCenter([edge.pointA, edge.pointB]);
 
-  const center = getCenter(edge.pointA, edge.pointB)
-  const ratioText = `${harbor.ratio}:1`
-  const cardTypes = harbor.cardTypes?.length > 1 ? 'Any' : harbor.cardTypes[0]
+  // Direction is simply from hex center through edge center
+  const dx = center.x - hexCenter.x;
+  const dy = center.y - hexCenter.y;
+  const length = Math.sqrt(dx * dx + dy * dy);
 
-  // Geometry
-  const dx = edge.pointB.x - edge.pointA.x
-  const dy = edge.pointB.y - edge.pointA.y
-  const edgeLen = Math.sqrt(dx * dx + dy * dy) || 1
-  const ex = dx / edgeLen
-  const ey = dy / edgeLen
-  // outward normal
-  const nx = -ey
-  const ny = ex
+  const nx = dx / length;
+  const ny = dy / length;
 
-  const boatDistance = 24 // distance from center along outward normal
-  const boatX = center.x + nx * boatDistance
-  const boatY = center.y + ny * boatDistance
+  return { nx, ny, center };
+}
 
-  // Boat orientation angle (pointing outward). Boat designed pointing up (-Y) by default.
-  const boatAngleDeg = (Math.atan2(ny, nx) * 180) / Math.PI - 90
+// Simple pier component with offset toward edge center
+function Pier({
+  start,
+  directionX,
+  directionY,
+  length,
+  edgeCenter,
+}: {
+  start: Point;
+  directionX: number;
+  directionY: number;
+  length: number;
+  edgeCenter: Pick<Point, "x" | "y">;
+}) {
+  // Calculate offset toward edge center to avoid overlap with neighboring harbors
+  const offsetFactor = 0.1; // Move 10% toward edge center
+  const offsetX = start.x + (edgeCenter.x - start.x) * offsetFactor;
+  const offsetY = start.y + (edgeCenter.y - start.y) * offsetFactor;
 
-  // Piers: small wooden walkways from each intersection towards boat
-  const pierReachFactor = 0.55 // portion of distance from endpoint to boat used for pier length
-  const endpoints = [edge.pointA, edge.pointB]
-  const pierWidth = 6
+  const midX = offsetX + (directionX * length) / 2;
+  const midY = offsetY + (directionY * length) / 2;
+  const angle = (Math.atan2(directionY, directionX) * 180) / Math.PI;
+
+  return (
+    <Group x={midX} y={midY} rotation={angle}>
+      <Rect
+        x={-length / 2}
+        y={-3}
+        width={length}
+        height={10}
+        fill="#a98274"
+        stroke="#6d4c41"
+        strokeWidth={0.7}
+        cornerRadius={2}
+      />
+    </Group>
+  );
+}
+
+// Harbor circle background component
+function HarborCircle({ cardType }: { cardType: string }) {
+  const radius = 25;
+
+  if (cardType === "Any") {
+    // Create sections for all resource types when it's an "Any" harbor
+    const resourceTypes = ["Grain", "Wool", "Lumber", "Ore", "Brick"];
+    const sectionAngle = 360 / resourceTypes.length;
+
+    return (
+      <Group>
+        {/* Base circle */}
+        <Circle
+          x={0}
+          y={0}
+          radius={radius}
+          fill="#ffffff"
+          stroke="#333333"
+          strokeWidth={1}
+        />
+        {/* Colored sections */}
+        {resourceTypes.map((type, index) => (
+          <Arc
+            key={type}
+            x={0}
+            y={0}
+            innerRadius={0}
+            outerRadius={radius - 1}
+            angle={sectionAngle}
+            rotation={index * sectionAngle + 55}
+            fill={colors[type] || "#cccccc"}
+            stroke="#ffffff"
+            strokeWidth={0.5}
+          />
+        ))}
+      </Group>
+    );
+  } else {
+    // Single color circle for specific resource types
+    const color = colors[cardType] || "#cccccc";
+    return (
+      <Circle
+        x={0}
+        y={0}
+        radius={radius}
+        fill={color}
+        stroke="#333333"
+        strokeWidth={1}
+      />
+    );
+  }
+}
+
+// Simple boat component
+function Boat({
+  x,
+  y,
+  cardType,
+  children,
+}: {
+  x: number;
+  y: number;
+  cardType: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <Group x={x} y={y}>
+      {/* Background circle with card type color */}
+      <HarborCircle cardType={cardType} />
+      {/* Hull */}
+      <Line
+        points={[-14, -6, -10, 2, 0, 6, 10, 2, 14, -6]}
+        closed
+        fill="#5d4037"
+        stroke="#3e2723"
+        strokeWidth={1}
+      />
+      {/* Mast */}
+      <Rect x={-1} y={-18} width={2} height={18} fill="#3e2723" />
+      {/* Sail */}
+      <Line
+        points={[0, -18, 12, -8, 0, -8]}
+        closed
+        fill="#eeeeee"
+        stroke="#bdbdbd"
+        strokeWidth={0.8}
+      />
+      {children}
+    </Group>
+  );
+}
+
+// Simple label component
+function HarborLabel({
+  x,
+  y,
+  ratio,
+}: {
+  x: number;
+  y: number;
+  ratio: number;
+}) {
+  const text = `${ratio}:1`;
+  const width = Math.max(50, text.length * 6);
+
+  return (
+    <Group x={x} y={y} offsetX={width / 2}>
+
+      <Text
+        width={width}
+        height={20}
+        text={text}
+        fontSize={16}
+        fontVariant="bold"
+        fill="#333"
+        align="center"
+        verticalAlign="middle"
+      />
+    </Group>
+  );
+}
+
+export function HarborShape({ harbor, hexCenter }: Props) {
+  const edge = harbor.edge;
+  if (!edge?.pointA || !edge?.pointB) return null;
+
+  const { nx, ny, center } = getOutwardNormal(edge, hexCenter);
+  const boatX = center.x + nx * 40;
+  const boatY = center.y + ny * 40;
+
+  const cardType =
+    harbor.cardTypes?.length > 1 ? "Any" : harbor.cardTypes[0] || "Any";
+  const pierLength = 30;
+
+  // Calculate slightly angled directions for piers to point toward each other
+  const rotationAngle = 20; // degrees
+  const rotationRad = (rotationAngle * Math.PI) / 180;
+
+  // Left pier (from pointA) rotates clockwise toward center
+  const leftCos = Math.cos(-rotationRad);
+  const leftSin = Math.sin(-rotationRad);
+  const leftDirX = nx * leftCos - ny * leftSin;
+  const leftDirY = nx * leftSin + ny * leftCos;
+
+  // Right pier (from pointB) rotates counter-clockwise toward center
+  const rightCos = Math.cos(rotationRad);
+  const rightSin = Math.sin(rotationRad);
+  const rightDirX = nx * rightCos - ny * rightSin;
+  const rightDirY = nx * rightSin + ny * rightCos;
 
   return (
     <Group listening={false}>
-      {/* Piers */}
-      {endpoints.map((p, i) => {
-        const vx = boatX - p.x
-        const vy = boatY - p.y
-        const dist = Math.sqrt(vx * vx + vy * vy) || 1
-        const ux = vx / dist
-        const uy = vy / dist
-        const length = dist * pierReachFactor
-        const midX = p.x + ux * (length / 2)
-        const midY = p.y + uy * (length / 2)
-        const angleDeg = (Math.atan2(uy, ux) * 180) / Math.PI
-        const boardCount = Math.max(3, Math.floor(length / 10))
-        return (
-          <Group key={i} x={midX} y={midY} rotation={angleDeg}>
-            <Rect
-              x={-length / 2}
-              y={-pierWidth / 2}
-              width={length}
-              height={pierWidth}
-              fill={'#a98274'}
-              shadowColor={'#000'}
-              shadowBlur={2}
-              shadowOpacity={0.25}
-              cornerRadius={2}
-              stroke={'#6d4c41'}
-              strokeWidth={0.6}
-            />
-            {/* Planks detail */}
-            {Array.from({ length: boardCount }).map((_, j) => {
-              const xPos = -length / 2 + (j * length) / boardCount
-              return (
-                <Line
-                  key={j}
-                  points={[xPos, -pierWidth / 2, xPos, pierWidth / 2]}
-                  stroke={'#5d4037'}
-                  strokeWidth={0.7}
-                />
-              )
-            })}
-            {/* Posts at ends */}
-            <Rect x={-length / 2 - 1.5} y={-pierWidth / 2} width={3} height={pierWidth} fill={'#5d4037'} cornerRadius={1} />
-            <Rect x={length / 2 - 1.5} y={-pierWidth / 2} width={3} height={pierWidth} fill={'#5d4037'} cornerRadius={1} />
-          </Group>
-        )
-      })}
+      {/* Piers from each endpoint angled toward each other */}
+      <Pier
+        start={edge.pointA}
+        directionX={leftDirX}
+        directionY={leftDirY}
+        length={pierLength}
+        edgeCenter={center}
+      />
+      <Pier
+        start={edge.pointB}
+        directionX={rightDirX}
+        directionY={rightDirY}
+        length={pierLength}
+        edgeCenter={center}
+      />
 
-      {/* Boat Group */}
-      <Group x={boatX} y={boatY} rotation={boatAngleDeg}>
-        {/* Hull as polygon (side view) */}
-        <Line
-          points={[-14, 6, -10, -2, 0, -6, 10, -2, 14, 6]}
-          closed
-          fill={'#5d4037'}
-          stroke={'#3e2723'}
-          strokeWidth={1}
-          shadowColor={'#000'}
-          shadowOpacity={0.3}
-          shadowBlur={3}
+      {/* Boat */}
+      <Boat x={boatX} y={boatY} cardType={cardType}>
+        {/* Label */}
+        <HarborLabel
+          x={0}
+          y={5}
+          ratio={harbor.ratio}
         />
-        {/* Deck rim */}
-        <Line
-          points={[-11.5, 1.5, -7, -1.5, 0, -3.5, 7, -1.5, 11.5, 1.5]}
-          stroke={'#d7ccc8'}
-          strokeWidth={1}
-        />
-        {/* Mast */}
-        <Rect x={-1.2} y={-18} width={2.4} height={18} fill={'#3e2723'} />
-        {/* Main sail */}
-        <Line
-          points={[0, -18, 12, -8, 0, -8]}
-          closed
-          fill={'#eeeeee'}
-          stroke={'#bdbdbd'}
-          strokeWidth={0.8}
-        />
-        {/* Jib sail */}
-        <Line
-          points={[0, -14, -8, -6, 0, -6]}
-          closed
-          fill={'#fafafa'}
-          stroke={'#cfcfcf'}
-          strokeWidth={0.6}
-        />
-        {/* Flag */}
-        <Line
-          points={[0, -18, 5, -16, 0, -14]}
-          closed
-          fill={'#ff5252'}
-          stroke={'#c62828'}
-          strokeWidth={0.6}
-        />
-      </Group>
-
-      {/* Readable label (ratio + resource) */}
-      {cardTypes && (
-        <Group x={boatX} y={boatY - 40} listening={false}>
-          {(() => {
-            const ratioFontSize = 12
-            const resourceFontSize = 11
-            const paddingX = 6
-            const paddingY = 4
-            const lineGap = 2
-            const lines = [ratioText, cardTypes]
-            const estWidth = Math.max(
-              ratioText.length * ratioFontSize * 0.55,
-              (cardTypes?.length || 0) * resourceFontSize * 0.55
-            )
-            const width = Math.max(34, estWidth + paddingX * 2)
-            const height = ratioFontSize + resourceFontSize + lineGap + paddingY * 2
-            return (
-              <Group offsetX={width / 2}>
-                <Rect
-                  x={0}
-                  y={0}
-                  width={width}
-                  height={height}
-                  fill={'rgba(255,255,255,0.9)'}
-                  stroke={'#333'}
-                  strokeWidth={0.75}
-                  cornerRadius={4}
-                  shadowColor={'#000'}
-                  shadowBlur={4}
-                  shadowOpacity={0.35}
-                />
-                <Text
-                  x={0}
-                  y={paddingY - 1}
-                  width={width}
-                  text={lines[0]}
-                  fontSize={ratioFontSize}
-                  fontStyle={'bold'}
-                  fill={'#212121'}
-                  align={'center'}
-                  shadowColor={'#fff'}
-                  shadowBlur={1}
-                />
-                <Text
-                  x={0}
-                  y={paddingY + ratioFontSize + lineGap - 1}
-                  width={width}
-                  text={lines[1]}
-                  fontSize={resourceFontSize}
-                  fill={'#263238'}
-                  align={'center'}
-                />
-              </Group>
-            )
-          })()}
-        </Group>
-      )}
+      </Boat>
     </Group>
-  )
+  );
 }

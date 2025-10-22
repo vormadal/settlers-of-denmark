@@ -1,5 +1,6 @@
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Board } from './Board'
 import ActionMenu from './components/ActionMenu'
 import { EndGameScreen } from './components/EndGameScreen'
@@ -9,14 +10,20 @@ import { StealResourceModal } from './components/StealResourceModal'
 import { MonopolySelectionModal } from './components/MonopolySelectionModal'
 import { YearOfPlentyModal } from './components/YearOfPlentyModal'
 import { DiscardCardsModal } from './components/DiscardCardsModal'
-import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer } from './hooks/stateHooks'
+import { useIsGameEnded, usePlayers, usePhase, useAvailablePlayersToSomethingFrom, useCurrentPlayer, useMaxPlayers } from './hooks/stateHooks'
 import { usePlayer } from './context/PlayerContext'
+import { useRoom } from './context/RoomContext'
 import { getUniqueColor } from './utils/colors'
 
+function getBackgroundLinearGradient(deg: number): string {
+  return `linear-gradient(${deg}deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 70%, transparent 100%)`
+}
 export function BaseGame() {
   const players = usePlayers()
   const currentPlayer = useCurrentPlayer() // The player whose turn it is
   const player = usePlayer() // The current user's player
+  const room = useRoom()
+  const navigate = useNavigate()
   const [width, setWidth] = useState(window.innerWidth)
   const [height, setHeight] = useState(window.innerHeight)
   const isMobile = width < 768
@@ -24,10 +31,17 @@ export function BaseGame() {
   const [examiningBoard, setExaminingBoard] = useState(false)
   const phase = usePhase()
   const eligiblePlayersForRobberActions = useAvailablePlayersToSomethingFrom()
-  
+  const maxPlayers = useMaxPlayers()
+
+  // Handle leaving the game
+  const handleLeaveGame = () => {
+    room?.leave()
+    navigate('/')
+  }
+
   // Only show modals if the current user is the player whose turn it is
   const isCurrentPlayerTurn = Boolean(player && currentPlayer && player.id === currentPlayer.id)
-  
+
   const showStealModal = Boolean(phase.key === 'stealingResource' && isCurrentPlayerTurn)
   const showMonopolyModal = Boolean(phase.key === 'playingMonopoly' && isCurrentPlayerTurn)
   const showYearOfPlentyModal = Boolean(phase.key === 'playingYearOfPlenty' && isCurrentPlayerTurn)
@@ -45,43 +59,82 @@ export function BaseGame() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Show splash screen only while waiting for players to join
-  const shouldShowSplashScreen = players.length < 2
-
-  if (shouldShowSplashScreen) {
-    return <WaitingSplashScreen maxPlayers={2} />
+  if (players.length < maxPlayers) {
+    return <WaitingSplashScreen maxPlayers={maxPlayers} players={players} onLeave={handleLeaveGame} />
   }
 
-  // Calculate dynamic heights based on mobile vs desktop
+  // Calculate dynamic heights for overlay elements
   const playerInfoHeight = isMobile ? Math.min(100, height * 0.12) : Math.min(140, height * 0.15)
   const actionMenuHeight = isMobile ? Math.min(160, height * 0.22) : Math.min(180, height * 0.2) // Increased to accommodate development cards
-  const boardHeight = height - playerInfoHeight - actionMenuHeight
 
   return (
     <Box
       width="100%"
       height="100vh"
-      sx={{ 
+      sx={{
         background: '#7CB3FF',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
-      {/* Player Info - Responsive layout */}
-      <Box 
-        sx={{ 
-          height: playerInfoHeight,
-          padding: isMobile ? '0.25rem' : '0.5rem',
+      {/* Board - Full screen background */}
+      <Box sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        pointerEvents: gameEnded && !examiningBoard ? 'none' : 'auto',
+        filter: gameEnded && !examiningBoard ? 'grayscale(0.2) brightness(0.9)' : 'none'
+      }}>
+        <Board
+          width={width}
+          height={height}
+        />
+      </Box>
+
+      {/* Player Info - Mobile: top overlay, Desktop: left side overlay */}
+      <Box
+        sx={{
           display: 'flex',
-          gap: isMobile ? 0.5 : 1,
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          flexShrink: 0,
-          '&::-webkit-scrollbar': {
-            height: 4,
-          },
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          ...(isMobile ? {
+            // Mobile: top overlay
+            right: 0,
+            height: playerInfoHeight,
+            flexDirection: 'row',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            background: getBackgroundLinearGradient(180),
+            gap: 0.5,
+            padding: '0.25rem',
+            '&::-webkit-scrollbar': {
+              width: 'auto',
+              height: 4,
+            },
+          } : {
+            // Desktop: left side overlay
+            bottom: 0,
+            width: '320px',
+            flexDirection: 'column',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            background: getBackgroundLinearGradient(90),
+            gap: 0.5,
+            padding: '0.5rem',
+            '&::-webkit-scrollbar': {
+              width: 4,
+              height: 'auto',
+            },
+          }),
+          backdropFilter: 'blur(2px)',
+          zIndex: 10,
+
           '&::-webkit-scrollbar-track': {
             background: 'rgba(0,0,0,0.1)',
           },
@@ -96,44 +149,51 @@ export function BaseGame() {
             key={player.id}
             player={player}
             color={getUniqueColor(i)}
-            width={isMobile ? Math.min(200, width / players.length - 8) : 280}
+            width={isMobile ? Math.min(200, width / players.length - 8) : 300}
           />
         ))}
       </Box>
 
-      {/* Board - Takes remaining space */}
-      <Box sx={{ 
-        flex: 1,
-        minHeight: 0,
-        padding: '0.25rem',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-  pointerEvents: gameEnded && !examiningBoard ? 'none' : 'auto',
-  filter: gameEnded && !examiningBoard ? 'grayscale(0.2) brightness(0.9)' : 'none'
-      }}>
-        <Board
-          width={width - 8}
-          height={boardHeight - 8}
-        />
-      </Box>
-
-      {/* Action Menu - Fixed at bottom */}
+      {/* Action Menu - Mobile: bottom overlay, Desktop: right side overlay */}
       {!gameEnded && (
-        <Box sx={{ 
-          height: actionMenuHeight,
-          flexShrink: 0,
-          borderTop: '1px solid rgba(255,255,255,0.2)'
+        <Box sx={{
+          position: 'absolute',
+          ...(isMobile ? {
+            // Mobile: bottom overlay
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: actionMenuHeight,
+            background: getBackgroundLinearGradient(0),
+          } : {
+            // Desktop: right side overlay
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '400px',
+            background: getBackgroundLinearGradient(270),
+          }),
+          backdropFilter: 'blur(2px)',
+          zIndex: 10
         }}>
           <ActionMenu />
         </Box>
       )}
 
       {gameEnded && !examiningBoard && (
-        <EndGameScreen onExamineBoard={() => setExaminingBoard(true)} />
+        <Box sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 20
+        }}>
+          <EndGameScreen onExamineBoard={() => setExaminingBoard(true)} />
+        </Box>
       )}
       {gameEnded && examiningBoard && (
-        <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 60, display: 'flex', gap: 1 }}>
+        <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 30, display: 'flex', gap: 1 }}>
           <button
             style={{
               background: 'rgba(255,255,255,0.9)',
@@ -151,30 +211,38 @@ export function BaseGame() {
       )}
 
       {/* Steal Resource Modal */}
-      <StealResourceModal
-        open={showStealModal}
-        onClose={() => {}} // Modal should only close when a player is selected
-        eligiblePlayers={eligiblePlayersForRobberActions}
-      />
+      <Box sx={{ zIndex: 40 }}>
+        <StealResourceModal
+          open={showStealModal}
+          onClose={() => { }} // Modal should only close when a player is selected
+          eligiblePlayers={eligiblePlayersForRobberActions}
+        />
+      </Box>
 
       {/* Monopoly Selection Modal */}
-      <MonopolySelectionModal
-        open={showMonopolyModal}
-        onClose={() => {}} // Modal should only close when a resource is selected
-      />
+      <Box sx={{ zIndex: 40 }}>
+        <MonopolySelectionModal
+          open={showMonopolyModal}
+          onClose={() => { }} // Modal should only close when a resource is selected
+        />
+      </Box>
 
       {/* Year of Plenty Selection Modal */}
-      <YearOfPlentyModal
-        open={showYearOfPlentyModal}
-        onClose={() => {}} // Modal should only close when resources are selected
-      />
+      <Box sx={{ zIndex: 40 }}>
+        <YearOfPlentyModal
+          open={showYearOfPlentyModal}
+          onClose={() => { }} // Modal should only close when resources are selected
+        />
+      </Box>
 
       {/* Discard Cards Modal */}
-      <DiscardCardsModal
-        open={showDiscardModal}
-        onClose={() => {}} // Modal should only close when cards are discarded
-        eligiblePlayers={eligiblePlayersForRobberActions}
-      />
+      <Box sx={{ zIndex: 40 }}>
+        <DiscardCardsModal
+          open={showDiscardModal}
+          onClose={() => { }} // Modal should only close when cards are discarded
+          eligiblePlayers={eligiblePlayersForRobberActions}
+        />
+      </Box>
     </Box>
   )
 }

@@ -1,61 +1,49 @@
-import { KonvaEventObject } from 'konva/lib/Node'
-import { useState } from 'react'
-import { Circle } from 'react-konva'
-import { usePlayer } from '../context/PlayerContext'
-import { useRoom } from '../context/RoomContext'
-import { useAvailableSettlementIntersections, useCurrentPlayer } from '../hooks/stateHooks'
+import { useRef, useState } from 'react'
+import { Group } from 'konva/lib/Group'
 import { Intersection } from '../state/Intersection'
+import { BaseSettlementShape } from './BaseSettlementShape'
+import { usePulseAnimation } from '../utils/konvaAnimations'
 
-interface Type {
+interface Props {
   intersection: Intersection
-  onClick?: (intersection: Intersection) => void
+  show: boolean
+  onClick?: () => void
 }
 
-const activeColor = '#ffffff'
-export function IntersectionShape({ intersection, onClick }: Type) {
-  const room = useRoom()
-  const [focus, setFocus] = useState(false)
-  const availableIntersections = useAvailableSettlementIntersections()
-  const player = usePlayer()
-  const currentPlayer = useCurrentPlayer()
+export function IntersectionShape({ intersection, show, onClick }: Props) {
+  const [hover, setHover] = useState(false)
+  const shapeRef = useRef<Group>(null)
 
-  function handleClick() {
-    room?.send('PLACE_SETTLEMENT', {
-      intersectionId: intersection.id
-    })
-    onClick && onClick(intersection)
-  }
+  usePulseAnimation(shapeRef, {
+    enabled: show && !hover,
+    period: 2000,
+    scaleAmplitude: 0.1,
+    defaultScale: hover ? 1.2 : 1.0
+  })
 
-  function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
-    setFocus(true)
+  function handleMouseEnter() {
+    setHover(true)
   }
 
   function handleMouseLeave() {
-    setFocus(false)
+    setHover(false)
   }
 
-  if (!availableIntersections.includes(intersection.id) || currentPlayer?.id !== player?.id) return null
+  if (!show) return null
 
   return (
-    <Circle
+    <BaseSettlementShape
+      ref={shapeRef}
       x={intersection.position.x}
       y={intersection.position.y}
-      radius={9}
-      fill={activeColor}
-      onClick={handleClick}
-      onTouchEnd={handleClick}
+      fillColor="#ffffff"
+      borderColor="#000000"
+      opacity={0.6}
+      onClick={onClick}
+      onTouchEnd={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      scaleX={focus ? 1.6 : 1}
-      scaleY={focus ? 1.6 : 1}
-      opacity={0.6}
-      shadowEnabled={true}
-      shadowColor="#000000"
-      shadowOffsetX={1}
-      shadowBlur={2}
-      shadowOpacity={0.3}
-      strokeWidth={0.9}
-      stroke={'#000000'}
+      scale={1}
     />
   )
 }

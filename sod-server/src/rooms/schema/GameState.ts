@@ -26,6 +26,7 @@ export class GameState extends Schema {
   @type('boolean') hasDiceBeenRolled: boolean = false
   @type('number') round = 1
   @type('number') victoryPointsToWin: number = 10
+  @type('number') maxPlayers: number = 2
   @type('boolean') isGameEnded: boolean = false
 
   @type(['string']) availableSettlementIntersections = new ArraySchema<string>()

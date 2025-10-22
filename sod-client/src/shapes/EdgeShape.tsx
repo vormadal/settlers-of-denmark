@@ -1,84 +1,48 @@
-import { KonvaEventObject } from "konva/lib/Node";
-import { useState } from "react";
-import { Ellipse } from "react-konva";
+import { useRef, useState } from "react";
+import { BaseRoadShape } from "./BaseRoadShape";
 import { BorderEdge } from "../state/BorderEdge";
-import { Point } from "../state/Point";
-import { getLineRotation } from "../utils/VectorMath";
-import { useRoom } from "../context/RoomContext";
-import { useAvailableEdges, useCurrentPlayer, usePhase } from "../hooks/stateHooks";
-import { usePlayer } from "../context/PlayerContext";
+import { Group } from "konva/lib/Group";
+import { usePulseAnimation } from "../utils/konvaAnimations";
 
 interface Props {
   edge: BorderEdge;
+  show: boolean;
+  onClick?: () => void;
 }
 
-function getCenter(pointA: Point, pointB: Point) {
-  return {
-    x: (pointA.x + pointB.x) / 2,
-    y: (pointA.y + pointB.y) / 2,
-  };
-}
+export function EdgeShape({ edge, show, onClick }: Props) {
+  const [hover, setHover] = useState(false);
+  const shapeRef = useRef<Group>(null);
 
-export function EdgeShape({ edge }: Props) {
-  const room = useRoom();
-  const player = usePlayer();
-  const currentPlayer = useCurrentPlayer();
-  const phase = usePhase();
-  const [focus, setFocus] = useState(false);
-  const availableEdges = useAvailableEdges();
-  
-  const isRoadBuildingActive = phase.key === 'placingRoadBuilding';
+  usePulseAnimation(shapeRef, {
+    enabled: show && !hover,
+    period: 2000,
+    scaleAmplitude: 0.1,
+    defaultScale: hover ? 1.2 : 1.0
+  });
 
-  function handleMouseEnter(event: KonvaEventObject<MouseEvent>) {
-    setFocus(true);
+  function handleMouseEnter() {
+    setHover(true);
   }
 
   function handleMouseLeave() {
-    setFocus(false);
+    setHover(false);
   }
 
-  function handleClick() {
-    room?.send("PLACE_ROAD", {
-      edgeId: edge.id,
-    });
-  }
-
-  const center = getCenter(edge.pointA, edge.pointB);
-  const rotation = getLineRotation(edge.pointA, edge.pointB);
-
-  console.log("Bro");
-
-  if (!availableEdges.includes(edge.id) || player?.id !== currentPlayer?.id)
-    return null;
-
-  // Subtle enhancements for Road Building phase
-  const roadBuildingColor = isRoadBuildingActive ? "#8B4513" : "#ffffff";
-  const roadBuildingOpacity = isRoadBuildingActive ? 0.8 : 0.6;
-  const roadBuildingStroke = isRoadBuildingActive ? "#ffffff" : "#000000";
-  const roadBuildingStrokeWidth = isRoadBuildingActive ? 1.2 : 0.9;
+  if (!show) return null;
 
   return (
-    <Ellipse
-      x={center.x}
-      y={center.y}
-      onClick={handleClick}
-      onTouchEnd={handleClick}
-      radiusX={11}
-      radiusY={6}
-      rotation={rotation}
-      fill={roadBuildingColor}
+    <BaseRoadShape
+      ref={shapeRef}
+      edge={edge}
+      fillColor="#ffffff"
+      borderColor="#000000"
+      opacity={0.5}
+      onClick={onClick}
+      onTouchEnd={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      scaleX={focus ? 1.6 : 1}
-      scaleY={focus ? 1.6 : 1}
-      opacity={roadBuildingOpacity}
-      shadowEnabled={true}
-      shadowColor="#000000"
-      shadowOffsetX={1}
-      shadowBlur={2}
-      shadowOpacity={0.3}
-      strokeWidth={roadBuildingStrokeWidth}
-      stroke={roadBuildingStroke}
+      scale={1}
     />
   );
 }

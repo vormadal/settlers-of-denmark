@@ -5,8 +5,9 @@ import { Hex } from '../rooms/schema/Hex'
 import { Vector } from '../utils/Vector'
 
 export class HexFactory {
-  intersections: Intersection[] = []
-  edges: BorderEdge[] = []
+  intersections: Map<string, Intersection> = new Map()
+  edges: Map<string, BorderEdge> = new Map()
+
   createHexMap = (gameState: GameState, positions: Vector[]) => {
     for (const position of positions) {
       const hex = this.createHex(position)
@@ -14,53 +15,40 @@ export class HexFactory {
     }
     gameState.intersections.clear()
     gameState.edges.clear()
-    gameState.intersections.push(...this.intersections)
-    gameState.edges.push(...this.edges)
+    gameState.intersections.push(...this.intersections.values())
+    gameState.edges.push(...this.edges.values())
   }
 
   createHex = (position: Vector) => {
     const hex = new Hex().assign({
-      id: `hex:${position.x},${position.y}`,
-      position: position.toPoint(),
-      radius: 100
+      id: `hex:${position.x},${position.y}`
     })
 
-    const intersections: Intersection[] = []
     for (let index = 0; index < 6; index++) {
       const angle = ((2 * Math.PI) / 6) * index
-      const intersection = this.getOrCreateIntersection(position, angle)
-      intersections.push(intersection)
+      const intersection = this.createIntersection(position, angle)
+      hex.intersections.push(intersection)
     }
 
-    hex.intersections.push(...intersections.map((x) => x.id))
-
-    const edges: BorderEdge[] = []
     for (let index = 0; index < 6; index++) {
-      const edge = this.getOrCreateEdge(intersections[(index + 1) % 6], intersections[index])
-      edges.push(edge)
+      this.getOrCreateEdge(hex.intersections[(index + 1) % 6], hex.intersections[index])
     }
-    hex.edges.push(...edges.map((x) => x.id))
     return hex
   }
 
   getOrCreateEdge(intersectionA: Intersection, intersectionB: Intersection) {
-    let edge = new BorderEdge().assign({
-      id: `Edge:${intersectionA.id}->${intersectionB.id}`,
-      pointA: intersectionA.position.copy(),
-      pointB: intersectionB.position.copy()
-    })
+    let edge = BorderEdge.create(intersectionA, intersectionB)
+    let altEdge = BorderEdge.create(intersectionB, intersectionA)
 
-    const existing = this.edges.find((x) => areEdgesEqual(x, edge))
-    if (existing) {
-      edge = existing
-    } else {
-      this.edges.push(edge)
+    // the same edge might be created from another hex in opposite direction a->b vs b->a giving different ids
+    if (!this.edges.has(edge.id) && !this.edges.has(altEdge.id)) {
+      this.edges.set(edge.id, edge)
     }
 
     return edge
   }
 
-  getOrCreateIntersection(position: Vector, angle: number) {
+  createIntersection(position: Vector, angle: number) {
     const point = position.add(new Vector(Math.cos(angle), Math.sin(angle)).mul(100)).toPoint()
 
     let intersection = new Intersection().assign({
@@ -68,19 +56,7 @@ export class HexFactory {
       position: point
     })
 
-    const existing = this.intersections.find((x) => x.id === intersection.id)
-    if (existing) {
-      intersection = existing
-    } else {
-      this.intersections.push(intersection)
-    }
-
+    this.intersections.set(intersection.id, intersection)
     return intersection
   }
-}
-
-function areEdgesEqual(edge1: BorderEdge, edge2: BorderEdge) {
-  const ids = [edge1.pointA.id, edge1.pointB.id]
-  const areEqual = ids.includes(edge2.pointA.id) && ids.includes(edge2.pointB.id)
-  return areEqual
 }

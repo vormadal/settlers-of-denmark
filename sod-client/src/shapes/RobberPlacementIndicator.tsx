@@ -2,6 +2,7 @@ import { KonvaEventObject } from 'konva/lib/Node'
 import { useState } from 'react'
 import { Circle } from 'react-konva'
 import { Hex } from '../state/Hex'
+import { getCenter } from '../geometry/geometryUtils'
 
 interface Props {
   hex: Hex
@@ -30,10 +31,11 @@ export function RobberPlacementIndicator({ hex, onClick }: Props) {
   const robberOffsetX = 30 // Slightly more off-center than current robber
   const robberOffsetY = -15 // Slightly higher than current robber
 
+  const center = getCenter(hex.intersections.map(x => x.position))
   return (
     <Circle
-      x={hex.position.x + robberOffsetX}
-      y={hex.position.y + robberOffsetY}
+      x={center.x + robberOffsetX}
+      y={center.y + robberOffsetY}
       radius={12}
       fill="#666666"
       onClick={handleClick}

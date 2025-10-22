@@ -1,4 +1,5 @@
 import { Circle, Group, Text } from 'react-konva'
+import { getCenter } from '../geometry/geometryUtils'
 import { Hex } from '../state/Hex'
 
 interface Props {
@@ -13,10 +14,11 @@ export function RobberShape({ hex, isMoveable = false }: Props) {
   const robberOffsetX = 30 // Position further to the right of center
   const robberOffsetY = -15 // Higher above center to avoid number overlap
 
+  const center = getCenter(hex.intersections.map(x => x.position))
   return (
     <Group
-      x={hex.position.x}
-      y={hex.position.y}
+      x={center.x}
+      y={center.y}
     >
       {/* Robber base circle */}
       <Circle
@@ -31,7 +33,7 @@ export function RobberShape({ hex, isMoveable = false }: Props) {
         shadowOffset={{ x: 2, y: 2 }}
         shadowOpacity={0.8}
       />
-      
+
       {/* Robber symbol */}
       <Text
         x={robberOffsetX}
@@ -45,7 +47,7 @@ export function RobberShape({ hex, isMoveable = false }: Props) {
         offsetX={6}
         offsetY={6}
       />
-      
+
       {/* Connection line to show the robber is affecting this hex */}
       <Circle
         x={robberOffsetX}
@@ -56,7 +58,7 @@ export function RobberShape({ hex, isMoveable = false }: Props) {
         dash={[3, 3]}
         fill="transparent"
       />
-      
+
 
     </Group>
   )
