@@ -71,6 +71,11 @@ npm test
 
 The E2E tests automatically start both server and client.
 
+Validate the test setup:
+```bash
+npm run validate:setup
+```
+
 Run all E2E tests:
 ```bash
 npm run test:e2e
