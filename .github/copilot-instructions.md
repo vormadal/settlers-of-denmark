@@ -5,6 +5,7 @@ Monorepo with multiplayer game using Colyseus server and React client.
 ## Project Structure
 - **sod-server**: Colyseus multiplayer server → See [server.instructions.md](.github/instructions/server.instructions.md)
 - **sod-client**: React client app → See [client.instructions.md](.github/instructions/client.instructions.md)
+- **e2e**: End-to-end tests with Playwright → See [playwright.instructions.md](.github/instructions/playwright.instructions.md)
 
 ## Cross-App Integration
 
@@ -31,7 +32,7 @@ Monorepo with multiplayer game using Colyseus server and React client.
 2. **Generate**: Run schema codegen if state changes
 3. **Client**: Add UI components using generated types
 4. **Sync**: Ensure event strings match between client and server
-5. **Test**: Server tests with Mocha, manual client testing
+5. **Test**: Server tests with Mocha, E2E tests with Playwright
 
 ### Schema Changes
 1. **Modify**: Server schema files
@@ -55,3 +56,4 @@ Monorepo with multiplayer game using Colyseus server and React client.
 For app-specific instructions, see:
 - [Server Instructions](.github/instructions/server.instructions.md) - Colyseus, XState, Commands
 - [Client Instructions](.github/instructions/client.instructions.md) - React, MUI, Konva
+- [Playwright E2E Tests](.github/instructions/playwright.instructions.md) - End-to-end testing with Page Object Model

@@ -1,0 +1,20 @@
+{
+  "name": "settlers-of-denmark",
+  "version": "1.0.0",
+  "description": "End-to-end tests for Settlers of Denmark",
+  "private": true,
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.4"
+  }
+}
