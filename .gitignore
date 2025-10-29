@@ -1,0 +1,24 @@
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/e2e-screenshots/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
