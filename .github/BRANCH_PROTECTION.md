@@ -47,5 +47,5 @@ The PR build verification workflow (`.github/workflows/pr-build.yml`):
 If the build check fails:
 1. Check the GitHub Actions workflow run for detailed error messages
 2. Review the Docker build logs in the workflow output
-3. Test the build locally with: `docker build -t settlers-of-denmark:test .`
+3. Test the build locally with: `docker build -t settlers-of-denmark:local .`
 4. Ensure all dependencies in `package.json` and `package-lock.json` are correct
