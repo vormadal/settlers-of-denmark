@@ -1,0 +1,65 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  test-e2e:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # Install root dependencies (Playwright)
+      - name: Install root dependencies
+        run: npm ci
+
+      # Install server dependencies
+      - name: Install server dependencies
+        working-directory: ./sod-server
+        run: npm ci
+
+      # Install client dependencies
+      - name: Install client dependencies
+        working-directory: ./sod-client
+        run: npm ci
+
+      # Install Playwright browsers
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # Run E2E tests
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      # Upload test results on failure
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      # Upload screenshots on failure
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: e2e-screenshots/
+          retention-days: 7
