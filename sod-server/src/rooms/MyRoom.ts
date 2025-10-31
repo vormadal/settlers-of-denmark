@@ -1,16 +1,19 @@
 import { Dispatcher } from '@colyseus/command'
 import { Client, Room } from '@colyseus/core'
 import { PercentageHexTypeProvider } from '../algorithms/HexTypeProvider'
+import { FixedHexTypeProvider } from '../algorithms/FixedHexTypeProvider'
 import { GameState } from './schema/GameState'
 import { Player } from './schema/Player'
 import { Road } from './schema/Road'
 import { Settlement } from './schema/Settlement'
 
 import { BaseGameDiceCup, DiceCup } from '../algorithms/DiceCup'
+import { FixedDiceCup } from '../algorithms/FixedDiceCup'
 import { HarborFactory } from '../algorithms/HarborFactory'
 import { HexFactory } from '../algorithms/HexFactory'
 import { HexLayoutAlgorithm } from '../algorithms/layout/HexLayoutAlgorithm'
 import { DefaultNumberTokenProvider } from '../algorithms/NumberTokenProvider'
+import { FixedNumberTokenProvider } from '../algorithms/FixedNumberTokenProvider'
 import { createBaseGameStateMachine } from '../games/base/BaseGameStateMachine'
 import { generate } from '../utils/arrayHelpers'
 import { cardGenerator } from '../utils/cardGenerator'
@@ -22,6 +25,7 @@ import { HexProduction } from './schema/HexProduction'
 
 export interface RoomOptions {
   debug?: boolean
+  fixed?: boolean // use fixed providers for reproducible tests
   numPlayers?: number
   numSettlements?: number
   numCities?: number
@@ -83,14 +87,21 @@ export class MyRoom extends Room<GameState> {
 
     const positions = new HexLayoutAlgorithm(3).createLayout()
     new HexFactory().createHexMap(state, positions)
-    PercentageHexTypeProvider.default().assign(state)
-    // new DebugNumberTokenProvider().assign(state)
-    new DefaultNumberTokenProvider().assign(state)
+    
+    // Use fixed providers for reproducible tests, or random providers for normal gameplay
+    if (this.options.fixed) {
+      new FixedHexTypeProvider().assign(state)
+      new FixedNumberTokenProvider().assign(state)
+    } else {
+      PercentageHexTypeProvider.default().assign(state)
+      new DefaultNumberTokenProvider().assign(state)
+    }
+    
     new HarborFactory().createHarbors(state)
     state.robberHex = state.hexes.find((x) => x.type === HexTypes.Desert).id
     state.maxPlayers = this.options.numPlayers
 
-    this.diceCup = new BaseGameDiceCup()
+    this.diceCup = this.options.fixed ? new FixedDiceCup() : new BaseGameDiceCup()
 
     this.diceCup.init(state)
     state.deck.push(
