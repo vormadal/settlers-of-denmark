@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test';
 import { LobbyPage } from '../pages/LobbyPage';
+import { GamePage } from '../pages/GamePage';
 
 /**
  * Custom test fixtures for Settlers of Denmark E2E tests.
@@ -7,6 +8,7 @@ import { LobbyPage } from '../pages/LobbyPage';
  */
 type CustomFixtures = {
   lobbyPage: LobbyPage;
+  gamePage: GamePage;
 };
 
 /**
@@ -20,6 +22,14 @@ export const test = base.extend<CustomFixtures>({
   lobbyPage: async ({ page }, use) => {
     const lobbyPage = new LobbyPage(page);
     await use(lobbyPage);
+  },
+  
+  /**
+   * Game page fixture - automatically creates GamePage instance
+   */
+  gamePage: async ({ page }, use) => {
+    const gamePage = new GamePage(page);
+    await use(gamePage);
   },
 });
 
