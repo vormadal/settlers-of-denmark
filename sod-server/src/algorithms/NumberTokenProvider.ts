@@ -37,8 +37,11 @@ export class BalancedNumberTokenProvider implements NumberTokenProvider {
   }
 }
 
+// Standard Catan number token sequence
+const DEFAULT_NUMBER_SEQUENCE = [5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11]
+
 export class DefaultNumberTokenProvider implements NumberTokenProvider {
-  values = [5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11]
+  values = DEFAULT_NUMBER_SEQUENCE
 
   assign(gameState: GameState): void {
     let index = 0
