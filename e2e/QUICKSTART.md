@@ -11,8 +11,6 @@ npm install
 # Install Playwright browsers
 npx playwright install chromium
 
-# Verify setup
-npm run validate:setup
 ```
 
 ### 2. Run Your First Test
@@ -35,9 +33,6 @@ That's it! Playwright will automatically:
 ## 🎯 Common Commands
 
 ```bash
-# Validate setup (no browser required)
-npm run validate:setup
-
 # Run tests (headless)
 npm run test:e2e
 
