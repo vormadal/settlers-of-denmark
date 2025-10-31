@@ -27,9 +27,11 @@ test.describe('Fixed Game - Reproducible Layout', () => {
     await page.goto(`http://localhost:3000/#/game/${roomId}?name=TestPlayer`);
     await page.waitForLoadState('networkidle');
     
-    // Wait for the canvas to load
-    await page.waitForSelector('canvas', { timeout: 15000 });
-    await page.waitForTimeout(2000); // Give time for board to render
+    // Wait for the canvas to load and be visible
+    await page.waitForSelector('canvas', { timeout: 15000, state: 'visible' });
+    
+    // Wait for network idle to ensure board is rendered
+    await page.waitForLoadState('networkidle');
     
     // Take a screenshot of the initial board
     await page.screenshot({ 
@@ -115,8 +117,18 @@ test.describe('Fixed Game - Reproducible Layout', () => {
       const client = new ColyseusJS.Client('ws://localhost:2567');
       const room = await client.create('fixed', { name: 'DiceTestPlayer' });
       
-      // We need to wait for state to sync
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for state to sync using room's state change listener
+      await new Promise<void>(resolve => {
+        if (room.state.dice && room.state.dice.length > 0) {
+          resolve();
+        } else {
+          room.state.listen('dice', () => {
+            if (room.state.dice.length > 0) {
+              resolve();
+            }
+          });
+        }
+      });
       
       const rolls: number[] = [];
       
@@ -183,11 +195,11 @@ test.describe('Fixed Game - Two Players Placement', () => {
     // Player 2 joins the same game
     await player2Page.goto(`http://localhost:3000/#/game/${roomId}?name=Player2`);
     await player2Page.waitForLoadState('networkidle');
-    await player2Page.waitForSelector('canvas', { timeout: 15000 });
+    await player2Page.waitForSelector('canvas', { timeout: 15000, state: 'visible' });
     
-    // Wait for game to start (both players joined)
-    await player1Page.waitForTimeout(2000);
-    await player2Page.waitForTimeout(2000);
+    // Wait for both players to be fully connected (use network idle)
+    await player1Page.waitForLoadState('networkidle');
+    await player2Page.waitForLoadState('networkidle');
 
     // Take screenshots
     await player1Page.screenshot({ 

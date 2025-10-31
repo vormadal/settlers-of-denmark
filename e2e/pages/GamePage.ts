@@ -65,11 +65,15 @@ export class GamePage extends BasePage {
   /**
    * Click on an intersection (for placing settlements)
    * This is a helper that will click at predetermined coordinates
-   * based on the fixed board layout
+   * based on the fixed board layout.
+   * 
+   * Note: These coordinates are approximate and should ideally be replaced
+   * with data attributes or more robust selectors in production tests.
    */
   async clickIntersection(index: number) {
     // These coordinates are approximate and may need adjustment based on actual board layout
     // For a fixed board, we can determine exact positions
+    // TODO: Consider adding data-testid attributes to intersection elements for more robust selection
     const intersectionCoords = [
       { x: 300, y: 200 },
       { x: 400, y: 200 },
@@ -85,9 +89,13 @@ export class GamePage extends BasePage {
 
   /**
    * Click on an edge (for placing roads)
+   * 
+   * Note: These coordinates are approximate and should ideally be replaced
+   * with data attributes or more robust selectors in production tests.
    */
   async clickEdge(index: number) {
     // These coordinates are approximate
+    // TODO: Consider adding data-testid attributes to edge elements for more robust selection
     const edgeCoords = [
       { x: 350, y: 240 },
       { x: 450, y: 240 },

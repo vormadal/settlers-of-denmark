@@ -10,8 +10,8 @@ test.describe('Fixed Game - Basic Room Creation', () => {
     await page.goto('http://localhost:3000');
     await page.waitForLoadState('networkidle');
     
-    // Wait for page to be ready
-    await page.waitForTimeout(1000);
+    // Wait for page to be fully loaded
+    await page.waitForFunction(() => document.readyState === 'complete');
     
     // Check if the page loaded
     const pageTitle = await page.title();
