@@ -147,4 +147,62 @@ export class GamePage extends BasePage {
   async hasText(text: string) {
     return await this.page.getByText(text).isVisible();
   }
+
+  /**
+   * Create a fixed room and return room ID
+   * @param playerName - The player name
+   */
+  async createFixedRoom(playerName: string): Promise<string> {
+    return await this.page.evaluate(async (name) => {
+      const ColyseusJS = await import('colyseus.js');
+      const client = new ColyseusJS.Client('ws://localhost:2567');
+      const room = await client.create('fixed', { name });
+      return room.id;
+    }, playerName);
+  }
+
+  /**
+   * Create a fixed room and get hex layout information
+   * @param playerName - The player name
+   */
+  async createFixedRoomWithHexInfo(playerName: string): Promise<{ roomId: string; hexes: any[] }> {
+    return await this.page.evaluate(async (name) => {
+      const ColyseusJS = await import('colyseus.js');
+      const client = new ColyseusJS.Client('ws://localhost:2567');
+      const room = await client.create('fixed', { name });
+      
+      // Get hex information
+      const hexes = Array.from(room.state.hexes.values()).map((hex: any) => ({
+        id: hex.id,
+        type: hex.type,
+        value: hex.value
+      }));
+      
+      await room.leave();
+      return { roomId: room.id, hexes };
+    }, playerName);
+  }
+
+  /**
+   * Navigate to game room and wait for it to load
+   * @param roomId - The room ID
+   * @param playerName - The player name
+   */
+  async joinGameRoom(roomId: string, playerName: string) {
+    await this.page.goto(`http://localhost:3000/#/game/${roomId}?name=${playerName}`);
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForSelector('canvas', { timeout: 15000, state: 'visible' });
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Take a screenshot of the current page
+   * @param filename - The filename for the screenshot
+   */
+  async takeScreenshot(filename: string) {
+    await this.page.screenshot({ 
+      path: `e2e-screenshots/${filename}`,
+      fullPage: true 
+    });
+  }
 }
