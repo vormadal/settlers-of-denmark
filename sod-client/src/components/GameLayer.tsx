@@ -13,6 +13,8 @@ import { BorderEdge } from '../state/BorderEdge'
 import { Intersection } from '../state/Intersection'
 import { Harbor } from '../state/Harbor'
 import { Player } from '../state/Player'
+import NumberToken from '../shapes/NumberToken'
+import { colors as CardColors } from '../utils/colors'
 
 interface GameLayerProps {
   hexes: Hex[]
@@ -83,11 +85,18 @@ export function GameLayer({
 
   return (
     <Layer>
-      {hexes.map((x) => (
+      {hexes.map(({ id, value, type, intersections }) => (
         <Land
-          key={x.id}
-          hex={x}
-        />
+          key={id}
+          color={CardColors[type]}
+          points={intersections.map(x => x.position)}
+        >
+          {value !== undefined && (
+            <NumberToken
+              value={value}
+            />
+          )}
+        </Land>
       ))}
 
       {/* Robber placement indicators - only show when moving robber */}

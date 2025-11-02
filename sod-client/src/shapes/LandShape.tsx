@@ -3,40 +3,37 @@ import { getCenter } from '../geometry/geometryUtils'
 import { Hex } from '../state/Hex'
 import { colors } from '../utils/colors'
 import NumberToken from './NumberToken'
+import Point from '../geometry/Point'
 
 interface Type {
-  hex: Hex
+  color: string
+  points: Point[]
+  children?: React.ReactNode
   isHighlighted?: boolean
   onClick?: () => void
 }
 
-export function Land({ hex, isHighlighted = false, onClick }: Type) {
-  const color = colors[hex.type] ?? '#ff0000'
-
+export function Land({ color, points, children, isHighlighted = false, onClick }: Type) {
   const handleClick = () => {
     if (onClick) {
       onClick()
     }
   }
 
-  const center = getCenter(hex.intersections.map(x => x.position))
+  const center = getCenter(points)
   return (
     <Group
       onClick={handleClick}
       onTap={handleClick}
     >
-      <Line points={[...hex.intersections].flatMap(intersection => [intersection.position.x, intersection.position.y])}
+      <Line points={[...points].flatMap(p => [p.x, p.y])}
         closed={true}
         stroke={isHighlighted ? '#ffff00' : '#000000'}
         strokeWidth={isHighlighted ? 3 : 1.5}
         fill={color} />
-
-      {hex.value !== undefined && (
-        <NumberToken
-          value={hex.value}
-          position={center}
-        />
-      )}
+      <Group x={center.x} y={center.y}>
+        {children}
+      </Group>
     </Group>
   )
 }

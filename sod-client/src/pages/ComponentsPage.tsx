@@ -25,6 +25,7 @@ import { CityShape } from "../shapes/CityShape";
 import { HarborShape } from "../shapes/HarborShape";
 import { Harbor } from "../state/Harbor";
 import { CardNames } from "../utils/CardNames";
+import { colors } from "../utils/colors";
 
 const playerColors = [
   "#ff4444", // Red
@@ -210,7 +211,9 @@ export function ComponentsPage() {
             >
               <Layer>
                 {/* Hex with Roads - Game Board Scale */}
-                <Land hex={hex} />
+                <Land color={colors.Forest} points={hex.intersections.map(x => x.position)} >
+                  <NumberToken value={hex.value} />
+                </Land>
 
                 {/* Harbors */}
                 {harbors.map((harbor) => (
