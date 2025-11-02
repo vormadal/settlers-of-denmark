@@ -75,7 +75,10 @@ export function GameLayer({
   const roads = players
     .map((player, i) => player.roads
       .filter((x) => !!x.edge)
-      .map((road) => ({ player, road, color: colors[i] })))
+      .map((road) => {
+        const { pointA, pointB } = edges.find((e) => e.id === road.edge)!
+        return { player, road, color: colors[i], pointA, pointB }
+      }))
     .flat()
 
   return (
@@ -100,12 +103,13 @@ export function GameLayer({
           ) : null
         })}
 
-      {edges.map((x) => (
+      {edges.map(({ id, pointA, pointB }) => (
         <EdgeShape
-          show={availableEdges.includes(x.id)}
-          key={x.id}
-          edge={x}
-          onClick={() => onPlaceRoad(x.id)}
+          show={availableEdges.includes(id)}
+          key={id}
+          pointA={pointA}
+          pointB={pointB}
+          onClick={() => onPlaceRoad(id)}
         />
       ))}
 
@@ -126,11 +130,12 @@ export function GameLayer({
         />
       ))}
 
-      {roads.map(({ road, player, color }) => (
+      {roads.map(({ road, color, pointA, pointB }) => (
         <RoadShape
           key={road.id}
           color={color}
-          edge={edges.find((x) => x.id === road.edge)!}
+          pointA={pointA}
+          pointB={pointB}
         />
       ))}
 

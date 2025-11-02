@@ -1,15 +1,17 @@
+import Point from '../geometry/Point'
 import { BaseRoadShape } from './BaseRoadShape'
-import { BorderEdge } from '../state/BorderEdge'
 
 interface Props {
-  edge: BorderEdge
+  pointA: Point
+  pointB: Point
   color: string
 }
 
-export function RoadShape({ edge, color = '#000000' }: Props) {
+export function RoadShape({ pointA, pointB, color = '#000000' }: Props) {
   return (
-    <BaseRoadShape 
-      edge={edge}
+    <BaseRoadShape
+      pointA={pointA}
+      pointB={pointB}
       fillColor={color}
     />
   )
