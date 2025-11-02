@@ -124,7 +124,7 @@ export function GameLayer({
       {intersections.map((x) => (
         <IntersectionShape
           key={x.id}
-          intersection={x}
+          position={x.position}
           show={availableIntersections.includes(x.id) && isCurrentPlayerTurn}
           onClick={() => onPlaceSettlement(x.id)}
         />
