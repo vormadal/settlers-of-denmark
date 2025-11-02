@@ -162,9 +162,9 @@ export function GameLayer({
           <SettlementShape
             key={settlement.id}
             color={color}
-            intersection={intersection}
-            isUpgradable={isUpgradable}
-            onUpgrade={onUpgradeSettlement}
+            position={intersection.position}
+            onClick={() => onUpgradeSettlement(intersection.id)}
+            showUpgradeAnimation={isUpgradable}
           />
         )
       })}

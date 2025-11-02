@@ -245,8 +245,8 @@ export function ComponentsPage() {
 
                 <SettlementShape
                   color={selectedColor}
-                  intersection={intersections[0]}
-                  isUpgradable={true}
+                  position={intersections[0].position}
+                  showUpgradeAnimation={true}
                 />
                 <CityShape
                   color={selectedColor}
