@@ -1,16 +1,17 @@
-import { useRef, useState } from "react";
-import { BaseRoadShape } from "./BaseRoadShape";
-import { BorderEdge } from "../state/BorderEdge";
 import { Group } from "konva/lib/Group";
+import { useRef, useState } from "react";
+import Point from "../geometry/Point";
 import { usePulseAnimation } from "../utils/konvaAnimations";
+import { BaseRoadShape } from "./BaseRoadShape";
 
 interface Props {
-  edge: BorderEdge;
+  pointA: Point;
+  pointB: Point;
   show: boolean;
   onClick?: () => void;
 }
 
-export function EdgeShape({ edge, show, onClick }: Props) {
+export function EdgeShape({ pointA, pointB, show, onClick }: Props) {
   const [hover, setHover] = useState(false);
   const shapeRef = useRef<Group>(null);
 
@@ -34,7 +35,8 @@ export function EdgeShape({ edge, show, onClick }: Props) {
   return (
     <BaseRoadShape
       ref={shapeRef}
-      edge={edge}
+      pointA={pointA}
+      pointB={pointB}
       fillColor="#ffffff"
       borderColor="#000000"
       opacity={0.5}

@@ -223,14 +223,15 @@ export function ComponentsPage() {
 
                 {/* Roads around the hex using exact game coordinates */}
                 {roads.slice(0, 3).map((road) => (
-                  <RoadShape key={road.id} color={selectedColor} edge={road} />
+                  <RoadShape key={road.id} color={selectedColor} pointA={road.pointA} pointB={road.pointB} />
                 ))}
 
                 {/* Edge shapes (placement indicators) around the hex */}
                 {roads.slice(3).map((road) => (
                   <EdgeShape
                     key={`edge-${road.id}`}
-                    edge={road}
+                    pointA={road.pointA}
+                    pointB={road.pointB}
                     show={showEdges}
                     onClick={() => console.log(`Edge clicked: ${road.id}`)}
                   />
