@@ -1,17 +1,19 @@
-import { Group, Line, Rect, Text, Circle, Arc } from "react-konva";
+import { Arc, Circle, Group, Line, Rect, Text } from "react-konva";
 import { getCenter } from "../geometry/geometryUtils";
-import { Harbor } from "../state/Harbor";
 import { Point } from "../state/Point";
 import { colors } from "../utils/colors";
 
 interface Props {
-  harbor: Harbor;
+  pointA: Point;
+  pointB: Point;
+  ratio: number;
+  cardTypes: string[];
   hexCenter: Point;
 }
 
 // Calculate outward normal direction from edge
-function getOutwardNormal(edge: any, hexCenter: Point) {
-  const center = getCenter([edge.pointA, edge.pointB]);
+function getOutwardNormal(pointA: Point, pointB: Point, hexCenter: Point) {
+  const center = getCenter([pointA, pointB]);
 
   // Direction is simply from hex center through edge center
   const dx = center.x - hexCenter.x;
@@ -185,16 +187,13 @@ function HarborLabel({
   );
 }
 
-export function HarborShape({ harbor, hexCenter }: Props) {
-  const edge = harbor.edge;
-  if (!edge?.pointA || !edge?.pointB) return null;
+export function HarborShape({ pointA, pointB, cardTypes, ratio, hexCenter }: Props) {
 
-  const { nx, ny, center } = getOutwardNormal(edge, hexCenter);
+  const { nx, ny, center } = getOutwardNormal(pointA, pointB, hexCenter);
   const boatX = center.x + nx * 40;
   const boatY = center.y + ny * 40;
 
-  const cardType =
-    harbor.cardTypes?.length > 1 ? "Any" : harbor.cardTypes[0] || "Any";
+  const cardType = cardTypes?.length > 1 ? "Any" : cardTypes[0] || "Any";
   const pierLength = 30;
 
   // Calculate slightly angled directions for piers to point toward each other
@@ -217,14 +216,14 @@ export function HarborShape({ harbor, hexCenter }: Props) {
     <Group listening={false}>
       {/* Piers from each endpoint angled toward each other */}
       <Pier
-        start={edge.pointA}
+        start={pointA}
         directionX={leftDirX}
         directionY={leftDirY}
         length={pierLength}
         edgeCenter={center}
       />
       <Pier
-        start={edge.pointB}
+        start={pointB}
         directionX={rightDirX}
         directionY={rightDirY}
         length={pierLength}
@@ -237,7 +236,7 @@ export function HarborShape({ harbor, hexCenter }: Props) {
         <HarborLabel
           x={0}
           y={5}
-          ratio={harbor.ratio}
+          ratio={ratio}
         />
       </Boat>
     </Group>
