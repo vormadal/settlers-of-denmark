@@ -55,7 +55,7 @@ export function GameLayer({
   onUpgradeSettlement,
   currentPlayerId
 }: GameLayerProps) {
-  
+
   const settlements = players
     .map((player, i) =>
       player.settlements
@@ -63,7 +63,7 @@ export function GameLayer({
         .map((settlement) => ({ player, settlement, color: colors[i] }))
     )
     .flat()
-    
+
   const cities = players
     .map((player, i) =>
       player.cities
@@ -71,7 +71,7 @@ export function GameLayer({
         .map((settlement) => ({ player, settlement, color: colors[i] }))
     )
     .flat()
-    
+
   const roads = players
     .map((player, i) => player.roads
       .filter((x) => !!x.edge)
@@ -133,7 +133,7 @@ export function GameLayer({
           edge={edges.find((x) => x.id === road.edge)!}
         />
       ))}
-      
+
       {settlements.map(({ settlement, player: settlementPlayer, color }) => {
         const intersection = intersections.find((x) => x.id === settlement.intersection)!
         const isUpgradable =
@@ -156,7 +156,7 @@ export function GameLayer({
         <CityShape
           key={settlement.id}
           color={color}
-          intersection={intersections.find((x) => x.id === settlement.intersection)!}
+          position={intersections.find((x) => x.id === settlement.intersection)!.position}
         />
       ))}
 

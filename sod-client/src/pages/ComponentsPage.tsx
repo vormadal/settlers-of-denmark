@@ -243,7 +243,7 @@ export function ComponentsPage() {
                 />
                 <CityShape
                   color={selectedColor}
-                  intersection={intersections[1]}
+                  position={intersections[1].position}
                 />
               </Layer>
             </Stage>

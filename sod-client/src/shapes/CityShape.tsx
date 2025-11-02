@@ -1,8 +1,8 @@
 import { Line } from 'react-konva'
-import { Intersection } from '../state/Intersection'
+import Point from '../geometry/Point'
 
 interface Props {
-  intersection: Intersection
+  position: Point
   color: string
 }
 
@@ -19,12 +19,12 @@ const points = [
   14, -14,  // top right
 ]
 
-export function CityShape({ intersection, color = '#000000' }: Props) {
+export function CityShape({ position, color = '#000000' }: Props) {
   return (
     <Line
       points={points}
-      x={intersection.position.x}
-      y={intersection.position.y}
+      x={position.x}
+      y={position.y}
       closed={true}
       shadowEnabled={true}
       shadowColor="#000000"
