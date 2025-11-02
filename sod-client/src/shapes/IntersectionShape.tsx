@@ -1,16 +1,16 @@
-import { useRef, useState } from 'react'
 import { Group } from 'konva/lib/Group'
-import { Intersection } from '../state/Intersection'
-import { BaseSettlementShape } from './BaseSettlementShape'
+import { useRef, useState } from 'react'
+import Point from '../geometry/Point'
 import { usePulseAnimation } from '../utils/konvaAnimations'
+import { BaseSettlementShape } from './BaseSettlementShape'
 
 interface Props {
-  intersection: Intersection
+  position: Point
   show: boolean
   onClick?: () => void
 }
 
-export function IntersectionShape({ intersection, show, onClick }: Props) {
+export function IntersectionShape({ position, show, onClick }: Props) {
   const [hover, setHover] = useState(false)
   const shapeRef = useRef<Group>(null)
 
@@ -34,8 +34,8 @@ export function IntersectionShape({ intersection, show, onClick }: Props) {
   return (
     <BaseSettlementShape
       ref={shapeRef}
-      x={intersection.position.x}
-      y={intersection.position.y}
+      x={position.x}
+      y={position.y}
       fillColor="#ffffff"
       borderColor="#000000"
       opacity={0.6}
