@@ -116,7 +116,10 @@ export function GameLayer({
       {harbors.map((h) => (
         <HarborShape
           key={h.id}
-          harbor={h}
+          pointA={h.edge.pointA}
+          pointB={h.edge.pointB}
+          cardTypes={h.cardTypes.toArray()}
+          ratio={h.ratio}
           hexCenter={h.hexPosition}
         />
       ))}

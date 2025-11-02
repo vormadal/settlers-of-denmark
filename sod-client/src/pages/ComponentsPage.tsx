@@ -216,7 +216,10 @@ export function ComponentsPage() {
                 {harbors.map((harbor) => (
                   <HarborShape
                     key={harbor.id}
-                    harbor={harbor}
+                    pointA={harbor.edge.pointA}
+                    pointB={harbor.edge.pointB}
+                    cardTypes={harbor.cardTypes.toArray()}
+                    ratio={harbor.ratio}
                     hexCenter={center}
                   />
                 ))}
