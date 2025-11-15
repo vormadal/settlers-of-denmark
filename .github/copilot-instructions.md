@@ -51,6 +51,7 @@ Monorepo with multiplayer game using Colyseus server and React client.
 - **State Sync**: Client subscribes to server state, no duplicate client state
 - **Player ID**: Server uses `client.sessionId`, client only overrides for debug
 - **Schema**: Server is source of truth, client imports generated types
+- **Comments**: Document **ONLY** complex logic, avoid redundant and verbose comments
 
 ---
 For app-specific instructions, see:

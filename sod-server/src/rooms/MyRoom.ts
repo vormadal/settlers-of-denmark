@@ -87,7 +87,7 @@ export class MyRoom extends Room<GameState> {
 
     const positions = new HexLayoutAlgorithm(3).createLayout()
     new HexFactory().createHexMap(state, positions)
-    
+
     // Use fixed providers for reproducible tests, or random providers for normal gameplay
     if (this.options.fixed) {
       new FixedHexTypeProvider().assign(state)
@@ -96,7 +96,7 @@ export class MyRoom extends Room<GameState> {
       PercentageHexTypeProvider.default().assign(state)
       new DefaultNumberTokenProvider().assign(state)
     }
-    
+
     new HarborFactory().createHarbors(state)
     state.robberHex = state.hexes.find((x) => x.type === HexTypes.Desert).id
     state.maxPlayers = this.options.numPlayers
@@ -226,7 +226,15 @@ export class MyRoom extends Room<GameState> {
     if (this.options.initialPlayerResourceCards) {
       Object.entries(this.options.initialPlayerResourceCards).forEach(([variant, count]) => {
         if (Object.values(ResourceCardVariants).includes(variant) && count > 0) {
-          this.state.deck.push(...cardGenerator(count, CardTypes.Resource, variant, variant === DevelopmentCardVariants.Knight, (card) => (card.owner = player.id)))
+          this.state.deck.push(
+            ...cardGenerator(
+              count,
+              CardTypes.Resource,
+              variant,
+              variant === DevelopmentCardVariants.Knight,
+              (card) => (card.owner = player.id)
+            )
+          )
         }
       })
     }
