@@ -1,5 +1,6 @@
-import { Page, Locator, expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Page, Locator, expect } from '@playwright/test'
+import { BasePage } from './BasePage'
+import * as Colyseus from 'colyseus.js'
 
 /**
  * Page Object Model for the Game page.
@@ -7,19 +8,19 @@ import { BasePage } from './BasePage';
  */
 export class GamePage extends BasePage {
   // Locators for page elements
-  readonly boardCanvas: Locator;
-  readonly currentPlayerIndicator: Locator;
-  readonly rollDiceButton: Locator;
-  readonly endTurnButton: Locator;
+  readonly boardCanvas: Locator
+  readonly currentPlayerIndicator: Locator
+  readonly rollDiceButton: Locator
+  readonly endTurnButton: Locator
 
   constructor(page: Page) {
-    super(page);
-    
+    super(page)
+
     // Define locators - adjusting based on actual implementation
-    this.boardCanvas = page.locator('canvas');
-    this.currentPlayerIndicator = page.getByText(/Current Player/i);
-    this.rollDiceButton = page.getByRole('button', { name: /Roll Dice/i });
-    this.endTurnButton = page.getByRole('button', { name: /End Turn/i });
+    this.boardCanvas = page.locator('canvas')
+    this.currentPlayerIndicator = page.getByText(/Current Player/i)
+    this.rollDiceButton = page.getByRole('button', { name: /Roll Dice/i })
+    this.endTurnButton = page.getByRole('button', { name: /End Turn/i })
   }
 
   /**
@@ -28,8 +29,8 @@ export class GamePage extends BasePage {
    * @param playerName - The player name
    */
   async navigate(roomId: string, playerName: string = 'TestPlayer') {
-    await this.goto(`/game/${roomId}?name=${playerName}`);
-    await this.waitForLoad();
+    await this.goto(`/#/game/${roomId}?name=${playerName}`)
+    await this.waitForLoad()
   }
 
   /**
@@ -37,16 +38,17 @@ export class GamePage extends BasePage {
    */
   async isLoaded() {
     // Wait for the canvas to be visible
-    await expect(this.boardCanvas).toBeVisible({ timeout: 10000 });
+    await expect(this.boardCanvas).toBeVisible({ timeout: 10000 })
   }
 
   /**
    * Wait for the game board to be fully rendered
    */
   async waitForBoardLoad() {
-    // Wait for canvas to be visible and game state to initialize
-    await this.page.waitForTimeout(1000); // Give time for board to render
-    await expect(this.boardCanvas).toBeVisible();
+    await this.boardCanvas.waitFor({ state: 'visible', timeout: 10000 })
+    // // Wait for canvas to be visible and game state to initialize
+    // await this.page.waitForTimeout(1000) // Give time for board to render
+    // await expect(this.boardCanvas).toBeVisible()
   }
 
   /**
@@ -55,10 +57,10 @@ export class GamePage extends BasePage {
    * @param y - Y coordinate
    */
   async clickOnBoard(x: number, y: number) {
-    const canvas = this.boardCanvas;
-    const box = await canvas.boundingBox();
+    const canvas = this.boardCanvas
+    const box = await canvas.boundingBox()
     if (box) {
-      await this.page.mouse.click(box.x + x, box.y + y);
+      await this.page.mouse.click(box.x + x, box.y + y)
     }
   }
 
@@ -66,7 +68,7 @@ export class GamePage extends BasePage {
    * Click on an intersection (for placing settlements)
    * This is a helper that will click at predetermined coordinates
    * based on the fixed board layout.
-   * 
+   *
    * Note: These coordinates are approximate and should ideally be replaced
    * with data attributes or more robust selectors in production tests.
    */
@@ -79,17 +81,17 @@ export class GamePage extends BasePage {
       { x: 400, y: 200 },
       { x: 500, y: 200 },
       { x: 350, y: 280 },
-      { x: 450, y: 280 },
+      { x: 450, y: 280 }
       // Add more coordinates as needed for testing
-    ];
-    
-    const coord = intersectionCoords[index] || intersectionCoords[0];
-    await this.clickOnBoard(coord.x, coord.y);
+    ]
+
+    const coord = intersectionCoords[index] || intersectionCoords[0]
+    await this.clickOnBoard(coord.x, coord.y)
   }
 
   /**
    * Click on an edge (for placing roads)
-   * 
+   *
    * Note: These coordinates are approximate and should ideally be replaced
    * with data attributes or more robust selectors in production tests.
    */
@@ -99,12 +101,12 @@ export class GamePage extends BasePage {
     const edgeCoords = [
       { x: 350, y: 240 },
       { x: 450, y: 240 },
-      { x: 300, y: 240 },
+      { x: 300, y: 240 }
       // Add more coordinates as needed for testing
-    ];
-    
-    const coord = edgeCoords[index] || edgeCoords[0];
-    await this.clickOnBoard(coord.x, coord.y);
+    ]
+
+    const coord = edgeCoords[index] || edgeCoords[0]
+    await this.clickOnBoard(coord.x, coord.y)
   }
 
   /**
@@ -112,7 +114,7 @@ export class GamePage extends BasePage {
    */
   async rollDice() {
     if (await this.rollDiceButton.isVisible()) {
-      await this.rollDiceButton.click();
+      await this.rollDiceButton.click()
     }
   }
 
@@ -121,7 +123,7 @@ export class GamePage extends BasePage {
    */
   async endTurn() {
     if (await this.endTurnButton.isVisible()) {
-      await this.endTurnButton.click();
+      await this.endTurnButton.click()
     }
   }
 
@@ -130,7 +132,7 @@ export class GamePage extends BasePage {
    */
   async getCurrentPlayer() {
     // This would need to be adjusted based on actual UI
-    return await this.currentPlayerIndicator.textContent();
+    return await this.currentPlayerIndicator.textContent()
   }
 
   /**
@@ -138,49 +140,29 @@ export class GamePage extends BasePage {
    * @param phase - The phase text to wait for
    */
   async waitForPhase(phase: string) {
-    await this.page.waitForSelector(`text=${phase}`, { timeout: 5000 });
+    await this.page.waitForSelector(`text=${phase}`, { timeout: 5000 })
   }
 
   /**
    * Check if an element with specific text is visible
    */
   async hasText(text: string) {
-    return await this.page.getByText(text).isVisible();
+    return await this.page.getByText(text).isVisible()
   }
 
   /**
-   * Create a fixed room and return room ID
+   * Create a fixed room and returns the room object
+   * Note that the first user is automatically added as a player in the room.
    * @param playerName - The player name
    */
-  async createFixedRoom(playerName: string): Promise<string> {
-    return await this.page.evaluate(async (name) => {
-      const ColyseusJS = await import('colyseus.js');
-      const client = new ColyseusJS.Client('ws://localhost:2567');
-      const room = await client.create('fixed', { name });
-      return room.id;
-    }, playerName);
-  }
+  async createFixedRoom(playerName: string, numPlayers?: number): Promise<Colyseus.Room> {
+    const client = new Colyseus.Client('ws://localhost:2567')
+    const room = await client.create('fixed', { name: playerName, numPlayers: numPlayers || 2 })
 
-  /**
-   * Create a fixed room and get hex layout information
-   * @param playerName - The player name
-   */
-  async createFixedRoomWithHexInfo(playerName: string): Promise<{ roomId: string; hexes: any[] }> {
-    return await this.page.evaluate(async (name) => {
-      const ColyseusJS = await import('colyseus.js');
-      const client = new ColyseusJS.Client('ws://localhost:2567');
-      const room = await client.create('fixed', { name });
-      
-      // Get hex information
-      const hexes = Array.from(room.state.hexes.values()).map((hex: any) => ({
-        id: hex.id,
-        type: hex.type,
-        value: hex.value
-      }));
-      
-      await room.leave();
-      return { roomId: room.id, hexes };
-    }, playerName);
+    await room.leave(false)
+    await this.joinGameRoom(room.roomId, playerName, room.reconnectionToken)
+
+    return room
   }
 
   /**
@@ -188,11 +170,14 @@ export class GamePage extends BasePage {
    * @param roomId - The room ID
    * @param playerName - The player name
    */
-  async joinGameRoom(roomId: string, playerName: string) {
-    await this.page.goto(`http://localhost:3000/#/game/${roomId}?name=${playerName}`);
-    await this.page.waitForLoadState('networkidle');
-    await this.page.waitForSelector('canvas', { timeout: 15000, state: 'visible' });
-    await this.page.waitForLoadState('networkidle');
+  async joinGameRoom(roomId: string, playerName: string, reconnectionToken?: string) {
+    // this will ensure that the correct browser context is used
+    await this.page.evaluate((reconnectionToken) => {
+      if (reconnectionToken) {
+        sessionStorage.setItem('reconnectionToken', reconnectionToken)
+      }
+    }, reconnectionToken)
+    await this.navigate(roomId, playerName)
   }
 
   /**
@@ -200,9 +185,9 @@ export class GamePage extends BasePage {
    * @param filename - The filename for the screenshot
    */
   async takeScreenshot(filename: string) {
-    await this.page.screenshot({ 
+    await this.page.screenshot({
       path: `e2e-screenshots/${filename}`,
-      fullPage: true 
-    });
+      fullPage: true
+    })
   }
 }

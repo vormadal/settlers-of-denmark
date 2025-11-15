@@ -30,7 +30,6 @@ export default config({
     
     gameServer.define("fixed", MyRoom, { 
       fixed: true,
-      numPlayers: 2,
       numRoads: 15,
       numSettlements: 5,
       numCities: 4,
