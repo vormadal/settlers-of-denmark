@@ -26,19 +26,19 @@ export default function ActionMenu() {
   }
 
   return (
-    <Box sx={{ 
-      padding: isMobile ? '0.5rem 0.25rem' : '0.75rem 0.5rem', 
-      display: 'flex', 
-      flexDirection: isMobile ? 'column' : 'column',
-      gap: isMobile ? 0.5 : 1, 
+    <Box sx={{
+      padding: isMobile ? '0.5rem 0.25rem' : '0.75rem 0.5rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: isMobile ? 0.5 : 1,
       minWidth: 0,
       height: '100%'
     }}>
       {/* Cards - takes most space */}
-      <Box sx={{ 
-        flex: 1, 
-        minWidth: 0, 
-        height: isMobile ? 'auto' : 'auto',
+      <Box sx={{
+        flex: 1,
+        minWidth: 0,
+        height: 'auto',
         display: 'flex',
         alignItems: 'flex-start'
       }}>
@@ -73,9 +73,9 @@ export default function ActionMenu() {
             </Box>
 
             {/* Dice and End Turn button */}
-            <Box sx={{ 
-              display: 'flex', 
-              gap: 0.5, 
+            <Box sx={{
+              display: 'flex',
+              gap: 0.5,
               alignItems: 'center'
             }}>
               {/* Dice */}
@@ -89,12 +89,12 @@ export default function ActionMenu() {
                   size="small"
                 />
               ))}
-              
+
               {/* End Turn button - right of dice */}
               <IconButton
                 disabled={player?.id !== currentPlayer?.id || phase.key !== 'turn'}
                 onClick={() => room?.send('END_TURN')}
-                sx={{ 
+                sx={{
                   flexShrink: 0,
                   width: 44,
                   height: 44,
@@ -131,20 +131,20 @@ export default function ActionMenu() {
                   },
                 }}
               >
-                <FastForwardIcon 
-                  sx={{ 
+                <FastForwardIcon
+                  sx={{
                     fontSize: '1.2rem',
                     color: 'white',
                     filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
-                  }} 
+                  }}
                 />
               </IconButton>
             </Box>
           </Box>
 
           {/* Bottom row: Phase indicator only */}
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}>
@@ -201,9 +201,9 @@ export default function ActionMenu() {
           </Box>
 
           {/* Dice */}
-          <Box sx={{ 
-            display: 'flex', 
-            gap: 0.5, 
+          <Box sx={{
+            display: 'flex',
+            gap: 0.5,
             alignItems: 'center',
             minWidth: 'fit-content'
           }}>
@@ -220,8 +220,8 @@ export default function ActionMenu() {
           </Box>
 
           {/* Phase indicator and End Turn button */}
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
             alignItems: 'center',
             gap: 1,
             flexDirection: 'row',
@@ -251,12 +251,12 @@ export default function ActionMenu() {
                 {phase.key === 'discardingCards' && '🎲 Discard Cards'}
               </Box>
             )}
-        
+
             {/* End Turn button */}
             <IconButton
               disabled={player?.id !== currentPlayer?.id || phase.key !== 'turn'}
               onClick={() => room?.send('END_TURN')}
-              sx={{ 
+              sx={{
                 flexShrink: 0,
                 width: 52,
                 height: 52,
@@ -293,12 +293,12 @@ export default function ActionMenu() {
                 },
               }}
             >
-              <FastForwardIcon 
-                sx={{ 
+              <FastForwardIcon
+                sx={{
                   fontSize: '1.5rem',
                   color: 'white',
                   filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
-                }} 
+                }}
               />
             </IconButton>
           </Box>
