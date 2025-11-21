@@ -58,12 +58,15 @@ export function GameLayer({
   currentPlayerId
 }: GameLayerProps) {
 
+  // Create a map for O(1) intersection lookups
+  const intersectionMap = new Map(intersections.map((int) => [int.id, int]))
+
   const settlements = players
     .map((player, i) =>
       player.settlements
-        .filter((x) => !!x.intersection && intersections.some((int) => int.id === x.intersection))
+        .filter((x) => !!x.intersection && intersectionMap.has(x.intersection))
         .map((settlement) => {
-          const intersection = intersections.find((x) => x.id === settlement.intersection)!
+          const intersection = intersectionMap.get(settlement.intersection)!
           return { player, settlement, color: colors[i], intersection }
         })
     )
@@ -72,9 +75,9 @@ export function GameLayer({
   const cities = players
     .map((player, i) =>
       player.cities
-        .filter((x) => !!x.intersection && intersections.some((int) => int.id === x.intersection))
+        .filter((x) => !!x.intersection && intersectionMap.has(x.intersection))
         .map((settlement) => {
-          const intersection = intersections.find((x) => x.id === settlement.intersection)!
+          const intersection = intersectionMap.get(settlement.intersection)!
           return { player, settlement, color: colors[i], intersection }
         })
     )
