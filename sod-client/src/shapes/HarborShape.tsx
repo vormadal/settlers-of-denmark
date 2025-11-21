@@ -12,7 +12,7 @@ interface Props {
 }
 
 // Calculate outward normal direction from edge
-function getOutwardNormal(pointA: Point, pointB: Point, hexCenter: Point) {
+function getOutwardNormal(pointA: Point, pointB: Point, hexCenter: Readonly<Point>) {
   const center = getCenter([pointA, pointB]);
 
   // Direction is simply from hex center through edge center

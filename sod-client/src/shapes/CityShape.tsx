@@ -19,7 +19,7 @@ const points = [
   14, -14,  // top right
 ]
 
-export function CityShape({ position, color = '#000000' }: Props) {
+export function CityShape({ position, color = '#000000' }: Readonly<Props>) {
   return (
     <Line
       points={points}

@@ -7,7 +7,7 @@ interface Props {
   color: string
 }
 
-export function RoadShape({ pointA, pointB, color = '#000000' }: Props) {
+export function RoadShape({ pointA, pointB, color = '#000000' }: Readonly<Props>) {
   return (
     <BaseRoadShape
       pointA={pointA}

@@ -10,7 +10,7 @@ interface Props {
   onClick?: () => void
 }
 
-export function IntersectionShape({ position, show, onClick }: Props) {
+export function IntersectionShape({ position, show, onClick }: Readonly<Props>) {
   const [hover, setHover] = useState(false)
   const shapeRef = useRef<Group>(null)
 
