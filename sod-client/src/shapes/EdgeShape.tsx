@@ -11,7 +11,7 @@ interface Props {
   onClick?: () => void;
 }
 
-export function EdgeShape({ pointA, pointB, show, onClick }: Props) {
+export function EdgeShape({ pointA, pointB, show, onClick }: Readonly<Props>) {
   const [hover, setHover] = useState(false);
   const shapeRef = useRef<Group>(null);
 

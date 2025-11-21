@@ -1,11 +1,8 @@
 import { Group, Line } from 'react-konva'
 import { getCenter } from '../geometry/geometryUtils'
-import { Hex } from '../state/Hex'
-import { colors } from '../utils/colors'
-import NumberToken from './NumberToken'
 import Point from '../geometry/Point'
 
-interface Type {
+interface Props {
   color: string
   points: Point[]
   children?: React.ReactNode
@@ -13,7 +10,7 @@ interface Type {
   onClick?: () => void
 }
 
-export function Land({ color, points, children, isHighlighted = false, onClick }: Type) {
+export function Land({ color, points, children, isHighlighted = false, onClick }: Readonly<Props>) {
   const handleClick = () => {
     if (onClick) {
       onClick()
