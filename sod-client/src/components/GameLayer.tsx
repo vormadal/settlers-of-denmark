@@ -92,6 +92,8 @@ export function GameLayer({
       .filter((x): x is NonNullable<typeof x> => x !== null))
     .flat()
 
+  const robberHexData = robberHex ? hexes.find((h) => h.id === robberHex) : undefined
+
   return (
     <Layer>
       {hexes.map(({ id, value, type, intersections }) => (
@@ -186,9 +188,9 @@ export function GameLayer({
       ))}
 
       {/* Render the robber */}
-      {robberHex && hexes.find((h) => h.id === robberHex) && (
+      {robberHexData && (
         <RobberShape
-          hex={hexes.find((h) => h.id === robberHex)!}
+          hex={robberHexData}
           isMoveable={isRobberMoveable}
         />
       )}
