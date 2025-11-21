@@ -61,16 +61,22 @@ export function GameLayer({
   const settlements = players
     .map((player, i) =>
       player.settlements
-        .filter((x) => !!x.intersection)
-        .map((settlement) => ({ player, settlement, color: colors[i] }))
+        .filter((x) => !!x.intersection && intersections.some((int) => int.id === x.intersection))
+        .map((settlement) => {
+          const intersection = intersections.find((x) => x.id === settlement.intersection)!
+          return { player, settlement, color: colors[i], intersection }
+        })
     )
     .flat()
 
   const cities = players
     .map((player, i) =>
       player.cities
-        .filter((x) => !!x.intersection)
-        .map((settlement) => ({ player, settlement, color: colors[i] }))
+        .filter((x) => !!x.intersection && intersections.some((int) => int.id === x.intersection))
+        .map((settlement) => {
+          const intersection = intersections.find((x) => x.id === settlement.intersection)!
+          return { player, settlement, color: colors[i], intersection }
+        })
     )
     .flat()
 
@@ -151,8 +157,7 @@ export function GameLayer({
         />
       ))}
 
-      {settlements.map(({ settlement, player: settlementPlayer, color }) => {
-        const intersection = intersections.find((x) => x.id === settlement.intersection)!
+      {settlements.map(({ settlement, player: settlementPlayer, color, intersection }) => {
         const isUpgradable =
           upgradableSettlements.includes(settlement.intersection) &&
           isCurrentPlayerTurn &&
@@ -169,11 +174,11 @@ export function GameLayer({
         )
       })}
 
-      {cities.map(({ settlement, player, color }) => (
+      {cities.map(({ settlement, player, color, intersection }) => (
         <CityShape
           key={settlement.id}
           color={color}
-          position={intersections.find((x) => x.id === settlement.intersection)!.position}
+          position={intersection.position}
         />
       ))}
 
