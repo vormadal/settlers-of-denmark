@@ -62,7 +62,11 @@ export function GameLayer({
     .map((player, i) =>
       player.settlements
         .filter((x) => !!x.intersection)
-        .map((settlement) => ({ player, settlement, color: colors[i] }))
+        .map((settlement) => {
+          const intersection = intersections.find((x) => x.id === settlement.intersection)
+          return intersection ? { player, settlement, color: colors[i], intersection } : null
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null)
     )
     .flat()
 
@@ -70,7 +74,11 @@ export function GameLayer({
     .map((player, i) =>
       player.cities
         .filter((x) => !!x.intersection)
-        .map((settlement) => ({ player, settlement, color: colors[i] }))
+        .map((settlement) => {
+          const intersection = intersections.find((x) => x.id === settlement.intersection)
+          return intersection ? { player, settlement, color: colors[i], intersection } : null
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null)
     )
     .flat()
 
@@ -78,9 +86,10 @@ export function GameLayer({
     .map((player, i) => player.roads
       .filter((x) => !!x.edge)
       .map((road) => {
-        const { pointA, pointB } = edges.find((e) => e.id === road.edge)!
-        return { player, road, color: colors[i], pointA, pointB }
-      }))
+        const edge = edges.find((e) => e.id === road.edge)
+        return edge ? { player, road, color: colors[i], pointA: edge.pointA, pointB: edge.pointB } : null
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null))
     .flat()
 
   return (
@@ -151,8 +160,7 @@ export function GameLayer({
         />
       ))}
 
-      {settlements.map(({ settlement, player: settlementPlayer, color }) => {
-        const intersection = intersections.find((x) => x.id === settlement.intersection)!
+      {settlements.map(({ settlement, player: settlementPlayer, color, intersection }) => {
         const isUpgradable =
           upgradableSettlements.includes(settlement.intersection) &&
           isCurrentPlayerTurn &&
@@ -169,16 +177,16 @@ export function GameLayer({
         )
       })}
 
-      {cities.map(({ settlement, player, color }) => (
+      {cities.map(({ settlement, player, color, intersection }) => (
         <CityShape
           key={settlement.id}
           color={color}
-          position={intersections.find((x) => x.id === settlement.intersection)!.position}
+          position={intersection.position}
         />
       ))}
 
       {/* Render the robber */}
-      {robberHex && (
+      {robberHex && hexes.find((h) => h.id === robberHex) && (
         <RobberShape
           hex={hexes.find((h) => h.id === robberHex)!}
           isMoveable={isRobberMoveable}
